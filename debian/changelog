@@ -1,15 +1,5 @@
-lxqt-panel (0.8.0-1) unstable; urgency=medium
-
-  * Upstream version 0.8.0
-  * Min Qt version 5.3.2
-  * current minimal lxqt components versions
-  * bump standards to 3.9.6
-  * lintian override for missed manpage
-
- -- Alf Gaida <agaida@siduction.org>  Sun, 19 Oct 2014 04:21:35 +0200
-
-lxqt-panel (0.7.96-1) unstable; urgency=low
+lxqt-panel (0.9.0-1) experimental; urgency=low
 
   * Initial release (Closes: #747610)
 
- -- Alf Gaida <agaida@siduction.org>  Mon, 24 Feb 2014 23:41:30 +0100
+ -- Alf Gaida <agaida@siduction.org>  Sun, 15 Feb 2015 16:08:24 +0100

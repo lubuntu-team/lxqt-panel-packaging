@@ -1,9 +1,11 @@
 Source: lxqt-panel
 Section: x11
 Priority: optional
-Maintainer: Alf Gaida <agaida@siduction.org>
+Maintainer: Debian LXQt Maintainers <lxqt-debian@lists.lxde.org>
+Uploaders:
+ Alf Gaida <agaida@siduction.org>
 Build-Depends:
- cmake,
+ cmake (>= 3.0.2),
  debhelper (>= 9),
  libasound2-dev,
  libglib2.0-dev,
@@ -14,16 +16,19 @@ Build-Depends:
  libsensors4-dev,
  libx11-dev,
  libxcomposite-dev,
+ libxcb-util0-dev,
  libxcb-xkb-dev,
  libxcb-damage0-dev,
  libxdamage-dev,
  libxrender-dev,
  pkg-config,
- liblxqt-qt5-0-dev (>= 0.8.0),
- liblxqt-globalkeys-qt5-0-dev (>= 0.8.0),
- liblxqt-globalkeys-ui-qt5-0-dev (>= 0.8.0),
- liblxqtmount-qt5-0-dev (>= 0.8.0),
- libqt5xdg-dev (>= 1.0.0),
+ libkf5guiaddons-dev (>= 5.5.0),
+ libkf5windowsystem-dev (>= 5.5.0),
+ liblxqt0-dev (>= 0.9.0),
+ liblxqt-globalkeys0-dev (>= 0.9.0),
+ liblxqt-globalkeys-ui0-dev (>= 0.9.0),
+ liblxqtmount0-dev (>= 0.9.0),
+ libqt5xdg-dev (>= 1.1.0),
  libqt5x11extras5-dev (>= 5.3.2),
  libsysstat-qt5-0-dev,
  qttools5-dev (>= 5.3.2),
@@ -33,12 +38,10 @@ Homepage: https://github.com/lxde/lxqt-panel
 #Vcs-Git: git://anonscm.debian.org/collab-maint/lxqt-panel.git
 #Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/lxqt-panel.git;a=summary
 
-Package: lxqt-panel-qt5
+Package: lxqt-panel
 Architecture: any
-Breaks:
- lxqt-panel,
-Replaces:
- lxqt-panel,
+Breaks: lxqt-panel-qt5 (<< 0.9.0)
+Replaces: lxqt-panel-qt5 (<< 0.9.0)
 Depends:
  ${misc:Depends},
  ${shlibs:Depends},
@@ -47,15 +50,34 @@ Description: LXQt desktop panel
  .
  This package contain the LXQt panel.
 
-Package: lxqt-panel-qt5-dbg
+Package: lxqt-panel-dbg
 Architecture: any
 Section: debug
 Priority: extra
+Breaks: lxqt-panel-qt5-dbg (<< 0.9.0)
+Replaces: lxqt-panel-qt5-dbg (<< 0.9.0)
 Depends:
  ${misc:Depends},
- lxqt-panel-qt5 (= ${binary:Version}),
+ lxqt-panel (= ${binary:Version}),
 Description: LXQt desktop panel (debug)
  The LXQt desktop panel
  .
  This package contain the debugging symbols.
 
+# ---- to be removed in 2016 ----
+
+Package: lxqt-panel-qt5
+Depends: lxqt-panel, ${misc:Depends}
+Priority: extra
+Section: oldlibs
+Architecture: all
+Description: lxqt-panel transitional package
+ Empty package to facilitate upgrades, can be safely removed.
+
+Package: lxqt-panel-qt5-dbg
+Depends: lxqt-panel-dbg, ${misc:Depends}
+Priority: extra
+Section: oldlibs
+Architecture: all
+Description: lxqt-panel transitional package (dbg)
+ Empty package to facilitate upgrades, can be safely removed.
