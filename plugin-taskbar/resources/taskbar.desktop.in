@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=LxQtPanel/Plugin
+Name=Task manager
+Comment=Switch between running applications
+Icon=window-duplicate
+
+#TRANSLATIONS_DIR=../translations

@@ -1,0 +1,129 @@
+/* BEGIN_COMMON_COPYRIGHT_HEADER
+ * (c)LGPL2+
+ *
+ * LXDE-Qt - a lightweight, Qt based, desktop toolset
+ * http://razor-qt.org
+ *
+ * Copyright: 2012 Razor team
+ *            2014 LXQt team
+ * Authors:
+ *   Kuzma Shapran <kuzma.shapran@gmail.com>
+ *
+ * This program or library is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA
+ *
+ * END_COMMON_COPYRIGHT_HEADER */
+
+
+#include <QTimeZone>
+
+#include "lxqtworldclockconfigurationtimezones.h"
+
+#include "ui_lxqtworldclockconfigurationtimezones.h"
+
+
+LxQtWorldClockConfigurationTimeZones::LxQtWorldClockConfigurationTimeZones(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::LxQtWorldClockConfigurationTimeZones)
+{
+    setObjectName("WorldClockConfigurationTimeZonesWindow");
+    ui->setupUi(this);
+
+    connect(ui->timeZonesTW, SIGNAL(itemSelectionChanged()), SLOT(itemSelectionChanged()));
+    connect(ui->timeZonesTW, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), SLOT(itemDoubleClicked(QTreeWidgetItem*,int)));
+}
+
+LxQtWorldClockConfigurationTimeZones::~LxQtWorldClockConfigurationTimeZones()
+{
+    delete ui;
+}
+
+QString LxQtWorldClockConfigurationTimeZones::timeZone()
+{
+    return mTimeZone;
+}
+
+void LxQtWorldClockConfigurationTimeZones::itemSelectionChanged()
+{
+    QList<QTreeWidgetItem*> items = ui->timeZonesTW->selectedItems();
+    if (!items.empty())
+        mTimeZone = items[0]->data(0, Qt::UserRole).toString();
+    else
+        mTimeZone.clear();
+}
+
+void LxQtWorldClockConfigurationTimeZones::itemDoubleClicked(QTreeWidgetItem* /*item*/, int /*column*/)
+{
+    if (!mTimeZone.isEmpty())
+        accept();
+}
+
+QTreeWidgetItem* LxQtWorldClockConfigurationTimeZones::makeSureParentsExist(const QStringList &parts, QMap<QString, QTreeWidgetItem*> &parentItems)
+{
+    if (parts.length() == 1)
+        return 0;
+
+    QStringList parentParts = parts.mid(0, parts.length() - 1);
+
+    QString parentPath = parentParts.join(QLatin1String("/"));
+
+    QMap<QString, QTreeWidgetItem*>::Iterator I = parentItems.find(parentPath);
+    if (I != parentItems.end())
+        return I.value();
+
+    QTreeWidgetItem* newItem = new QTreeWidgetItem(QStringList() << parts[parts.length() - 2]);
+
+    QTreeWidgetItem* parentItem = makeSureParentsExist(parentParts, parentItems);
+
+    if (!parentItem)
+        ui->timeZonesTW->addTopLevelItem(newItem);
+    else
+        parentItem->addChild(newItem);
+
+    parentItems[parentPath] = newItem;
+
+    return newItem;
+}
+
+int LxQtWorldClockConfigurationTimeZones::updateAndExec()
+{
+    QDateTime now = QDateTime::currentDateTime();
+
+    ui->timeZonesTW->clear();
+
+    QMap<QString, QTreeWidgetItem*> parentItems;
+
+    foreach(QByteArray ba, QTimeZone::availableTimeZoneIds())
+    {
+        QTimeZone timeZone(ba);
+        QString ianaId(ba);
+        QStringList qStrings(QString(ba).split(QLatin1Char('/')));
+
+        if ((qStrings.size() == 1) && (qStrings[0].startsWith(QLatin1String("UTC"))))
+            qStrings.prepend(tr("UTC"));
+
+        if (qStrings.size() == 1)
+            qStrings.prepend(tr("Other"));
+
+        QTreeWidgetItem *tzItem = new QTreeWidgetItem(QStringList() << qStrings[qStrings.length() - 1] << timeZone.displayName(now) << timeZone.comment() << QLocale::countryToString(timeZone.country()));
+        tzItem->setData(0, Qt::UserRole, ianaId);
+
+        makeSureParentsExist(qStrings, parentItems)->addChild(tzItem);
+    }
+
+    ui->timeZonesTW->sortByColumn(0, Qt::AscendingOrder);
+
+    return exec();
+}
