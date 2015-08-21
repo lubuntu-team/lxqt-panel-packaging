@@ -46,7 +46,7 @@ Depends: ${misc:Depends},
          ${shlibs:Depends}
 Breaks: lxqt-panel-qt5 (<< 0.9.0)
 Replaces: lxqt-panel-qt5 (<< 0.9.0)
-Description: LXQt desktop panel 
+Description: LXQt desktop panel
  The LXQt desktop panel
  .
  This package contain the LXQt panel.
