@@ -29,6 +29,7 @@
 #include "lxqtmainmenuconfiguration.h"
 #include "ui_lxqtmainmenuconfiguration.h"
 #include <XdgMenu>
+#include <XdgIcon>
 
 #include <QFileDialog>
 
@@ -43,6 +44,8 @@ LxQtMainMenuConfiguration::LxQtMainMenuConfiguration(QSettings &settings, const 
     setObjectName("MainMenuConfigurationWindow");
     ui->setupUi(this);
 
+    ui->chooseMenuFilePB->setIcon(XdgIcon::fromTheme("folder"));
+
     connect(ui->buttons, SIGNAL(clicked(QAbstractButton*)), this, SLOT(dialogButtonsAction(QAbstractButton*)));
 
     loadSettings();
@@ -50,7 +53,11 @@ LxQtMainMenuConfiguration::LxQtMainMenuConfiguration(QSettings &settings, const 
     connect(ui->showTextCB, SIGNAL(toggled(bool)), this, SLOT(showTextChanged(bool)));
     connect(ui->textLE, SIGNAL(textEdited(QString)), this, SLOT(textButtonChanged(QString)));
     connect(ui->chooseMenuFilePB, SIGNAL(clicked()), this, SLOT(chooseMenuFile()));
-    
+    connect(ui->menuFilePathLE, &QLineEdit::textChanged, [this] (QString const & file)
+        {
+            mSettings.setValue(QStringLiteral("menu_file"), file);
+        });
+
     connect(ui->shortcutEd, SIGNAL(shortcutGrabbed(QString)), this, SLOT(shortcutChanged(QString)));
     connect(ui->shortcutEd->addMenuAction(tr("Reset")), SIGNAL(triggered()), this, SLOT(shortcutReset()));
 
@@ -97,12 +104,16 @@ void LxQtMainMenuConfiguration::showTextChanged(bool value)
 
 void LxQtMainMenuConfiguration::chooseMenuFile()
 {
-    QString path = QFileDialog::getOpenFileName(this, tr("Choose menu file"), "~", tr("Menu files (*.menu)"));
-    if (!path.isEmpty())
-    {
-        ui->menuFilePathLE->setText(path);
-        mSettings.setValue("menu_file", path);
-    }
+    QFileDialog *d = new QFileDialog(this,
+                                     tr("Choose menu file"),
+                                     QStringLiteral("/etc/xdg/menus"),
+                                     tr("Menu files (*.menu)"));
+    d->setWindowModality(Qt::WindowModal);
+    d->setAttribute(Qt::WA_DeleteOnClose);
+    connect(d, &QFileDialog::fileSelected, [&] (const QString &file) {
+        ui->menuFilePathLE->setText(file);
+    });
+    d->show();
 }
 
 void LxQtMainMenuConfiguration::shortcutChanged(const QString &value)

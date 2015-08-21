@@ -25,25 +25,21 @@
  *
  * END_COMMON_COPYRIGHT_HEADER */
 
-
 #ifndef LXQTMOUNTPLUGIN_H
 #define LXQTMOUNTPLUGIN_H
 
 #include "../panel/ilxqtpanelplugin.h"
 #include "../panel/lxqtpanel.h"
+#include "button.h"
+#include "popup.h"
+#include "actions/deviceaction.h"
 
-namespace LxQt {
-class MountManager;
-}
-
-class Popup;
-class MountButton;
-class DeviceAction;
-class QIcon;
+#include <QIcon>
 
 /*!
 \author Petr Vanek <petr@scribus.info>
 */
+
 class LxQtMountPlugin : public QObject, public ILxQtPanelPlugin
 {
     Q_OBJECT
@@ -52,36 +48,34 @@ public:
     LxQtMountPlugin(const ILxQtPanelPluginStartupInfo &startupInfo);
     ~LxQtMountPlugin();
 
-    virtual QWidget *widget();
-    virtual QString themeId() const { return "LxQtMount"; }
-    virtual ILxQtPanelPlugin::Flags flags() const { return PreferRightAlignment | HaveConfigDialog ; }
-    void realign();
+    virtual QWidget *widget() { return mButton; }
+    virtual QString themeId() const { return QStringLiteral("LxQtMount"); }
+    virtual ILxQtPanelPlugin::Flags flags() const { return PreferRightAlignment | HaveConfigDialog; }
+
+    Popup *popup() { return mPopup; }
+    QIcon icon() { return mButton->icon(); };
     QDialog *configureDialog();
 
-    LxQt::MountManager *mountManager() const { return mMountManager; }
-    Popup *popup() { return mPopup; }
-
-    QIcon icon() const;
+public slots:
+    void realign();
 
 protected slots:
     virtual void settingsChanged();
-    void buttonClicked();
 
 private:
-    MountButton *mButton;
+    Button *mButton;
     Popup *mPopup;
-    LxQt::MountManager *mMountManager;
     DeviceAction *mDeviceAction;
 };
-
 
 class LxQtMountPluginLibrary: public QObject, public ILxQtPanelPluginLibrary
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "lxde-qt.org/Panel/PluginInterface/3.0")
     Q_INTERFACES(ILxQtPanelPluginLibrary)
+
 public:
-    ILxQtPanelPlugin *instance(const ILxQtPanelPluginStartupInfo &startupInfo)
+    ILxQtPanelPlugin *instance(const ILxQtPanelPluginStartupInfo &startupInfo) const
     {
         return new LxQtMountPlugin(startupInfo);
     }

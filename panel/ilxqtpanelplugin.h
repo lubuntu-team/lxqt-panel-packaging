@@ -81,7 +81,9 @@ public:
                                         otherwise plugin prefer left (like main menu).
                                         This flag is used only at the first start, later positions of all
                                         plugins saved in a config, and this saved information is used. */
-        HaveConfigDialog     = 2    ///< The plugin have a configuration dialog.
+        HaveConfigDialog     = 2,   ///< The plugin have a configuration dialog.
+        SingleInstance       = 4,   ///< The plugin allows only one instance to run.
+        NeedsHandle          = 8    ///< The plugin needs a handle for the context menu
     };
 
     Q_DECLARE_FLAGS(Flags, Flag)
@@ -220,7 +222,7 @@ public:
     /**
     Returns the root component object of the plugin. When the library is finally unloaded, the root component will automatically be deleted.
      **/
-    virtual ILxQtPanelPlugin* instance(const ILxQtPanelPluginStartupInfo &startupInfo) = 0;
+    virtual ILxQtPanelPlugin* instance(const ILxQtPanelPluginStartupInfo &startupInfo) const = 0;
 };
 
 

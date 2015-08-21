@@ -28,14 +28,13 @@
 #ifndef LXQT_COLORPICKER_H
 #define LXQT_COLORPICKER_H
 
+#include "../panel/ilxqtpanelplugin.h"
 #include <QApplication>
-#include <QFontMetrics>
 #include <QDesktopWidget>
+#include <QFrame>
+#include <QFontMetrics>
 #include <QLineEdit>
 #include <QToolButton>
-#include <QFrame>
-
-#include "../panel/ilxqtpanelplugin.h"
 #include <XdgIcon>
 
 
@@ -87,7 +86,7 @@ class ColorPickerLibrary: public QObject, public ILxQtPanelPluginLibrary
     Q_PLUGIN_METADATA(IID "lxde-qt.org/Panel/PluginInterface/3.0")
     Q_INTERFACES(ILxQtPanelPluginLibrary)
 public:
-    ILxQtPanelPlugin *instance(const ILxQtPanelPluginStartupInfo &startupInfo)
+    ILxQtPanelPlugin *instance(const ILxQtPanelPluginStartupInfo &startupInfo) const
     {
         return new ColorPicker(startupInfo);
     }

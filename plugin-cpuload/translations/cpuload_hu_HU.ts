@@ -4,7 +4,7 @@
 <context>
     <name>LxQtCpuLoad</name>
     <message>
-        <location filename="../lxqtcpuload.cpp" line="119"/>
+        <location filename="../lxqtcpuload.cpp" line="124"/>
         <source>CPU load %1%</source>
         <translation type="unfinished"></translation>
     </message>
@@ -29,37 +29,42 @@
     <message>
         <location filename="../lxqtcpuloadconfiguration.ui" line="42"/>
         <source>Update interval:</source>
-        <translation type="unfinished"></translation>
+        <translation>Frissítési köz:</translation>
     </message>
     <message>
         <location filename="../lxqtcpuloadconfiguration.ui" line="49"/>
         <source>sec</source>
-        <translation type="unfinished"></translation>
+        <translation> mp</translation>
     </message>
     <message>
         <location filename="../lxqtcpuloadconfiguration.ui" line="71"/>
         <source>Bar orientation:</source>
-        <translation type="unfinished"></translation>
+        <translation>Sáv irány:</translation>
     </message>
     <message>
-        <location filename="../lxqtcpuloadconfiguration.cpp" line="68"/>
-        <source>Bottom up</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../lxqtcpuloadconfiguration.cpp" line="69"/>
-        <source>Top down</source>
-        <translation type="unfinished"></translation>
+        <location filename="../lxqtcpuloadconfiguration.ui" line="81"/>
+        <source>Bar width:</source>
+        <translation>Sáv szélesség:</translation>
     </message>
     <message>
         <location filename="../lxqtcpuloadconfiguration.cpp" line="70"/>
-        <source>Left to right</source>
-        <translation type="unfinished"></translation>
+        <source>Bottom up</source>
+        <translation>Felfele</translation>
     </message>
     <message>
         <location filename="../lxqtcpuloadconfiguration.cpp" line="71"/>
+        <source>Top down</source>
+        <translation>Lefele</translation>
+    </message>
+    <message>
+        <location filename="../lxqtcpuloadconfiguration.cpp" line="72"/>
+        <source>Left to right</source>
+        <translation>Jobbra</translation>
+    </message>
+    <message>
+        <location filename="../lxqtcpuloadconfiguration.cpp" line="73"/>
         <source>Right to left</source>
-        <translation type="unfinished"></translation>
+        <translation>Balra</translation>
     </message>
 </context>
 </TS>

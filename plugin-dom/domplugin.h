@@ -32,6 +32,7 @@
 #include "../panel/ilxqtpanelplugin.h"
 #include <QToolButton>
 
+
 class DomPlugin: public QObject, public ILxQtPanelPlugin
 {
     Q_OBJECT
@@ -56,7 +57,7 @@ class DomPluginLibrary: public QObject, public ILxQtPanelPluginLibrary
     Q_PLUGIN_METADATA(IID "lxde-qt.org/Panel/PluginInterface/3.0")
     Q_INTERFACES(ILxQtPanelPluginLibrary)
 public:
-    ILxQtPanelPlugin *instance(const ILxQtPanelPluginStartupInfo &startupInfo)
+    ILxQtPanelPlugin *instance(const ILxQtPanelPluginStartupInfo &startupInfo) const
     {
         return new DomPlugin(startupInfo);
     }

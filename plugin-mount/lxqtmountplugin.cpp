@@ -25,92 +25,60 @@
  *
  * END_COMMON_COPYRIGHT_HEADER */
 
-
 #include "lxqtmountplugin.h"
-#include "lxqtmountconfiguration.h"
-#include <LXQtMount/Mount>
-#include "actions/deviceaction.h"
-#include "popup.h"
-#include "mountbutton.h"
+#include "configuration.h"
 
-#include <QtDebug>
+#include <Solid/DeviceNotifier>
 
 LxQtMountPlugin::LxQtMountPlugin(const ILxQtPanelPluginStartupInfo &startupInfo):
     QObject(),
     ILxQtPanelPlugin(startupInfo),
-	mPopup(NULL),
-    mMountManager(NULL),
-    mDeviceAction(0)
+    mPopup(nullptr),
+    mDeviceAction(nullptr)
 {
-    mButton = new MountButton();
-    connect(mButton, SIGNAL(clicked(bool)), SLOT(buttonClicked()));
-}
+    mButton = new Button;
+    mPopup = new Popup(this);
 
+    connect(mButton, &QToolButton::clicked, mPopup, &Popup::showHide);
+    connect(mPopup, &Popup::visibilityChanged, mButton, &QToolButton::setDown);
+}
 
 LxQtMountPlugin::~LxQtMountPlugin()
 {
     delete mButton;
-    delete mDeviceAction;
+    delete mPopup;
 }
-
-
-QWidget *LxQtMountPlugin::widget()
-{
-    return mButton;
-}
-
-
-void LxQtMountPlugin::realign()
-{
-    if(mPopup)
-        mPopup->hide();
-}
-
 
 QDialog *LxQtMountPlugin::configureDialog()
 {
-    if(mPopup)
+    if (mPopup)
         mPopup->hide();
-    LxQtMountConfiguration *configWindow = new LxQtMountConfiguration(*settings());
+
+    Configuration *configWindow = new Configuration(*settings());
     configWindow->setAttribute(Qt::WA_DeleteOnClose, true);
     return configWindow;
 }
 
-
-QIcon LxQtMountPlugin::icon() const
+void LxQtMountPlugin::realign()
 {
-    return mButton->icon();
+    //nothing to do
 }
-
 
 void LxQtMountPlugin::settingsChanged()
 {
-    QString s = settings()->value("newDeviceAction").toString();
+    QString s = settings()->value(QStringLiteral(CFG_KEY_ACTION)).toString();
     DeviceAction::ActionId actionId = DeviceAction::stringToActionId(s, DeviceAction::ActionMenu);
 
-    delete mDeviceAction;
-    mDeviceAction = DeviceAction::create(actionId, this);
-
-    if(mMountManager)
+    if (mDeviceAction == nullptr || mDeviceAction->Type() != actionId)
     {
-        connect(mMountManager, SIGNAL(deviceAdded(LxQt::MountDevice*)),
-                mDeviceAction, SLOT(deviceAdded(LxQt::MountDevice*)));
+        delete mDeviceAction;
+        mDeviceAction = DeviceAction::create(actionId, this);
 
-        connect(mMountManager, SIGNAL(deviceRemoved(LxQt::MountDevice*)),
-                mDeviceAction, SLOT(deviceRemoved(LxQt::MountDevice*)));
+        connect(Solid::DeviceNotifier::instance(), &Solid::DeviceNotifier::deviceAdded,
+                mDeviceAction, &DeviceAction::onDeviceAdded);
+
+        connect(Solid::DeviceNotifier::instance(), &Solid::DeviceNotifier::deviceRemoved,
+                mDeviceAction, &DeviceAction::onDeviceRemoved);
     }
-}
 
-void LxQtMountPlugin::buttonClicked()
-{
-    if(!mMountManager)
-    {
-        mMountManager = new LxQt::MountManager(this);
-        mPopup = new Popup(mMountManager, this, mButton);
-        settingsChanged();
-
-        connect(mPopup, SIGNAL(visibilityChanged(bool)), mButton, SLOT(setDown(bool)));
-        mMountManager->update();
-    }
-    mPopup->showHide();
 }

@@ -33,7 +33,6 @@
 
 #include <QDialog>
 #include <QLabel>
-#include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QMouseEvent>
 
@@ -41,6 +40,8 @@
 #include <QTimer>
 #include <QPoint>
 #include <QRect>
+#include <QProxyStyle>
+#include <QPainter>
 
 #include <QDebug>
 
@@ -51,17 +52,40 @@
  * @author Kuzma Shapran
  */
 
+class DownscaleFontStyle : public QProxyStyle
+{
+    using QProxyStyle::QProxyStyle;
+public:
+
+    virtual void drawItemText(QPainter * painter, const QRect & rect, int flags
+            , const QPalette & pal, bool enabled, const QString & text
+            , QPalette::ColorRole textRole = QPalette::NoRole) const override
+    {
+        while (1 < painter->font().pointSize()
+                && !(rect.size() - painter->fontMetrics().boundingRect(text).size()).isValid())
+        {
+            QFont f{painter->font()};
+            f.setPointSize(f.pointSize() - 1);
+            painter->setFont(f);
+        }
+        return QProxyStyle::drawItemText(painter, rect, flags, pal, enabled, text, textRole);
+    }
+};
+
 /**
  * @brief constructor
  */
 LxQtClock::LxQtClock(const ILxQtPanelPluginStartupInfo &startupInfo):
     QObject(),
     ILxQtPanelPlugin(startupInfo),
-    mAutoRotate(true)
+    mAutoRotate(true),
+    mTextStyle{new DownscaleFontStyle},
+    mCurrentCharCount(0)
 {
     mMainWidget = new QWidget();
     mRotatedWidget = new LxQt::RotatedWidget(*(new QWidget()), mMainWidget);
     mContent = mRotatedWidget->content();
+    mContent->setStyle(mTextStyle.data());
     mTimeLabel = new QLabel(mContent);
     mDateLabel = new QLabel(mContent);
 
@@ -76,21 +100,14 @@ LxQtClock::LxQtClock(const ILxQtPanelPluginStartupInfo &startupInfo):
     mTimeLabel->setAlignment(Qt::AlignCenter);
     mDateLabel->setAlignment(Qt::AlignCenter);
 
-    QVBoxLayout *contentLayout = new QVBoxLayout(mContent);
-    contentLayout->setContentsMargins(0, 0, 0, 0);
-    contentLayout->setSpacing(1);
-    contentLayout->addWidget(mTimeLabel, 0, Qt::AlignCenter);
-    contentLayout->addWidget(mDateLabel, 0, Qt::AlignCenter);
-    mContent->setLayout(contentLayout);
-
-    mTimeLabel->setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum));
-    mDateLabel->setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum));
-    mContent->setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum));
-    mRotatedWidget->setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum));
-    mMainWidget->setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum));
-
+    mContent->setLayout(new QVBoxLayout{mContent});
+    mContent->layout()->setContentsMargins(0, 0, 0, 0);
+    mContent->layout()->setSpacing(0);
+    mContent->layout()->addWidget(mTimeLabel);
+    mContent->layout()->addWidget(mDateLabel);
 
     mClockTimer = new QTimer(this);
+    mClockTimer->setTimerType(Qt::PreciseTimer);
     connect (mClockTimer, SIGNAL(timeout()), SLOT(updateTime()));
 
     mClockFormat = "hh:mm";
@@ -120,43 +137,58 @@ QDateTime LxQtClock::currentDateTime()
  */
 void LxQtClock::updateTime()
 {
-    QDateTime now = currentDateTime();
+    //XXX: do we need this with PreciseTimer ?
+    if (currentDateTime().time().msec() > 500)
+        restartTimer();
 
-    if (now.time().msec() > 500)
-        restartTimer(now);
-
-    showTime(now);
+    showTime();
 }
 
-void LxQtClock::showTime(const QDateTime &now)
+void LxQtClock::showTime()
 {
+    QDateTime now{currentDateTime()};
+    int new_char_count;
     if (mDateOnNewLine)
     {
-        mTimeLabel->setText(QLocale::system().toString(now, mTimeFormat));
-        mDateLabel->setText(QLocale::system().toString(now, mDateFormat));
+        QString new_time = QLocale::system().toString(now, mTimeFormat);
+        QString new_date = QLocale::system().toString(now, mDateFormat);
+        new_char_count = qMax(new_time.size(), new_date.size());
+        mTimeLabel->setText(new_time);
+        mDateLabel->setText(new_date);
     }
     else
     {
-        mTimeLabel->setText(QLocale::system().toString(now, mClockFormat));
+        QString new_time = QLocale::system().toString(now, mClockFormat);
+        new_char_count = new_time.size();
+        mTimeLabel->setText(new_time);
     }
 
-    mRotatedWidget->adjustContentSize();
-
-    mRotatedWidget->update();
+    if (mCurrentCharCount != new_char_count)
+    {
+        mCurrentCharCount = new_char_count;
+        realign();
+    }
 }
 
-void LxQtClock::restartTimer(const QDateTime &now)
+void LxQtClock::restartTimer()
 {
     if (mClockTimer->isActive())
         mClockTimer->stop();
     int updateInterval = mClockTimer->interval();
-    int delay = static_cast<int>((updateInterval + 100 /* ms after time change */ - ((now.time().msec() + now.time().second() * 1000) % updateInterval)) % updateInterval);
-    QTimer::singleShot(delay, this, SLOT(updateTime()));
-    QTimer::singleShot(delay, mClockTimer, SLOT(start()));
+    QDateTime now{currentDateTime()};
+    int delay = updateInterval - ((now.time().msec() + now.time().second() * 1000) % updateInterval);
+    QTimer::singleShot(delay, Qt::PreciseTimer, mClockTimer, SLOT(start()));
+    QTimer::singleShot(delay, Qt::PreciseTimer, this, SLOT(updateTime()));
 }
 
 void LxQtClock::settingsChanged()
 {
+    mFirstDayOfWeek = settings()->value("firstDayOfWeek", -1).toInt();
+    if (-1 == mFirstDayOfWeek)
+        mCalendarPopup->setFirstDayOfWeek(QLocale::system().firstDayOfWeek());
+    else
+        mCalendarPopup->setFirstDayOfWeek(static_cast<Qt::DayOfWeek>(mFirstDayOfWeek));
+
     mTimeFormat = settings()->value("timeFormat", QLocale::system().timeFormat(QLocale::ShortFormat).toUpper().contains("AP") ? "h:mm AP" : "HH:mm").toString();
 
     mUseUTC = settings()->value("UTC", false).toBool();
@@ -169,13 +201,7 @@ void LxQtClock::settingsChanged()
     bool dateAfterTime = (settings()->value("showDate", "no").toString().toLower() == "after");
     mDateOnNewLine = (settings()->value("showDate", "no").toString().toLower() == "below");
 
-    bool autoRotate = settings()->value("autoRotate", true).toBool();
-    if (autoRotate != mAutoRotate)
-    {
-        mAutoRotate = autoRotate;
-        realign();
-    }
-
+    mAutoRotate = settings()->value("autoRotate", true).toBool();
 
     if (dateBeforeTime)
         mClockFormat = QString("%1 %2").arg(mDateFormat).arg(mTimeFormat);
@@ -184,143 +210,71 @@ void LxQtClock::settingsChanged()
     else
         mClockFormat = mTimeFormat;
 
-    mDateLabel->setVisible(mDateOnNewLine);
-
-    updateMinWidth();
+    mDateLabel->setHidden(!mDateOnNewLine);
 
     // mDateFormat usually does not contain time portion, but since it's possible to use custom date format - it has to be supported. [Kuzma Shapran]
     int updateInterval = QString(mTimeFormat + " " + mDateFormat).replace(QRegExp("'[^']*'"),"").contains("s") ? 1000 : 60000;
 
     QDateTime now = currentDateTime();
 
-    showTime(now);
+    showTime();
 
     if (mClockTimer->interval() != updateInterval)
     {
         mClockTimer->setInterval(updateInterval);
 
-        restartTimer(now);
+        restartTimer();
     }
 }
 
 void LxQtClock::realign()
 {
-    if (mAutoRotate)
+    QSize size{QWIDGETSIZE_MAX, QWIDGETSIZE_MAX};
+    Qt::Corner origin = Qt::TopLeftCorner;
+    if (mAutoRotate || panel()->isHorizontal())
+    {
         switch (panel()->position())
         {
         case ILxQtPanel::PositionTop:
         case ILxQtPanel::PositionBottom:
-            mRotatedWidget->setOrigin(Qt::TopLeftCorner);
+            origin = Qt::TopLeftCorner;
             break;
 
         case ILxQtPanel::PositionLeft:
-            mRotatedWidget->setOrigin(Qt::BottomLeftCorner);
+            origin = Qt::BottomLeftCorner;
             break;
 
         case ILxQtPanel::PositionRight:
-            mRotatedWidget->setOrigin(Qt::TopRightCorner);
+            origin = Qt::TopRightCorner;
             break;
         }
-    else
-        mRotatedWidget->setOrigin(Qt::TopLeftCorner);
-}
 
-static QDate getMaxDate(const QFontMetrics &metrics, const QString &format)
-{
-    QDate d(QDate::currentDate().year(), 1, 1);
-    QDateTime dt(d);
-    QDate res;
-
-    int maxWidth = 0;
-    while (dt.date().year() == d.year())
+        //set minwidth
+        QFontMetrics metrics{mTimeLabel->font()};
+        //Note: using a constant string of reasonably wide characters for computing the width
+        //      (not the current text as width of text can differ for each particular string (based on font))
+        size.setWidth(metrics.boundingRect(QString{mCurrentCharCount, 'A'}).width());
+    } else if (!panel()->isHorizontal())
     {
-        int w = metrics.boundingRect(dt.toString(format)).width();
-        //qDebug() << "*" << dt.toString(format) << w;
-        if (w > maxWidth)
-        {
-            res = dt.date();
-            maxWidth = w;
-        }
-        dt = dt.addDays(1);
+        size.setWidth(panel()->globalGometry().width());
     }
 
-    //qDebug() << "Max date:" << res.toString(format);
-    return res;
-}
+    mTimeLabel->setFixedWidth(size.width());
+    mDateLabel->setFixedWidth(size.width());
 
+    int label_height = mTimeLabel->sizeHint().height();
+    size.setHeight(mDateOnNewLine ? label_height * 2 : label_height);
 
-static QTime getMaxTime(const QFontMetrics &metrics, const QString &format)
-{
-    int maxMinSec = 0;
-    for (int width=0, i=0; i<60; ++i)
+    const bool changed = mContent->maximumSize() != size || mRotatedWidget->origin() != origin;
+
+    mContent->setFixedSize(size);
+    mRotatedWidget->setOrigin(origin);
+
+    if (changed)
     {
-        int w = metrics.boundingRect(QString("%1").arg(i, 2, 10, QChar('0'))).width();
-        if (w > width)
-        {
-            maxMinSec = i;
-            width = w;
-        }
+        mRotatedWidget->adjustContentSize();
+        mRotatedWidget->update();
     }
-
-    QTime res;
-    QDateTime dt(QDate(1, 1, 1), QTime(0, maxMinSec, maxMinSec));
-
-    int maxWidth = 0;
-    while (dt.date().day() == 1)
-    {
-        int w = metrics.boundingRect(dt.toString(format)).width();
-        //qDebug() << "*" << dt.toString(format) << w;
-        if (w > maxWidth)
-        {
-            res = dt.time();
-            maxWidth = w;
-        }
-        dt = dt.addSecs(3600);
-    }
-
-    //qDebug() << "Max time:" << res.toString();
-    return res;
-}
-
-/************************************************
-  Issue #18: Panel clock plugin changes your size
- ************************************************/
-void LxQtClock::updateMinWidth()
-{
-    QFontMetrics timeLabelMetrics(mTimeLabel->font());
-    QFontMetrics dateLabelMetrics(mDateLabel->font());
-    QDate maxDate = getMaxDate(mDateOnNewLine ? dateLabelMetrics : timeLabelMetrics, mDateFormat);
-    QTime maxTime = getMaxTime(timeLabelMetrics, mTimeFormat);
-    QDateTime dt(maxDate, maxTime);
-
-    //qDebug() << "T:" << metrics.boundingRect(dt.toString(mTimeFormat)).width();
-    //qDebug() << "C:" << metrics.boundingRect(QTime::currentTime().toString(mTimeFormat)).width() << QTime::currentTime().toString(mTimeFormat);
-    //qDebug() << "D:" << metrics.boundingRect(dt.toString(mDateFormat)).width();
-
-    int width;
-    int height;
-    if (mDateOnNewLine)
-    {
-        QRect rect1(timeLabelMetrics.boundingRect(dt.toString(mTimeFormat)));
-        mTimeLabel->setMinimumSize(rect1.size());
-        QRect rect2(dateLabelMetrics.boundingRect(dt.toString(mDateFormat)));
-        mDateLabel->setMinimumSize(rect2.size());
-        width = qMax(rect1.width(), rect2.width());
-        height = rect1.height() + rect2.height();
-//        qDebug() << "LxQtClock Recalc size" << width << height << dt.toString(mTimeFormat) << dt.toString(mDateFormat);
-    }
-    else
-    {
-        QRect rect(timeLabelMetrics.boundingRect(dt.toString(mClockFormat)));
-        mTimeLabel->setMinimumSize(rect.size());
-        mDateLabel->setMinimumSize(0, 0);
-        width = rect.width();
-        height = rect.height();
-//        qDebug() << "LxQtClock Recalc size" << width << height << dt.toString(mClockFormat);
-    }
-
-
-    mContent->setMinimumSize(width, height);
 }
 
 void LxQtClock::activated(ActivationReason reason)

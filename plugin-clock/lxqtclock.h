@@ -41,6 +41,7 @@
 class QLabel;
 class QDialog;
 class QTimer;
+class QProxyStyle;
 
 class LxQtClock : public QObject, public ILxQtPanelPlugin
 {
@@ -80,25 +81,24 @@ private:
     QString mDateFormat;
     bool mDateOnNewLine;
     bool mUseUTC;
-    Qt::DayOfWeek mFirstDayOfWeek;
+    int mFirstDayOfWeek;
     bool mAutoRotate;
+    QScopedPointer<QProxyStyle> mTextStyle;
+    int mCurrentCharCount;
 
     QDateTime currentDateTime();
-    void showTime(const QDateTime &);
-    void restartTimer(const QDateTime&);
-
-private slots:
-    void updateMinWidth();
+    void showTime();
+    void restartTimer();
 };
 
 
 class LxQtClockPluginLibrary: public QObject, public ILxQtPanelPluginLibrary
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "lxde-qt.org/Panel/PluginInterface/3.0")
+    // Q_PLUGIN_METADATA(IID "lxde-qt.org/Panel/PluginInterface/3.0")
     Q_INTERFACES(ILxQtPanelPluginLibrary)
 public:
-    ILxQtPanelPlugin *instance(const ILxQtPanelPluginStartupInfo &startupInfo) { return new LxQtClock(startupInfo);}
+    ILxQtPanelPlugin *instance(const ILxQtPanelPluginStartupInfo &startupInfo) const { return new LxQtClock(startupInfo);}
 };
 
 

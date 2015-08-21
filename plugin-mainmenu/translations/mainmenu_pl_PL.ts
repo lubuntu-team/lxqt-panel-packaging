@@ -4,14 +4,13 @@
 <context>
     <name>LxQtMainMenu</name>
     <message>
-        <location filename="../lxqtmainmenu.cpp" line="314"/>
+        <location filename="../lxqtmainmenu.cpp" line="245"/>
         <source>Show/hide main menu</source>
-        <translation type="unfinished"></translation>
+        <translation>Pokaż/ukryj menu</translation>
     </message>
     <message>
-        <location filename="../lxqtmainmenu.cpp" line="339"/>
         <source>Leave</source>
-        <translation>Opuść</translation>
+        <translation type="vanished">Opuść</translation>
     </message>
 </context>
 <context>
@@ -36,22 +35,22 @@
     <message>
         <location filename="../lxqtmainmenuconfiguration.ui" line="14"/>
         <source>Main Menu settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Ustawienia Menu</translation>
     </message>
     <message>
         <location filename="../lxqtmainmenuconfiguration.ui" line="35"/>
         <source>Button text:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tekst przycisku:</translation>
     </message>
     <message>
         <location filename="../lxqtmainmenuconfiguration.ui" line="52"/>
         <source>Custom font size:</source>
-        <translation type="unfinished"></translation>
+        <translation>Własny rozmiar czcionki:</translation>
     </message>
     <message>
         <location filename="../lxqtmainmenuconfiguration.ui" line="62"/>
         <source> pt</source>
-        <translation type="unfinished"></translation>
+        <translation>pt</translation>
     </message>
     <message>
         <location filename="../lxqtmainmenuconfiguration.ui" line="81"/>
@@ -61,7 +60,7 @@
     <message>
         <location filename="../lxqtmainmenuconfiguration.ui" line="87"/>
         <source>Menu file:</source>
-        <translation type="unfinished"></translation>
+        <translation>Plik menu:</translation>
     </message>
     <message>
         <location filename="../lxqtmainmenuconfiguration.ui" line="101"/>
@@ -81,7 +80,7 @@
     <message>
         <location filename="../lxqtmainmenuconfiguration.cpp" line="55"/>
         <source>Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>Zresetuj</translation>
     </message>
     <message>
         <location filename="../lxqtmainmenuconfiguration.cpp" line="100"/>
