@@ -37,7 +37,7 @@
 #include <QVBoxLayout>
 #include <QApplication>
 #include <QDesktopWidget>
-#include <QProcess>
+#include <QToolTip>
 #include "audioengine.h"
 #include <QDebug>
 
@@ -50,18 +50,9 @@ VolumePopup::VolumePopup(QWidget* parent):
     m_mixerButton = new QPushButton(this);
     m_mixerButton->setObjectName("MixerLink");
     m_mixerButton->setMinimumWidth(1);
-    m_mixerButton->setFlat(true);
     m_mixerButton->setToolTip(tr("Launch mixer"));
-    m_mixerButton->setText(tr("Mixer"));
-    QSize textSize = m_mixerButton->fontMetrics().size(Qt::TextShowMnemonic, m_mixerButton->text());
-    QStyleOptionButton opt;
-    opt.initFrom(m_mixerButton);
-    opt.rect.setSize(textSize);
-    m_mixerButton->setMaximumSize(m_mixerButton->style()->sizeFromContents(QStyle::CT_PushButton,
-                                                                           &opt,
-                                                                           textSize,
-                                                                           m_mixerButton));
-    m_mixerButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    m_mixerButton->setText(tr("Mi&xer"));
+    m_mixerButton->setAutoDefault(false);
 
     m_volumeSlider = new QSlider(Qt::Vertical, this);
     m_volumeSlider->setTickPosition(QSlider::TicksBothSides);
@@ -73,11 +64,11 @@ VolumePopup::VolumePopup(QWidget* parent):
     m_muteToggleButton = new QPushButton(this);
     m_muteToggleButton->setIcon(XdgIcon::fromTheme(QStringList() << "audio-volume-muted"));
     m_muteToggleButton->setCheckable(true);
-    m_muteToggleButton->setFlat(true);
+    m_muteToggleButton->setAutoDefault(false);
 
     QVBoxLayout *l = new QVBoxLayout(this);
     l->setSpacing(0);
-    l->setMargin(2);
+    l->setMargin(0);
 
     l->addWidget(m_mixerButton, 0, Qt::AlignHCenter);
     l->addWidget(m_volumeSlider, 0, Qt::AlignHCenter);
@@ -115,6 +106,9 @@ void VolumePopup::handleSliderValueChanged(int value)
         return;
     // qDebug("VolumePopup::handleSliderValueChanged: %d\n", value);
     m_device->setVolume(value);
+    m_volumeSlider->setToolTip(QStringLiteral("%1%").arg(value));
+    dynamic_cast<QWidget&>(*parent()).setToolTip(m_volumeSlider->toolTip()); //parent is the button on panel
+    QToolTip::showText(QCursor::pos(),  m_volumeSlider->toolTip(), m_volumeSlider);
 }
 
 void VolumePopup::handleMuteToggleClicked()
@@ -134,6 +128,8 @@ void VolumePopup::handleDeviceVolumeChanged(int volume)
     // signal emission.
     m_volumeSlider->blockSignals(true);
     m_volumeSlider->setValue(volume);
+    m_volumeSlider->setToolTip(QStringLiteral("%1%").arg(volume));
+    dynamic_cast<QWidget&>(*parent()).setToolTip(m_volumeSlider->toolTip()); //parent is the button on panel
     m_volumeSlider->blockSignals(false);
 
     // emit volumeChanged(percent);
@@ -171,7 +167,7 @@ void VolumePopup::resizeEvent(QResizeEvent *event)
     realign();
 }
 
-void VolumePopup::open(QPoint pos, Qt::Corner anchor)
+void VolumePopup::openAt(QPoint pos, Qt::Corner anchor)
 {
     m_pos = pos;
     m_anchor = anchor;

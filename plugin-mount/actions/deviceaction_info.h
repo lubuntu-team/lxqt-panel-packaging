@@ -25,13 +25,13 @@
  *
  * END_COMMON_COPYRIGHT_HEADER */
 
+#ifndef LXQT_PLUGIN_MOUNT_DEVICEACTION_INFO_H
+#define LXQT_PLUGIN_MOUNT_DEVICEACTION_INFO_H
 
-#ifndef DEVICEACTION_INFO_H
-#define DEVICEACTION_INFO_H
+#include "deviceaction.h"
 
 #include <QWidget>
 #include <QTimer>
-#include "deviceaction.h"
 
 class Popup;
 
@@ -39,11 +39,12 @@ class DeviceActionInfo : public DeviceAction
 {
     Q_OBJECT
 public:
-    explicit DeviceActionInfo(LxQtMountPlugin *plugin, QObject *parent=0);
+    explicit DeviceActionInfo(LxQtMountPlugin *plugin, QObject *parent = 0);
+    virtual ActionId Type() const throw () { return ActionInfo; }
 
 protected:
-    void doDeviceAdded(LxQt::MountDevice *device);
-    void doDeviceRemoved(LxQt::MountDevice *device);
+    void doDeviceAdded(Solid::Device device);
+    void doDeviceRemoved(Solid::Device device);
 
 private:
     void showMessage(const QString &text);

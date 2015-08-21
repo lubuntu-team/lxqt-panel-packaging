@@ -42,7 +42,7 @@ public:
 
     virtual QWidget *widget();
     virtual QString themeId() const { return "Tray"; }
-    virtual ILxQtPanelPlugin::Flags flags() const { return  PreferRightAlignment; }
+    virtual Flags flags() const { return  PreferRightAlignment | SingleInstance | NeedsHandle; }
     void realign();
 
     bool isSeparate() const { return true; }
@@ -55,10 +55,10 @@ private:
 class LxQtTrayPluginLibrary: public QObject, public ILxQtPanelPluginLibrary
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "lxde-qt.org/Panel/PluginInterface/3.0")
+    // Q_PLUGIN_METADATA(IID "lxde-qt.org/Panel/PluginInterface/3.0")
     Q_INTERFACES(ILxQtPanelPluginLibrary)
 public:
-    ILxQtPanelPlugin *instance(const ILxQtPanelPluginStartupInfo &startupInfo)
+    ILxQtPanelPlugin *instance(const ILxQtPanelPluginStartupInfo &startupInfo) const
     {
         return new LxQtTrayPlugin(startupInfo);
     }

@@ -78,6 +78,9 @@ protected:
     bool eventFilter(QObject *obj, QEvent *event);
 
 private:
+    void setMenuFontSize();
+
+private:
     QToolButton mButton;
     QString mLogDir;
     QMenu* mMenu;
@@ -95,7 +98,9 @@ private:
 
     bool mLockCascadeChanges;
     QTimer mDelayedPopup;
+    QTimer mHideTimer;
     QKeySequence mShortcutSeq;
+    QString mMenuFile;
 
 protected slots:
 
@@ -111,10 +116,10 @@ private slots:
 class LxQtMainMenuPluginLibrary: public QObject, public ILxQtPanelPluginLibrary
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "lxde-qt.org/Panel/PluginInterface/3.0")
+    // Q_PLUGIN_METADATA(IID "lxde-qt.org/Panel/PluginInterface/3.0")
     Q_INTERFACES(ILxQtPanelPluginLibrary)
 public:
-    ILxQtPanelPlugin *instance(const ILxQtPanelPluginStartupInfo &startupInfo) { return new LxQtMainMenu(startupInfo);}
+    ILxQtPanelPlugin *instance(const ILxQtPanelPluginStartupInfo &startupInfo) const { return new LxQtMainMenu(startupInfo);}
 };
 
 #endif

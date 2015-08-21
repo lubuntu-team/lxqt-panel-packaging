@@ -26,21 +26,38 @@
  *
  * END_COMMON_COPYRIGHT_HEADER */
 
-#include <QGridLayout>
-#include <QLabel>
-#include <QDesktopWidget>
-#include <LXQtMount/Mount>
-#include "menudiskitem.h"
 #include "popup.h"
+#include "../panel/ilxqtpanelplugin.h"
 
+#include <QDesktopWidget>
+#include <QVBoxLayout>
+#include <QTimer>
+#include <Solid/StorageAccess>
+#include <Solid/StorageDrive>
+#include <Solid/DeviceNotifier>
 
-Popup::Popup(LxQt::MountManager *manager, ILxQtPanelPlugin *plugin, QWidget* parent):
+// Paulo: I'm not sure what this is for
+static bool hasRemovableParent(Solid::Device device)
+{
+    // qDebug() << "acess:" << device.udi();
+    for ( ; !device.udi().isEmpty(); device = device.parent())
+    {
+        Solid::StorageDrive* drive = device.as<Solid::StorageDrive>();
+        if (drive && drive->isRemovable())
+        {
+            // qDebug() << "removable parent drive:" << device.udi();
+            return true;
+        }
+    }
+    return false;
+}
+
+Popup::Popup(ILxQtPanelPlugin * plugin, QWidget* parent):
     QDialog(parent,  Qt::Dialog | Qt::WindowStaysOnTopHint | Qt::CustomizeWindowHint | Qt::Popup | Qt::X11BypassWindowManagerHint),
-    mManager(manager),
     mPlugin(plugin),
+    mPlaceholder(nullptr),
     mDisplayCount(0)
 {
-
     setObjectName("LxQtMountPopup");
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setLayout(new QVBoxLayout(this));
@@ -48,96 +65,103 @@ Popup::Popup(LxQt::MountManager *manager, ILxQtPanelPlugin *plugin, QWidget* par
 
     setAttribute(Qt::WA_AlwaysShowToolTips);
 
-    connect(mManager, SIGNAL(deviceAdded(LxQt::MountDevice*)),
-                this, SLOT(addItem(LxQt::MountDevice*)));
-    connect(mManager, SIGNAL(deviceRemoved(LxQt::MountDevice*)),
-                this, SLOT(removeItem(LxQt::MountDevice*)));
-
     mPlaceholder = new QLabel(tr("No devices are available"), this);
     mPlaceholder->setObjectName("NoDiskLabel");
     layout()->addWidget(mPlaceholder);
-    mPlaceholder->hide();
 
-    foreach(LxQt::MountDevice *device, mManager->devices())
-    {
+    //Perform the potential long time operation after object construction
+    //Note: can't use QTimer::singleShot with lambda in pre QT 5.4 code
+    QTimer * aux_timer = new QTimer;
+    connect(aux_timer, &QTimer::timeout, [this, aux_timer]
+        {
+            delete aux_timer; //cleanup
+            for (Solid::Device device : Solid::Device::listFromType(Solid::DeviceInterface::StorageAccess))
+                if (hasRemovableParent(device))
+                    addItem(device);
+        });
+    aux_timer->setSingleShot(true);
+    aux_timer->start(0);
+
+    connect(Solid::DeviceNotifier::instance(), &Solid::DeviceNotifier::deviceAdded,
+            this, &Popup::onDeviceAdded);
+    connect(Solid::DeviceNotifier::instance(), &Solid::DeviceNotifier::deviceRemoved,
+            this, &Popup::onDeviceRemoved);
+}
+
+void Popup::showHide()
+{
+    setVisible(isHidden());
+}
+
+void Popup::onDeviceAdded(QString const & udi)
+{
+    Solid::Device device(udi);
+    if (device.is<Solid::StorageAccess>() && hasRemovableParent(device))
         addItem(device);
-    }
 }
 
-
-MenuDiskItem *Popup::addItem(LxQt::MountDevice *device)
+void Popup::onDeviceRemoved(QString const & udi)
 {
-    if (MenuDiskItem::isUsableDevice(device))
+    MenuDiskItem* item = nullptr;
+    const int size = layout()->count() - 1;
+    for (int i = size; 0 <= i; --i)
     {
-        MenuDiskItem  *item   = new MenuDiskItem(device, this);
-        layout()->addWidget(item);
-        item->setVisible(true);
-        mDisplayCount++;
-        if (mDisplayCount != 0)
-            mPlaceholder->hide();
+        QWidget *w = layout()->itemAt(i)->widget();
+        if (w == mPlaceholder)
+            continue;
 
-        if (isVisible())
-            realign();
-        return item;
+        MenuDiskItem *it = static_cast<MenuDiskItem *>(w);
+        if (udi == it->deviceUdi())
+        {
+            item = it;
+            break;
+        }
     }
-    else
-    {
-        return 0;
-    }
-}
 
-void Popup::removeItem(LxQt::MountDevice *device)
-{
-    if (MenuDiskItem::isUsableDevice(device))
+    if (item != nullptr)
     {
-        mDisplayCount--;
+        layout()->removeWidget(item);
+        item->deleteLater();
+
+        --mDisplayCount;
         if (mDisplayCount == 0)
             mPlaceholder->show();
     }
 }
 
-void Popup::resizeEvent(QResizeEvent *event)
-{
-    QWidget::resizeEvent(event);
-    realign();
-}
-
-
 void Popup::showEvent(QShowEvent *event)
 {
-    if (mDisplayCount == 0)
-        mPlaceholder->show();
-
+    mPlaceholder->setVisible(mDisplayCount == 0);
     realign();
-
-    this->setFocus();
-    this->activateWindow();
+    setFocus();
+    activateWindow();
     QWidget::showEvent(event);
     emit visibilityChanged(true);
 }
 
-
 void Popup::hideEvent(QHideEvent *event)
 {
-    mPlaceholder->hide();
-
     QWidget::hideEvent(event);
     emit visibilityChanged(false);
 }
 
+void Popup::addItem(Solid::Device device)
+{
+    MenuDiskItem *item = new MenuDiskItem(device, this);
+    connect(item, &MenuDiskItem::invalid, this, &Popup::onDeviceRemoved);
+    item->setVisible(true);
+    layout()->addWidget(item);
+
+    mDisplayCount++;
+    if (mDisplayCount != 0)
+        mPlaceholder->hide();
+
+    if (isVisible())
+        realign();
+}
 
 void Popup::realign()
 {
-    updateGeometry();
     adjustSize();
-
-    QRect rect = mPlugin->calculatePopupWindowPos(size());
-    setGeometry(rect);
+    setGeometry(mPlugin->calculatePopupWindowPos(sizeHint()));
 }
-
-
-void Popup::showHide()
-{
-    setHidden(!isHidden());
-}
-

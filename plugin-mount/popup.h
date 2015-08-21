@@ -26,48 +26,45 @@
  *
  * END_COMMON_COPYRIGHT_HEADER */
 
+#ifndef LXQT_PLUGIN_MOUNT_POPUP_H
+#define LXQT_PLUGIN_MOUNT_POPUP_H
 
-#ifndef POPUP_H
-#define POPUP_H
+#include "menudiskitem.h"
 
+#include <QLabel>
 #include <QDialog>
-#include "../panel/ilxqtpanelplugin.h"
+#include <Solid/Device>
 
-namespace LxQt {
-class MountManager;
-class MountDevice;
-}
-
-class MenuDiskItem;
-class QLabel;
+class ILxQtPanelPlugin;
 
 class Popup: public QDialog
 {
     Q_OBJECT
+
 public:
-    explicit Popup(LxQt::MountManager *manager, ILxQtPanelPlugin *plugin, QWidget* parent = 0);
+    explicit Popup(ILxQtPanelPlugin * plugin, QWidget* parent = 0);
+    void realign();
 
 public slots:
     void showHide();
+
+private slots:
+    void onDeviceAdded(QString const & udi);
+    void onDeviceRemoved(QString const & udi);
 
 signals:
     void visibilityChanged(bool visible);
 
 protected:
-    void resizeEvent(QResizeEvent *event);
     void showEvent(QShowEvent *event);
     void hideEvent(QHideEvent *event);
 
-private slots:
-    MenuDiskItem *addItem(LxQt::MountDevice *device);
-    void removeItem(LxQt::MountDevice *device);
-
 private:
-    void realign();
-    LxQt::MountManager *mManager;
-    ILxQtPanelPlugin *mPlugin;
+    ILxQtPanelPlugin * mPlugin;
     QLabel *mPlaceholder;
     int mDisplayCount;
+
+    void addItem(Solid::Device device);
 };
 
 #endif // POPUP_H

@@ -16,18 +16,11 @@ set(SOURCES
     lxqtsysstatutils.cpp
 )
 
-set(MOCS
-    lxqtsysstat.h
-    lxqtsysstatconfiguration.h
-    lxqtsysstatcolours.h
-)
-
 set(UIS
     lxqtsysstatconfiguration.ui
     lxqtsysstatcolours.ui
 )
 
-set(LIBRARIES ${SYSSTAT_LIBRARIES})
-include_directories("${SYSSTAT_INCLUDE_DIRS}")
+set(LIBRARIES sysstat-qt5)
 
 BUILD_LXQT_PLUGIN(${PLUGIN})

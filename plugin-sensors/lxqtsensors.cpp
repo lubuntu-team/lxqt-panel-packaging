@@ -29,10 +29,10 @@
 #include "lxqtsensorsconfiguration.h"
 #include "../panel/ilxqtpanelplugin.h"
 #include "../panel/ilxqtpanel.h"
+#include <QBoxLayout>
+#include <QDebug>
 #include <QMessageBox>
 #include <QPalette>
-#include <QDebug>
-#include <QBoxLayout>
 
 
 LxQtSensors::LxQtSensors(ILxQtPanelPlugin *plugin, QWidget* parent):
@@ -108,23 +108,24 @@ LxQtSensors::LxQtSensors(ILxQtPanelPlugin *plugin, QWidget* parent):
     updateSensorReadings();
 
     // Run timer that will be updating sensor readings
-    mUpdateSensorReadingsTimer.setParent(this);
     connect(&mUpdateSensorReadingsTimer, SIGNAL(timeout()), this, SLOT(updateSensorReadings()));
     mUpdateSensorReadingsTimer.start(mSettings->value("updateInterval").toInt() * 1000);
 
     // Run timer that will be showin warning
-    mWarningAboutHighTemperatureTimer.setParent(this);
+    mWarningAboutHighTemperatureTimer.setInterval(500);
     connect(&mWarningAboutHighTemperatureTimer, SIGNAL(timeout()), this,
             SLOT(warningAboutHighTemperature()));
     if (mSettings->value("warningAboutHighTemperature").toBool())
     {
-        mWarningAboutHighTemperatureTimer.start(mWarningAboutHighTemperatureTimerFreq);
+        mWarningAboutHighTemperatureTimer.start();
     }
 }
+
 
 LxQtSensors::~LxQtSensors()
 {
 }
+
 
 void LxQtSensors::updateSensorReadings()
 {
@@ -230,6 +231,7 @@ void LxQtSensors::updateSensorReadings()
     update();
 }
 
+
 void LxQtSensors::warningAboutHighTemperature()
 {
     // Iterator for temperature progress bars
@@ -313,7 +315,8 @@ void LxQtSensors::settingsChanged()
         // Update sensors readings to get the list of high temperature progress bars
         updateSensorReadings();
 
-        mWarningAboutHighTemperatureTimer.start(mWarningAboutHighTemperatureTimerFreq);
+        if (!mWarningAboutHighTemperatureTimer.isActive())
+            mWarningAboutHighTemperatureTimer.start();
     }
     else if (mWarningAboutHighTemperatureTimer.isActive())
     {
@@ -326,6 +329,7 @@ void LxQtSensors::settingsChanged()
     realign();
     update();
 }
+
 
 void LxQtSensors::realign()
 {
@@ -375,11 +379,13 @@ void LxQtSensors::realign()
     }
 }
 
+
 double LxQtSensors::celsiusToFahrenheit(double celsius)
 {
     // Fahrenheit = 32 * (9/5) * Celsius
     return 32 + 1.8 * celsius;
 }
+
 
 void LxQtSensors::initDefaultSettings()
 {
@@ -435,10 +441,12 @@ void LxQtSensors::initDefaultSettings()
     }
 }
 
+
 ProgressBar::ProgressBar(QWidget *parent):
     QProgressBar(parent)
 {
 }
+
 
 QSize ProgressBar::sizeHint() const
 {

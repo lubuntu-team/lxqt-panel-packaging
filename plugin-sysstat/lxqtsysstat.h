@@ -143,7 +143,8 @@ protected slots:
     void swapUpdate(float used);
     void networkUpdate(unsigned received, unsigned transmitted);
 
-
+private:
+    void toolTipInfo(QString const & tooltip);
 
 private:
     ILxQtPanelPlugin *mPlugin;
@@ -217,7 +218,7 @@ class LxQtSysStatLibrary: public QObject, public ILxQtPanelPluginLibrary
     Q_PLUGIN_METADATA(IID "lxde-qt.org/Panel/PluginInterface/3.0")
     Q_INTERFACES(ILxQtPanelPluginLibrary)
 public:
-    ILxQtPanelPlugin *instance(const ILxQtPanelPluginStartupInfo &startupInfo)
+    ILxQtPanelPlugin *instance(const ILxQtPanelPluginStartupInfo &startupInfo) const
     {
         return new LxQtSysStat(startupInfo);
     }

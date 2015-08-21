@@ -8,13 +8,9 @@ set(SOURCES
     panelscreensaver.cpp
 )
 
-set(MOCS
-    panelscreensaver.h
-)
-
 set(LIBRARIES
     ${LIBRARIES}
-    ${LXQT_GLOBALKEYS_LIBRARIES}
+    lxqt-globalkeys
 )
 
 BUILD_LXQT_PLUGIN(${PLUGIN})

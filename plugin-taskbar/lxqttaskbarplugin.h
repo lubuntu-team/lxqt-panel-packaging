@@ -43,7 +43,7 @@ public:
     ~LxQtTaskBarPlugin();
 
     QString themeId() const { return "TaskBar"; }
-    virtual ILxQtPanelPlugin::Flags flags() const { return HaveConfigDialog ; }
+    virtual Flags flags() const { return HaveConfigDialog | NeedsHandle; }
 
     QWidget *widget() { return mTaskBar; }
     QDialog *configureDialog();
@@ -60,10 +60,10 @@ private:
 class LxQtTaskBarPluginLibrary: public QObject, public ILxQtPanelPluginLibrary
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "lxde-qt.org/Panel/PluginInterface/3.0")
+    // Q_PLUGIN_METADATA(IID "lxde-qt.org/Panel/PluginInterface/3.0")
     Q_INTERFACES(ILxQtPanelPluginLibrary)
 public:
-    ILxQtPanelPlugin *instance(const ILxQtPanelPluginStartupInfo &startupInfo) { return new LxQtTaskBarPlugin(startupInfo);}
+    ILxQtPanelPlugin *instance(const ILxQtPanelPluginStartupInfo &startupInfo) const { return new LxQtTaskBarPlugin(startupInfo);}
 };
 
 #endif // LXQTTASKBARPLUGIN_H

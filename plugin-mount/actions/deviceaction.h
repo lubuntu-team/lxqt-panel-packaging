@@ -25,45 +25,42 @@
  *
  * END_COMMON_COPYRIGHT_HEADER */
 
-
-#ifndef DEVICEACTION_H
-#define DEVICEACTION_H
+#ifndef LXQT_PLUGIN_MOUNT_DEVICEACTION_H
+#define LXQT_PLUGIN_MOUNT_DEVICEACTION_H
 
 #include <QObject>
 #include <QSettings>
-#include <LXQtMount/Mount>
-
-namespace {
-class MountDevice;
-class MountManager;
-}
+#include <Solid/Device>
 
 class LxQtMountPlugin;
 
 class DeviceAction: public QObject
 {
     Q_OBJECT
+
 public:
-    enum ActionId {
+    enum ActionId
+    {
         ActionNothing,
         ActionInfo,
         ActionMenu
     };
 
     virtual ~DeviceAction();
+    virtual ActionId Type() const throw () = 0;
 
-    static DeviceAction *create(ActionId id, LxQtMountPlugin *plugin, QObject *parent=0);
+    static DeviceAction *create(ActionId id, LxQtMountPlugin *plugin, QObject *parent = 0);
     static ActionId stringToActionId(const QString &string, ActionId defaultValue);
     static QString actionIdToString(ActionId id);
 
 public slots:
-    void deviceAdded(LxQt::MountDevice *device);
-    void deviceRemoved(LxQt::MountDevice *device);
+    void onDeviceAdded(QString const & udi);
+    void onDeviceRemoved(QString const & udi);
 
 protected:
-    explicit DeviceAction(LxQtMountPlugin *plugin, QObject *parent=0);
-    virtual void doDeviceAdded(LxQt::MountDevice *device) = 0;
-    virtual void doDeviceRemoved(LxQt::MountDevice *device) = 0;
+    explicit DeviceAction(LxQtMountPlugin *plugin, QObject *parent = 0);
+    virtual void doDeviceAdded(Solid::Device device) = 0;
+    virtual void doDeviceRemoved(Solid::Device device) = 0;
 
     LxQtMountPlugin *mPlugin;
 };

@@ -12,12 +12,6 @@ set(SOURCES
     lxqtmainmenuconfiguration.cpp
 )
 
-set(MOCS
-    lxqtmainmenu.h
-    menustyle.h
-    lxqtmainmenuconfiguration.h
-)
-
 set(UIS
     lxqtmainmenuconfiguration.ui
 )
@@ -39,10 +33,9 @@ if(MENU_CACHE_FOUND)
 endif()
 
 set(LIBRARIES
-    ${LXQT_LIBRARIES}
-    ${QTXDG_LIBRARIES}
-    ${LXQT_GLOBALKEYS_LIBRARIES}
-    ${LXQT_GLOBALKEYS_UI_LIBRARIES}
+    lxqt
+    lxqt-globalkeys
+    lxqt-globalkeys-ui
     ${MENU_CACHE_LIBRARIES}
 )
 

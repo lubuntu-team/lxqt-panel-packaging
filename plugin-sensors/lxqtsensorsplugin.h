@@ -29,9 +29,10 @@
 #ifndef LXQTSENSORSPLUGIN_H
 #define LXQTSENSORSPLUGIN_H
 
-
 #include "../panel/ilxqtpanelplugin.h"
 #include <QObject>
+
+
 class LxQtSensors;
 
 class LxQtSensorsPlugin: public QObject, public ILxQtPanelPlugin
@@ -64,11 +65,10 @@ class LxQtSensorsPluginLibrary: public QObject, public ILxQtPanelPluginLibrary
     Q_PLUGIN_METADATA(IID "lxde-qt.org/Panel/PluginInterface/3.0")
     Q_INTERFACES(ILxQtPanelPluginLibrary)
 public:
-    ILxQtPanelPlugin *instance(const ILxQtPanelPluginStartupInfo &startupInfo)
+    ILxQtPanelPlugin *instance(const ILxQtPanelPluginStartupInfo &startupInfo) const
     {
         return new LxQtSensorsPlugin(startupInfo);
     }
 };
-
 
 #endif // LXQTSENSORSPLUGIN_H
