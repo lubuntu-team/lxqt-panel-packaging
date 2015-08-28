@@ -4,6 +4,11 @@ lxqt-panel (0.9.0+20150815-1) unstable; urgency=medium
   * Some cleanup in debian $foo
   * some changes in debian $foo
   * drop transitional packages
+  * some minimum versions added
+  * drop breaks/replaces  
+  * append  -Wl,--as-needed to linker flags
+  * copyright fixed, the panel uses only LGPL2.1+, file headers
+    fixed upstream
 
   [ Shih-Yuan Lee (FourDollars) ]
   * Polish debian/control by 'cme fix dpkg-control'.
@@ -19,7 +24,7 @@ lxqt-panel (0.9.0+20150815-1) unstable; urgency=medium
   [ Shih-Yuan Lee (FourDollars) ]
   * Imported Upstream version 0.9.0+20150815
 
- -- Shih-Yuan Lee (FourDollars) <fourdollars@gmail.com>  Fri, 21 Aug 2015 23:01:29 +0200
+ -- Alf Gaida <agaida@siduction.org>  Sat, 29 Aug 2015 01:52:37 +0200
 
 lxqt-panel (0.9.0-1) experimental; urgency=low
 
