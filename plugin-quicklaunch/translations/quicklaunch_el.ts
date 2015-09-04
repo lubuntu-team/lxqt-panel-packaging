@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="el_GR">
+<TS version="2.1" language="el">
 <context>
-    <name>LxQtQuickLaunch</name>
+    <name>LXQtQuickLaunch</name>
     <message>
         <location filename="../lxqtquicklaunch.cpp" line="219"/>
         <source>Drop Error</source>
@@ -17,7 +17,8 @@
         <location filename="../lxqtquicklaunch.cpp" line="327"/>
         <source>Drop application
 icons here</source>
-        <translation type="unfinished"></translation>
+        <translation>Εναποθέστε εδώ
+εικονίδια εφαρμογών</translation>
     </message>
 </context>
 <context>

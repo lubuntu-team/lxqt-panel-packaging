@@ -8,16 +8,16 @@
  * Authors:
  *   Alexander Sokoloff <sokoloff.a@gmail.com>
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation;  only version 2 of
- * the License is valid for this program.
+ * This program or library is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+
  * You should have received a copy of the GNU Lesser General
  * Public License along with this library; if not, write to the
  * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -32,7 +32,7 @@
 #include <QSettings>
 #include <Solid/Device>
 
-class LxQtMountPlugin;
+class LXQtMountPlugin;
 
 class DeviceAction: public QObject
 {
@@ -49,7 +49,7 @@ public:
     virtual ~DeviceAction();
     virtual ActionId Type() const throw () = 0;
 
-    static DeviceAction *create(ActionId id, LxQtMountPlugin *plugin, QObject *parent = 0);
+    static DeviceAction *create(ActionId id, LXQtMountPlugin *plugin, QObject *parent = 0);
     static ActionId stringToActionId(const QString &string, ActionId defaultValue);
     static QString actionIdToString(ActionId id);
 
@@ -58,11 +58,11 @@ public slots:
     void onDeviceRemoved(QString const & udi);
 
 protected:
-    explicit DeviceAction(LxQtMountPlugin *plugin, QObject *parent = 0);
+    explicit DeviceAction(LXQtMountPlugin *plugin, QObject *parent = 0);
     virtual void doDeviceAdded(Solid::Device device) = 0;
     virtual void doDeviceRemoved(Solid::Device device) = 0;
 
-    LxQtMountPlugin *mPlugin;
+    LXQtMountPlugin *mPlugin;
 };
 
 #endif // DEVICEACTION_H
