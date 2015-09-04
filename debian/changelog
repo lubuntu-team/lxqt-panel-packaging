@@ -1,8 +1,9 @@
-lxqt-panel (0.9.0+20150830-1) UNRELEASED; urgency=medium
+lxqt-panel (0.9.0+20150830-1) unstable; urgency=medium
 
+  * Cherry-picked upstream version 0.9.0+20150830.
   * Added upstream signing key and use it in watch file
 
- -- Alf Gaida <agaida@siduction.org>  Fri, 04 Sep 2015 20:49:49 +0200
+ -- Alf Gaida <agaida@siduction.org>  Fri, 04 Sep 2015 20:54:16 +0200
 
 lxqt-panel (0.9.0+20150815-1) unstable; urgency=medium
 

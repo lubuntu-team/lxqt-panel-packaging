@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="el_GR">
+<TS version="2.1" language="el">
 <context>
-    <name>LxQtNetworkMonitor</name>
+    <name>LXQtNetworkMonitor</name>
     <message>
         <location filename="../lxqtnetworkmonitor.cpp" line="161"/>
         <source>Network interface &lt;b&gt;%1&lt;/b&gt;</source>
@@ -50,15 +50,15 @@
     </message>
 </context>
 <context>
-    <name>LxQtNetworkMonitorConfiguration</name>
+    <name>LXQtNetworkMonitorConfiguration</name>
     <message>
-        <source>LxQt Network Monitor settings</source>
-        <translation type="vanished">Ρυθμίσεις επίβλεψης δικτύου LxQt</translation>
+        <source>LXQt Network Monitor settings</source>
+        <translation type="vanished">Ρυθμίσεις επίβλεψης δικτύου LXQt</translation>
     </message>
     <message>
         <location filename="../lxqtnetworkmonitorconfiguration.ui" line="14"/>
         <source>Network Monitor settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Ρυθμίσεις του επόπτη δικτύου</translation>
     </message>
     <message>
         <location filename="../lxqtnetworkmonitorconfiguration.ui" line="20"/>

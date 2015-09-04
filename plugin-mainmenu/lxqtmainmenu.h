@@ -47,9 +47,9 @@
 
 
 class QMenu;
-class LxQtBar;
+class LXQtBar;
 
-namespace LxQt {
+namespace LXQt {
 class PowerManager;
 class ScreenSaver;
 }
@@ -59,15 +59,15 @@ namespace GlobalKeyShortcut
 class Action;
 }
 
-class LxQtMainMenu : public QObject, public ILxQtPanelPlugin
+class LXQtMainMenu : public QObject, public ILXQtPanelPlugin
 {
     Q_OBJECT
 public:
-    LxQtMainMenu(const ILxQtPanelPluginStartupInfo &startupInfo);
-    ~LxQtMainMenu();
+    LXQtMainMenu(const ILXQtPanelPluginStartupInfo &startupInfo);
+    ~LXQtMainMenu();
 
     QString themeId() const { return "MainMenu"; }
-    virtual ILxQtPanelPlugin::Flags flags() const { return HaveConfigDialog ; }
+    virtual ILXQtPanelPlugin::Flags flags() const { return HaveConfigDialog ; }
 
     QWidget *widget() { return &mButton; }
     QDialog *configureDialog();
@@ -86,7 +86,6 @@ private:
     QMenu* mMenu;
     GlobalKeyShortcut::Action *mShortcut;
     MenuStyle mTopMenuStyle;
-    MenuStyle mMenuStyle;
 
 #ifdef HAVE_MENU_CACHE
     MenuCache* mMenuCache;
@@ -113,13 +112,13 @@ private slots:
     void shortcutChanged(const QString &oldShortcut, const QString &newShortcut);
 };
 
-class LxQtMainMenuPluginLibrary: public QObject, public ILxQtPanelPluginLibrary
+class LXQtMainMenuPluginLibrary: public QObject, public ILXQtPanelPluginLibrary
 {
     Q_OBJECT
     // Q_PLUGIN_METADATA(IID "lxde-qt.org/Panel/PluginInterface/3.0")
-    Q_INTERFACES(ILxQtPanelPluginLibrary)
+    Q_INTERFACES(ILXQtPanelPluginLibrary)
 public:
-    ILxQtPanelPlugin *instance(const ILxQtPanelPluginStartupInfo &startupInfo) const { return new LxQtMainMenu(startupInfo);}
+    ILXQtPanelPlugin *instance(const ILXQtPanelPluginStartupInfo &startupInfo) const { return new LXQtMainMenu(startupInfo);}
 };
 
 #endif

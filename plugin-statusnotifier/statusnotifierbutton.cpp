@@ -4,7 +4,7 @@
  * LXDE-Qt - a lightweight, Qt based, desktop toolset
  * http://lxqt.org
  *
- * Copyright: 2015 LxQt team
+ * Copyright: 2015 LXQt team
  * Authors:
  *  Balázs Béla <balazsbela[at]gmail.com>
  *  Paulo Lieuthier <paulolieuthier@gmail.com>
@@ -34,7 +34,7 @@
 #include "../panel/ilxqtpanelplugin.h"
 
 
-StatusNotifierButton::StatusNotifierButton(QString service, QString objectPath, ILxQtPanelPlugin* plugin, QWidget *parent)
+StatusNotifierButton::StatusNotifierButton(QString service, QString objectPath, ILXQtPanelPlugin* plugin, QWidget *parent)
     : QToolButton(parent),
     mMenu(NULL),
     mStatus(Passive),
@@ -222,7 +222,7 @@ void StatusNotifierButton::mouseReleaseEvent(QMouseEvent *event)
     else if (event->button() == Qt::MidButton)
         interface->SecondaryActivate(QCursor::pos().x(), QCursor::pos().y());
     else if (Qt::RightButton == event->button())
-        mMenu->popup(mPlugin->calculatePopupWindowPos(mMenu->sizeHint()).topLeft());
+        mMenu->popup(QCursor::pos());
     QToolButton::mouseReleaseEvent(event);
 }
 
