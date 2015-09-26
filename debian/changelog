@@ -1,13 +1,13 @@
-lxqt-panel (0.9.0+20150830-1) unstable; urgency=medium
+lxqt-panel (0.9.0+20150925-1) experimental; urgency=medium
 
   [ Alf Gaida ]
-  * Cherry-picked upstream version 0.9.0+20150830.
+  * Cherry-picked upstream version 0.9.0+20150925.
+  * Cleaned up debian/.gitignore
+  * Switched to experimental because of LXQt namespace change
+  * Added minimum version for liblxqt0-dev (>= 0.9.0+20150911)
   * Added upstream signing key and use it in watch file
-  * Some cleanup in debian $foo
-  * some changes in debian $foo
   * drop transitional packages
-  * some minimum versions added
-  * drop breaks/replaces  
+  * drop breaks/replaces
   * append  -Wl,--as-needed to linker flags
   * copyright fixed, the panel uses only LGPL2.1+, file headers
     fixed upstream
@@ -21,4 +21,4 @@ lxqt-panel (0.9.0+20150830-1) unstable; urgency=medium
   * Sorting build-depends.
   * Removing whitespaces at EOL and EOF.
 
- -- Alf Gaida <agaida@siduction.org>  Sun, 15 Feb 2015 16:08:24 +0100
+ -- Alf Gaida <agaida@siduction.org>  Sat, 26 Sep 2015 03:39:36 +0200

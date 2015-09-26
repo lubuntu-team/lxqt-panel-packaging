@@ -53,6 +53,11 @@ StatusNotifierWidget::StatusNotifierWidget(ILXQtPanelPlugin *plugin, QWidget *pa
 
 }
 
+StatusNotifierWidget::~StatusNotifierWidget()
+{
+    delete mWatcher;
+}
+
 void StatusNotifierWidget::itemAdded(QString serviceAndPath)
 {
     int slash = serviceAndPath.indexOf('/');
@@ -60,15 +65,10 @@ void StatusNotifierWidget::itemAdded(QString serviceAndPath)
     QString path = serviceAndPath.mid(slash);
     StatusNotifierButton *button = new StatusNotifierButton(serv, path, mPlugin, this);
 
-    if (!button->isValid())
-        delete button;
-    else
-    {
-        mServices.insert(serviceAndPath, button);
-        layout()->addWidget(button);
-        layout()->setAlignment(button, Qt::AlignCenter);
-        button->show();
-    }
+    mServices.insert(serviceAndPath, button);
+    layout()->addWidget(button);
+    layout()->setAlignment(button, Qt::AlignCenter);
+    button->show();
 }
 
 void StatusNotifierWidget::itemRemoved(const QString &serviceAndPath)
