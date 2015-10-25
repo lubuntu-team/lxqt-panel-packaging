@@ -542,7 +542,7 @@ void ActiveLabel::mouseReleaseEvent(QMouseEvent* event)
 }
 
 LXQtWorldClockPopup::LXQtWorldClockPopup(QWidget *parent) :
-    QDialog(parent, Qt::Dialog | Qt::WindowStaysOnTopHint | Qt::CustomizeWindowHint | Qt::Popup | Qt::X11BypassWindowManagerHint)
+    QDialog(parent, Qt::Window | Qt::WindowStaysOnTopHint | Qt::CustomizeWindowHint | Qt::Popup | Qt::X11BypassWindowManagerHint)
 {
     setLayout(new QHBoxLayout(this));
     layout()->setMargin(1);
@@ -556,7 +556,7 @@ void LXQtWorldClockPopup::show()
 
 bool LXQtWorldClockPopup::event(QEvent *event)
 {
-    if (event->type() == QEvent::WindowDeactivate)
+    if (event->type() == QEvent::Close)
         emit deactivated();
 
     return QDialog::event(event);

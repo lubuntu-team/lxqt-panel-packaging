@@ -35,7 +35,6 @@
 #include "popupmenu.h"
 #include "plugin.h"
 #include "panelpluginsmodel.h"
-#include <LXQt/Settings>
 #include <LXQt/PluginInfo>
 
 #include <QScreen>
@@ -112,8 +111,9 @@ QString LXQtPanel::positionToStr(ILXQtPanel::Position position)
 /************************************************
 
  ************************************************/
-LXQtPanel::LXQtPanel(const QString &configGroup, QWidget *parent) :
+LXQtPanel::LXQtPanel(const QString &configGroup, LXQt::Settings *settings, QWidget *parent) :
     QFrame(parent),
+    mSettings(settings),
     mConfigGroup(configGroup),
     mPlugins{nullptr},
     mPanelSize(0),
@@ -123,6 +123,7 @@ LXQtPanel::LXQtPanel(const QString &configGroup, QWidget *parent) :
     mAlignment(AlignmentLeft),
     mPosition(ILXQtPanel::PositionBottom),
     mScreenNum(0), //whatever (avoid conditional on uninitialized value)
+    mActualScreenNum(0),
     mHidable(false),
     mHidden(false)
 {
@@ -174,8 +175,6 @@ LXQtPanel::LXQtPanel(const QString &configGroup, QWidget *parent) :
     connect(LXQt::Settings::globalSettings(), SIGNAL(settingsChanged()), this, SLOT(update()));
     connect(lxqtApp, SIGNAL(themeChanged()), this, SLOT(realign()));
 
-    LXQtPanelApplication *app = reinterpret_cast<LXQtPanelApplication*>(qApp);
-    mSettings = app->settings();
     readSettings();
     // the old position might be on a visible screen
     ensureVisible();
@@ -213,7 +212,8 @@ void LXQtPanel::readSettings()
               mSettings->value(CFG_KEY_PERCENT, true).toBool(),
               false);
 
-    setPosition(mSettings->value(CFG_KEY_SCREENNUM, QApplication::desktop()->primaryScreen()).toInt(),
+    mScreenNum = mSettings->value(CFG_KEY_SCREENNUM, QApplication::desktop()->primaryScreen()).toInt();
+    setPosition(mScreenNum,
                 strToPosition(mSettings->value(CFG_KEY_POSITION).toString(), PositionBottom),
                 false);
 
@@ -283,6 +283,8 @@ void LXQtPanel::ensureVisible()
 {
     if (!canPlacedOn(mScreenNum, mPosition))
         setPosition(findAvailableScreen(mPosition), mPosition, true);
+    else
+        mActualScreenNum = mScreenNum;
 
     // the screen size might be changed, let's update the reserved screen space.
     updateWmStrut();
@@ -352,7 +354,7 @@ int LXQtPanel::getReserveDimension()
 
 void LXQtPanel::setPanelGeometry()
 {
-    const QRect currentScreen = QApplication::desktop()->screenGeometry(mScreenNum);
+    const QRect currentScreen = QApplication::desktop()->screenGeometry(mActualScreenNum);
     QRect rect;
 
     if (isHorizontal())
@@ -731,7 +733,7 @@ void LXQtPanel::setPosition(int screen, ILXQtPanel::Position position, bool save
             mPosition == position)
         return;
 
-    mScreenNum = screen;
+    mActualScreenNum = screen;
     mPosition = position;
     mLayout->setPosition(mPosition);
 

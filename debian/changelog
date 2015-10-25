@@ -1,7 +1,7 @@
-lxqt-panel (0.9.0+20150925-1) experimental; urgency=medium
+lxqt-panel (0.9.0+20151024-1) experimental; urgency=medium
 
   [ Alf Gaida ]
-  * Cherry-picked upstream version 0.9.0+20150925.
+  * Cherry-picked upstream version 0.9.0+20151024.
   * Cleaned up debian/.gitignore
   * Switched to experimental because of LXQt namespace change
   * Added minimum version for liblxqt0-dev (>= 0.9.0+20150911)
@@ -21,4 +21,4 @@ lxqt-panel (0.9.0+20150925-1) experimental; urgency=medium
   * Sorting build-depends.
   * Removing whitespaces at EOL and EOF.
 
- -- Alf Gaida <agaida@siduction.org>  Sat, 26 Sep 2015 03:39:36 +0200
+ -- Alf Gaida <agaida@siduction.org>  Sun, 25 Oct 2015 02:27:12 +0200
