@@ -96,7 +96,7 @@ QStringList PanelPluginsModel::pluginNames() const
     QStringList names;
     for (auto const & p : mPlugins)
         names.append(p.first);
-    return std::move(names);
+    return names;
 }
 
 QList<Plugin *> PanelPluginsModel::plugins() const
@@ -105,7 +105,7 @@ QList<Plugin *> PanelPluginsModel::plugins() const
     for (auto const & p : mPlugins)
         if (!p.second.isNull())
             plugins.append(p.second.data());
-    return std::move(plugins);
+    return plugins;
 }
 
 Plugin* PanelPluginsModel::pluginByName(QString name) const
@@ -246,9 +246,19 @@ QString PanelPluginsModel::findNewPluginSettingsGroup(const QString &pluginType)
     groups.sort();
 
     // Generate new section name
-    for (int i = 2; true; ++i)
-        if (!groups.contains(QStringLiteral("%1%2").arg(pluginType).arg(i)))
-            return QStringLiteral("%1%2").arg(pluginType).arg(i);
+    QString pluginName = QStringLiteral("%1").arg(pluginType);
+
+    if (!groups.contains(pluginName))
+        return pluginName;
+    else
+    {
+        for (int i = 2; true; ++i)
+        {
+            pluginName = QStringLiteral("%1%2").arg(pluginType).arg(i);
+            if (!groups.contains(pluginName))
+                return pluginName;
+        }
+    }
 }
 
 void PanelPluginsModel::onActivatedIndex(QModelIndex const & index)

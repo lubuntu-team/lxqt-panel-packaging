@@ -73,6 +73,17 @@ void LeftAlignedTextStyle::drawItemText(QPainter * painter, const QRect & rect, 
 /************************************************
 
 ************************************************/
+QString LXQtTaskButton::mimeDataData(QMimeData const * mime)
+{
+    QString data;
+    QDataStream stream(mime->data(mimeDataFormat()));
+    stream >> data;
+    return data;
+}
+
+/************************************************
+
+************************************************/
 LXQtTaskButton::LXQtTaskButton(const WId window, LXQtTaskBar * taskbar, QWidget *parent) :
     QToolButton(parent),
     mWindow(window),
@@ -157,31 +168,44 @@ void LXQtTaskButton::refreshIconGeometry(QRect const & geom)
  ************************************************/
 void LXQtTaskButton::dragEnterEvent(QDragEnterEvent *event)
 {
-    if (event->mimeData()->hasFormat(mimeDataFormat()))
-    {
-        event->ignore();
-        return;
-    }
-
-    mDNDTimer->start();
-
     // It must be here otherwise dragLeaveEvent and dragMoveEvent won't be called
     // on the other hand drop and dragmove events of parent widget won't be called
-    event->accept();
+    event->acceptProposedAction();
+    if (event->mimeData()->hasFormat(mimeDataFormat()))
+    {
+        emit dragging(mimeDataData(event->mimeData()), event->pos());
+        setAttribute(Qt::WA_UnderMouse, false);
+    } else
+    {
+        mDNDTimer->start();
+    }
+
     QToolButton::dragEnterEvent(event);
+}
+
+void LXQtTaskButton::dragMoveEvent(QDragMoveEvent * event)
+{
+    if (event->mimeData()->hasFormat(mimeDataFormat()))
+    {
+        emit dragging(mimeDataData(event->mimeData()), event->pos());
+        setAttribute(Qt::WA_UnderMouse, false);
+    }
 }
 
 void LXQtTaskButton::dragLeaveEvent(QDragLeaveEvent *event)
 {
     mDNDTimer->stop();
-    event->ignore();
     QToolButton::dragLeaveEvent(event);
 }
 
 void LXQtTaskButton::dropEvent(QDropEvent *event)
 {
     mDNDTimer->stop();
-    event->ignore();
+    if (event->mimeData()->hasFormat(mimeDataFormat()))
+    {
+        emit dropped(mimeDataData(event->mimeData()), event->pos());
+        setAttribute(Qt::WA_UnderMouse, false);
+    }
     QToolButton::dropEvent(event);
 }
 
@@ -241,12 +265,8 @@ void LXQtTaskButton::mouseMoveEvent(QMouseEvent* event)
 
     QDrag *drag = new QDrag(this);
     drag->setMimeData(mimeData());
-
-    //fixme when vertical panel, pixmap is empty
-    QPixmap pixmap = grab();
-    drag->setPixmap(pixmap);
-    drag->setHotSpot(QPoint(mapTo(this, event->pos())));
-
+    QIcon ico = icon();
+    drag->setPixmap(ico.pixmap(ico.actualSize({32, 32})));
     sDraggging = true;
     drag->exec();
 
