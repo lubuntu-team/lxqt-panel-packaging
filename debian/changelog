@@ -1,4 +1,4 @@
-lxqt-panel (0.9.0+20151101-1) unstable; urgency=medium
+lxqt-panel (0.9.0+20151101-1) experimental; urgency=medium
 
   [ Alf Gaida ]
   * Cherry-picked upstream version 0.9.0+20151101.
