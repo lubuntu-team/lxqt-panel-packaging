@@ -95,10 +95,8 @@ private:
     XdgMenu mXdgMenu;
 #endif
 
-    bool mLockCascadeChanges;
     QTimer mDelayedPopup;
     QTimer mHideTimer;
-    QKeySequence mShortcutSeq;
     QString mMenuFile;
 
 protected slots:
@@ -109,7 +107,6 @@ protected slots:
 private slots:
     void showMenu();
     void showHideMenu();
-    void shortcutChanged(const QString &oldShortcut, const QString &newShortcut);
 };
 
 class LXQtMainMenuPluginLibrary: public QObject, public ILXQtPanelPluginLibrary
