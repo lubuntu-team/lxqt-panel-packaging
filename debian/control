@@ -43,7 +43,8 @@ Homepage: https://github.com/lxde/lxqt-panel
 Package: lxqt-panel
 Architecture: any
 Depends: ${misc:Depends},
-         ${shlibs:Depends}
+         ${shlibs:Depends},
+         lxmenu-data
 Description: LXQt desktop panel
  The LXQt desktop panel
  .

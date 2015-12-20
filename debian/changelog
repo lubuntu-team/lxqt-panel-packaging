@@ -1,3 +1,9 @@
+lxqt-panel (0.10.0-3) unstable; urgency=medium
+
+  * Added dependency lxmenu-data (Closes: 807066)
+
+ -- Alf Gaida <agaida@siduction.org>  Sun, 20 Dec 2015 23:44:22 +0100
+
 lxqt-panel (0.10.0-2) unstable; urgency=medium
 
   * Merge to unstable.
