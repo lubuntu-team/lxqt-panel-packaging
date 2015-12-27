@@ -1,3 +1,10 @@
+lxqt-panel (0.10.0-4) unstable; urgency=medium
+
+  * Remove dbg package in favor of dbgsym.
+  * Build cpuoad- and networkmonitor-plugin only for linux architectures.
+
+ -- Alf Gaida <agaida@siduction.org>  Sun, 27 Dec 2015 11:15:32 +0100
+
 lxqt-panel (0.10.0-3) unstable; urgency=medium
 
   * Added dependency lxmenu-data (Closes: 807066)

@@ -3,14 +3,16 @@
 
 export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
+DEB_HOST_ARCH_OS := $(shell dpkg-architecture -qDEB_HOST_ARCH_OS 2>/dev/null)
+
+ifneq ($(DEB_HOST_ARCH_OS),linux)
+  NOT_LINUX := -DCPULOAD_PLUGIN=NO -DNETWORKMONITOR_PLUGIN=NO
+endif
+
+
 %:
-	dh ${@} --buildsystem cmake --parallel
+	dh ${@} --buildsystem cmake \
+		--parallel
 
 override_dh_auto_configure:
-	dh_auto_configure -- -DDOM_PLUGIN=YES
-
-override_dh_auto_install:
-	dh_auto_install -- DESTDIR=$(CURDIR)/debian/lxqt-panel
-
-override_dh_strip:
-	dh_strip --dbg-package=lxqt-panel-dbg
+	dh_auto_configure -- -DDOM_PLUGIN=YES $(NOT_LINUX)
