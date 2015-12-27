@@ -1,7 +1,13 @@
+lxqt-panel (0.10.0-5) unstable; urgency=medium
+
+  * Build volume-plugin only for linux.
+
+ -- Alf Gaida <agaida@siduction.org>  Sun, 27 Dec 2015 13:24:08 +0100
+
 lxqt-panel (0.10.0-4) unstable; urgency=medium
 
   * Remove dbg package in favor of dbgsym.
-  * Build cpuoad- and networkmonitor-plugin only for linux architectures.
+  * Build cpuoad- and networkmonitor-plugin only for linux.
 
  -- Alf Gaida <agaida@siduction.org>  Sun, 27 Dec 2015 11:15:32 +0100
 
