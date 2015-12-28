@@ -1,3 +1,11 @@
+lxqt-panel (0.10.0-6) unstable; urgency=medium
+
+  * different handling of non-linux-os:
+    - hurd: no cpuload-, networkmonitor-, volume- and sensors-plugin
+    - kfreebsd: no cpuload-, networkmonitor- and volume-plugin
+
+ -- Alf Gaida <agaida@siduction.org>  Mon, 28 Dec 2015 17:07:30 +0100
+
 lxqt-panel (0.10.0-5) unstable; urgency=medium
 
   * Build volume-plugin only for linux.
