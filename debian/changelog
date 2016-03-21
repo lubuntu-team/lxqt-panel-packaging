@@ -5,6 +5,7 @@ lxqt-panel (0.10.0-8) unstable; urgency=medium
 
   [ ChangZhuo Chen (陳昌倬) ]
   * Merge patch from Ralf Jung.
+  * Update Vcs-* fields.
 
  -- ChangZhuo Chen (陳昌倬) <czchen@debian.org>  Mon, 21 Mar 2016 18:23:35 +0800
 
