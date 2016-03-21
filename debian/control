@@ -36,8 +36,8 @@ Build-Depends: cmake (>= 3.0.2),
                qttools5-dev,
                qttools5-dev-tools
 Standards-Version: 3.9.6
-Vcs-Browser: http://anonscm.debian.org/cgit/pkg-lxqt/lxqt-panel.git
-Vcs-Git: git://anonscm.debian.org/pkg-lxqt/lxqt-panel.git
+Vcs-Browser: https://anonscm.debian.org/cgit/pkg-lxqt/lxqt-panel.git/?h=debian/sid
+Vcs-Git: https://anonscm.debian.org/git/pkg-lxqt/lxqt-panel.git
 Homepage: https://github.com/lxde/lxqt-panel
 
 Package: lxqt-panel
