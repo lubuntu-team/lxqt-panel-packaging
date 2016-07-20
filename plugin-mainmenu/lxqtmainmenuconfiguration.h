@@ -29,11 +29,9 @@
 #ifndef LXQTMAINMENUCONFIGURATION_H
 #define LXQTMAINMENUCONFIGURATION_H
 
-#include <LXQt/Settings>
+#include "../panel/lxqtpanelpluginconfigdialog.h"
+#include "../panel/pluginsettings.h"
 
-#include <QDialog>
-
-class QSettings;
 class QAbstractButton;
 
 namespace Ui {
@@ -44,18 +42,19 @@ namespace GlobalKeyShortcut {
     class Action;
 }
 
-class LXQtMainMenuConfiguration : public QDialog
+class LXQtMainMenuConfiguration : public LXQtPanelPluginConfigDialog
 {
     Q_OBJECT
 
 public:
-    explicit LXQtMainMenuConfiguration(QSettings &settings, GlobalKeyShortcut::Action * shortcut, const QString &defaultShortcut, QWidget *parent = 0);
+    explicit LXQtMainMenuConfiguration(PluginSettings *settings,
+                                       GlobalKeyShortcut::Action *shortcut,
+                                       const QString &defaultShortcut,
+                                       QWidget *parent = nullptr);
     ~LXQtMainMenuConfiguration();
 
 private:
     Ui::LXQtMainMenuConfiguration *ui;
-    QSettings &mSettings;
-    LXQt::SettingsCache mOldSettings;
     QString mDefaultShortcut;
     GlobalKeyShortcut::Action * mShortcut;
 
@@ -66,9 +65,9 @@ private slots:
       Saves settings in conf file.
     */
     void loadSettings();
-    void dialogButtonsAction(QAbstractButton *btn);
     void textButtonChanged(const QString &value);
     void showTextChanged(bool value);
+    void chooseIcon();
     void chooseMenuFile();
     void shortcutReset();
     void customFontChanged(bool value);

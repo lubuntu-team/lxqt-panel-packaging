@@ -163,6 +163,10 @@ void LXQtClock::showTime()
         mTimeLabel->setText(new_time);
     }
 
+    //Note: if transformation (custom rendering) is enabled we need the explicit update
+    //(update doesn't cause superfluous paint events)
+    mRotatedWidget->update();
+
     if (mCurrentCharCount != new_char_count)
     {
         mCurrentCharCount = new_char_count;
@@ -286,6 +290,7 @@ void LXQtClock::activated(ActivationReason reason)
     {
         QRect pos = calculatePopupWindowPos(mCalendarPopup->size());
         mCalendarPopup->move(pos.topLeft());
+        willShowWindow(mCalendarPopup);
         mCalendarPopup->show();
     }
     else
@@ -296,7 +301,7 @@ void LXQtClock::activated(ActivationReason reason)
 
 QDialog * LXQtClock::configureDialog()
 {
-     return new LXQtClockConfiguration(*settings());
+     return new LXQtClockConfiguration(settings());
 }
 
 bool LXQtClock::eventFilter(QObject *watched, QEvent *event)

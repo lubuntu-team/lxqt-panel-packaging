@@ -1,3 +1,24 @@
+lxqt-panel (0.10.96~127-g699cf7a-1) experimental; urgency=medium
+
+  * Cherry-picking upstream version 0.10.96~127-g699cf7a.
+  * Preparing the upcoming release, switch to experimental
+  * Added new build dependendies 
+    - gcc (>= 4:6)
+    - g++ (>= 4:6)
+    - libqt5xdgiconloader-dev (>= 1.3.1~)
+  * Added some needed minimum versions
+  * Fixed VCS fields, point to the right branch
+  * Bumped Standards to 3.9.8, no changes needed
+  * Added Recommends lxqt-panel-l10n
+  * Fixed copyrights Format field to https
+  * Bumped years in copyrights
+  * Added translation control to rules
+  * Added hardening options
+  * Set CMAKE_BUILD_TYPE=RelWithDebInfo
+  * Exported LC_ALL=C.UTF-8, make builds reproducible
+
+ -- Alf Gaida <agaida@siduction.org>  Wed, 20 Jul 2016 21:03:03 +0200
+
 lxqt-panel (0.10.0-8) unstable; urgency=medium
 
   [ Ralf Jung ]

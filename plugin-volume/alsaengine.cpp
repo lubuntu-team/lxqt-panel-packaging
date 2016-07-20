@@ -130,15 +130,23 @@ void AlsaEngine::discoverDevices()
 {
     int error;
     int cardNum = -1;
+    const int BUFF_SIZE = 64;
 
     while (1) {
-        error = snd_card_next(&cardNum);
+        if ((error = snd_card_next(&cardNum)) < 0) {
+            qWarning("Can't get the next card number: %s\n", snd_strerror(error));
+            break;
+        }
 
         if (cardNum < 0)
             break;
 
-        char str[64];
-        sprintf(str, "hw:%i", cardNum);
+        char str[BUFF_SIZE];
+        const size_t n = snprintf(str, sizeof(str), "hw:%i", cardNum);
+        if (BUFF_SIZE <= n) {
+            qWarning("AlsaEngine::discoverDevices: Buffer too small\n");
+            continue;
+        }
 
         snd_ctl_t *cardHandle;
         if ((error = snd_ctl_open(&cardHandle, str, 0)) < 0) {

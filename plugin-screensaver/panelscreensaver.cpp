@@ -25,7 +25,6 @@
  *
  * END_COMMON_COPYRIGHT_HEADER */
 
-#include <QToolButton>
 #include <QMessageBox>
 #include <QHBoxLayout>
 #include <LXQt/ScreenSaver>
@@ -33,6 +32,7 @@
 #include <lxqt-globalkeys.h>
 
 #include "panelscreensaver.h"
+#include "../panel/pluginsettings.h"
 
 #define DEFAULT_SHORTCUT "Control+Alt+L"
 
@@ -41,6 +41,7 @@ PanelScreenSaver::PanelScreenSaver(const ILXQtPanelPluginStartupInfo &startupInf
     QObject(),
     ILXQtPanelPlugin(startupInfo)
 {
+    mButton.setAutoRaise(true);
     mSaver = new LXQt::ScreenSaver(this);
 
     QList<QAction*> actions = mSaver->availableActions();

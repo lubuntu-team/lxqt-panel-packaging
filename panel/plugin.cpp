@@ -28,6 +28,7 @@
 
 #include "plugin.h"
 #include "ilxqtpanelplugin.h"
+#include "pluginsettings_p.h"
 #include "lxqtpanel.h"
 #include <QDebug>
 #include <QProcessEnvironment>
@@ -41,7 +42,7 @@
 #include <QMenu>
 #include <QMouseEvent>
 #include <QApplication>
-#include <QCryptographicHash>
+#include <QWindow>
 #include <memory>
 
 #include <LXQt/Settings>
@@ -75,22 +76,16 @@ QColor Plugin::mMoveMarkerColor= QColor(255, 0, 0, 255);
 /************************************************
 
  ************************************************/
-Plugin::Plugin(const LXQt::PluginInfo &desktopFile, const QString &settingsFile, const QString &settingsGroup, LXQtPanel *panel) :
+Plugin::Plugin(const LXQt::PluginInfo &desktopFile, LXQt::Settings *settings, const QString &settingsGroup, LXQtPanel *panel) :
     QFrame(panel),
     mDesktopFile(desktopFile),
     mPluginLoader(0),
     mPlugin(0),
     mPluginWidget(0),
     mAlignment(AlignLeft),
-    mSettingsGroup(settingsGroup),
     mPanel(panel)
 {
-
-    mSettings = new LXQt::Settings(settingsFile, QSettings::IniFormat, this);
-    connect(mSettings, SIGNAL(settingsChanged()), this, SLOT(settingsChanged()));
-    mSettings->beginGroup(settingsGroup);
-
-    mSettingsHash = calcSettingsHash();
+    mSettings = PluginSettingsFactory::create(settings, settingsGroup);
 
     setWindowTitle(desktopFile.name());
     mName = desktopFile.name();
@@ -109,7 +104,7 @@ Plugin::Plugin(const LXQt::PluginInfo &desktopFile, const QString &settingsFile,
     else {
         // this plugin is a dynamically loadable module
         QString baseName = QString("lib%1.so").arg(desktopFile.id());
-        foreach(QString dirName, dirs)
+        foreach(const QString &dirName, dirs)
         {
             QFileInfo fi(QDir(dirName), baseName);
             if (fi.exists())
@@ -155,12 +150,15 @@ Plugin::Plugin(const LXQt::PluginInfo &desktopFile, const QString &settingsFile,
     {
         QGridLayout* layout = new QGridLayout(this);
         layout->setSpacing(0);
-        layout->setMargin(0);
         layout->setContentsMargins(0, 0, 0, 0);
         setLayout(layout);
         layout->addWidget(mPluginWidget, 0, 0);
     }
 
+    // delay the connection to settingsChanged to avoid conflicts
+    // while the plugin is still being initialized
+    connect(mSettings, &PluginSettings::settingsChanged,
+            this, &Plugin::settingsChanged);
     saveSettings();
 }
 
@@ -171,11 +169,8 @@ Plugin::Plugin(const LXQt::PluginInfo &desktopFile, const QString &settingsFile,
 Plugin::~Plugin()
 {
     delete mPlugin;
-    if (mPluginLoader)
-    {
-        mPluginLoader->unload();
-        delete mPluginLoader;
-    }
+    delete mPluginLoader;
+    delete mSettings;
 }
 
 void Plugin::setAlignment(Plugin::Alignment alignment)
@@ -309,30 +304,9 @@ bool Plugin::loadModule(const QString &libraryName)
 /************************************************
 
  ************************************************/
-QByteArray Plugin::calcSettingsHash()
-{
-    QCryptographicHash hash(QCryptographicHash::Md5);
-    QStringList keys = mSettings->allKeys();
-    foreach (const QString &key, keys)
-    {
-        hash.addData(key.toUtf8());
-        hash.addData(mSettings->value(key).toByteArray());
-    }
-    return hash.result();
-}
-
-
-/************************************************
-
- ************************************************/
 void Plugin::settingsChanged()
 {
-    QByteArray hash = calcSettingsHash();
-    if (mSettingsHash != hash)
-    {
-        mSettingsHash = hash;
-        mPlugin->settingsChanged();
-    }
+    mPlugin->settingsChanged();
 }
 
 
@@ -463,23 +437,21 @@ void Plugin::realign()
  ************************************************/
 void Plugin::showConfigureDialog()
 {
-    // store a pointer to each plugin using the plugins' names
-    static QHash<QString, QPointer<QDialog> > refs;
-    QDialog *dialog = refs[name()].data();
+    if (!mConfigDialog)
+        mConfigDialog = mPlugin->configureDialog();
 
-    if (!dialog)
-    {
-        dialog = mPlugin->configureDialog();
-        refs[name()] = dialog;
-        connect(this, SIGNAL(destroyed()), dialog, SLOT(close()));
-    }
-
-    if (!dialog)
+    if (!mConfigDialog)
         return;
 
-    dialog->show();
-    dialog->raise();
-    dialog->activateWindow();
+    connect(this, &Plugin::destroyed, mConfigDialog, &QWidget::close);
+    mPanel->willShowWindow(mConfigDialog);
+    mConfigDialog->show();
+    mConfigDialog->raise();
+    mConfigDialog->activateWindow();
+
+    WId wid = mConfigDialog->windowHandle()->winId();
+    KWindowSystem::activateWindow(wid);
+    KWindowSystem::setOnDesktop(wid, KWindowSystem::currentDesktop());
 }
 
 

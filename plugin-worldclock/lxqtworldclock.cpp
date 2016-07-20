@@ -46,7 +46,6 @@ LXQtWorldClock::LXQtWorldClock(const ILXQtPanelPluginStartupInfo &startupInfo):
     mPopup(NULL),
     mTimer(new QTimer(this)),
     mUpdateInterval(1),
-    mLastUpdate(0),
     mAutoRotate(true),
     mPopupContent(NULL)
 {
@@ -67,6 +66,7 @@ LXQtWorldClock::LXQtWorldClock(const ILXQtPanelPluginStartupInfo &startupInfo):
 
     settingsChanged();
 
+    mTimer->setTimerType(Qt::PreciseTimer);
     connect(mTimer, SIGNAL(timeout()), SLOT(timeout()));
 
     connect(mContent, SIGNAL(wheelScrolled(int)), SLOT(wheelScrolled(int)));
@@ -79,47 +79,54 @@ LXQtWorldClock::~LXQtWorldClock()
 
 void LXQtWorldClock::timeout()
 {
+    if (QDateTime{}.time().msec() > 500)
+        restartTimer();
+    setTimeText();
+}
+
+void LXQtWorldClock::setTimeText()
+{
     QDateTime now = QDateTime::currentDateTime();
-    qint64 nowMsec = now.toMSecsSinceEpoch();
-    if ((mLastUpdate / mUpdateInterval) == (nowMsec / mUpdateInterval))
-        return;
-
-    mLastUpdate = nowMsec;
-
     QString timeZoneName = mActiveTimeZone;
     if (timeZoneName == QLatin1String("local"))
         timeZoneName = QString::fromLatin1(QTimeZone::systemTimeZoneId());
 
-    mContent->setText(formatDateTime(now, timeZoneName));
-
-    mRotatedWidget->update();
-
-    updatePopupContent();
+    QString time_text = formatDateTime(now, timeZoneName);
+    if (mContent->text() != time_text)
+    {
+        mContent->setText(time_text);
+        mRotatedWidget->update();
+        updatePopupContent();
+    }
 }
 
-void LXQtWorldClock::restartTimer(int updateInterval)
+void LXQtWorldClock::restartTimer()
 {
-    mUpdateInterval = updateInterval;
-    mTimer->start(qMin(100, updateInterval));
+    mTimer->stop();
+    mTimer->setInterval(mUpdateInterval);
+
+    int delay = static_cast<int>((mUpdateInterval - (static_cast<long long>(QTime::currentTime().msecsSinceStartOfDay()) % mUpdateInterval)) % mUpdateInterval);
+    QTimer::singleShot(delay, Qt::PreciseTimer, this, &LXQtWorldClock::setTimeText);
+    QTimer::singleShot(delay, Qt::PreciseTimer, mTimer, SLOT(start()));
 }
 
 void LXQtWorldClock::settingsChanged()
 {
-    QSettings *_settings = settings();
+    PluginSettings *_settings = settings();
 
     QString oldFormat = mFormat;
 
     mTimeZones.clear();
 
-    int size = _settings->beginReadArray(QLatin1String("timeZones"));
-    for (int i = 0; i < size; ++i)
+    QList<QMap<QString, QVariant> > array = _settings->readArray(QLatin1String("timeZones"));
+    for (const auto &map : array)
     {
-        _settings->setArrayIndex(i);
-        QString timeZoneName = _settings->value(QLatin1String("timeZone"), QString()).toString();
+        QString timeZoneName = map.value(QLatin1String("timeZone"), QString()).toString();
         mTimeZones.append(timeZoneName);
-        mTimeZoneCustomNames[timeZoneName] = _settings->value(QLatin1String("customName"), QString()).toString();
+        mTimeZoneCustomNames[timeZoneName] = map.value(QLatin1String("customName"),
+                                                       QString()).toString();
     }
-    _settings->endArray();
+
     if (mTimeZones.isEmpty())
         mTimeZones.append(QLatin1String("local"));
 
@@ -264,18 +271,22 @@ void LXQtWorldClock::settingsChanged()
 
     if ((oldFormat != mFormat))
     {
-        int updateInterval = 0;
-
+        int update_interval;
         QString format = mFormat;
         format.replace(QRegExp(QLatin1String("'[^']*'")), QString());
-        if (format.contains(QLatin1String("z")))
-            updateInterval = 1;
-        else if (format.contains(QLatin1String("s")))
-            updateInterval = 1000;
+        //don't support updating on milisecond basis -> big performance hit
+        if (format.contains(QLatin1String("s")))
+            update_interval = 1000;
+        else if (format.contains(QLatin1String("m")))
+            update_interval = 60000;
         else
-            updateInterval = 60000;
+            update_interval = 3600000;
 
-        restartTimer(updateInterval);
+        if (update_interval != mUpdateInterval)
+        {
+            mUpdateInterval = update_interval;
+            restartTimer();
+        }
     }
 
     bool autoRotate = settings()->value(QLatin1String("autoRotate"), true).toBool();
@@ -292,7 +303,7 @@ void LXQtWorldClock::settingsChanged()
         mPopup->setGeometry(calculatePopupWindowPos(mPopup->size()));
     }
 
-    timeout();
+    setTimeText();
 }
 
 QDialog *LXQtWorldClock::configureDialog()
@@ -305,7 +316,7 @@ void LXQtWorldClock::wheelScrolled(int delta)
     if (mTimeZones.count() > 1)
     {
         mActiveTimeZone = mTimeZones[(mTimeZones.indexOf(mActiveTimeZone) + ((delta > 0) ? -1 : 1) + mTimeZones.size()) % mTimeZones.size()];
-        timeout();
+        setTimeText();
     }
 }
 
@@ -356,6 +367,7 @@ void LXQtWorldClock::activated(ActivationReason reason)
         mPopup->adjustSize();
         mPopup->setGeometry(calculatePopupWindowPos(mPopup->size()));
 
+        willShowWindow(mPopup);
         mPopup->show();
     }
     else

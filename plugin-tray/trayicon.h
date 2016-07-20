@@ -47,13 +47,12 @@ class TrayIcon: public QFrame
     Q_PROPERTY(QSize iconSize READ iconSize WRITE setIconSize)
 
 public:
-    TrayIcon(Window iconId, QWidget* parent);
+    TrayIcon(Window iconId, QSize const & iconSize, QWidget* parent);
     virtual ~TrayIcon();
 
     Window iconId() { return mIconId; }
     Window windowId() { return mWindowId; }
-
-    bool isValid() const { return mValid; }
+    void windowDestroyed(Window w);
 
     QSize iconSize() const { return mIconSize; }
     void setIconSize(QSize iconSize);
@@ -65,11 +64,10 @@ protected:
     void draw(QPaintEvent* event);
 
 private:
-    bool init();
+    void init();
     QRect iconGeometry();
     Window mIconId;
     Window mWindowId;
-    bool mValid;
     QSize mIconSize;
     Damage mDamage;
     Display* mDisplay;
