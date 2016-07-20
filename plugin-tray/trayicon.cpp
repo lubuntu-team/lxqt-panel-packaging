@@ -69,11 +69,11 @@ int windowErrorHandler(Display *d, XErrorEvent *e)
 /************************************************
 
  ************************************************/
-TrayIcon::TrayIcon(Window iconId, QWidget* parent):
+TrayIcon::TrayIcon(Window iconId, QSize const & iconSize, QWidget* parent):
     QFrame(parent),
     mIconId(iconId),
     mWindowId(0),
-    mIconSize(TRAY_ICON_SIZE_DEFAULT, TRAY_ICON_SIZE_DEFAULT),
+    mIconSize(iconSize),
     mDamage(0),
     mDisplay(QX11Info::display())
 {
@@ -87,7 +87,12 @@ TrayIcon::TrayIcon(Window iconId, QWidget* parent):
 
     setObjectName("TrayIcon");
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    mValid = init();
+    // NOTE:
+    // see https://github.com/lxde/lxqt/issues/945
+    // workaround: delayed init because of weird behaviour of some icons/windows (claws-mail)
+    // (upon starting the app the window for receiving clicks wasn't correctly sized
+    //  no matter what we've done)
+    QTimer::singleShot(200, [this] { init(); update(); });
 }
 
 
@@ -95,12 +100,16 @@ TrayIcon::TrayIcon(Window iconId, QWidget* parent):
 /************************************************
 
  ************************************************/
-bool TrayIcon::init()
+void TrayIcon::init()
 {
     Display* dsp = mDisplay;
 
     XWindowAttributes attr;
-    if (! XGetWindowAttributes(dsp, mIconId, &attr)) return false;
+    if (! XGetWindowAttributes(dsp, mIconId, &attr))
+    {
+        deleteLater();
+        return;
+    }
 
 //    qDebug() << "New tray icon ***********************************";
 //    qDebug() << "  * window id:  " << hex << mIconId;
@@ -117,7 +126,7 @@ bool TrayIcon::init()
     set_attr.border_pixel = 0;
     mask = CWColormap|CWBackPixel|CWBorderPixel;
 
-    mWindowId = XCreateWindow(dsp, this->winId(), 0, 0, mIconSize.width(), mIconSize.height(),
+    mWindowId = XCreateWindow(dsp, this->winId(), 0, 0, mIconSize.width() * metric(PdmDevicePixelRatio), mIconSize.height() * metric(PdmDevicePixelRatio),
                               0, attr.depth, InputOutput, visual, mask, &set_attr);
 
 
@@ -134,7 +143,9 @@ bool TrayIcon::init()
         qWarning() << "* Not icon_swallow                     *";
         qWarning() << "****************************************";
         XDestroyWindow(dsp, mWindowId);
-        return false;
+        mWindowId = 0;
+        deleteLater();
+        return;
     }
 
 
@@ -157,7 +168,8 @@ bool TrayIcon::init()
         {
             qWarning() << "TrayIcon: xembed error";
             XDestroyWindow(dsp, mWindowId);
-            return false;
+            deleteLater();
+            return;
         }
     }
 
@@ -184,10 +196,9 @@ bool TrayIcon::init()
     XMapWindow(dsp, mIconId);
     XMapRaised(dsp, mWindowId);
 
-    XResizeWindow(dsp, mWindowId, mIconSize.width(), mIconSize.height());
-    XResizeWindow(dsp, mIconId, mIconSize.width(), mIconSize.height());
-
-    return true;
+    const QSize req_size{mIconSize * metric(PdmDevicePixelRatio)};
+    XResizeWindow(dsp, mWindowId, req_size.width(), req_size.height());
+    XResizeWindow(dsp, mIconId, req_size.width(), req_size.height());
 }
 
 
@@ -209,7 +220,8 @@ TrayIcon::~TrayIcon()
     XUnmapWindow(dsp, mIconId);
     XReparentWindow(dsp, mIconId, QX11Info::appRootWindow(), 0, 0);
 
-    XDestroyWindow(dsp, mWindowId);
+    if (mWindowId)
+        XDestroyWindow(dsp, mWindowId);
     XSync(dsp, False);
     XSetErrorHandler(old);
 }
@@ -234,11 +246,12 @@ void TrayIcon::setIconSize(QSize iconSize)
 {
     mIconSize = iconSize;
 
+    const QSize req_size{mIconSize * metric(PdmDevicePixelRatio)};
     if (mWindowId)
-        xfitMan().resizeWindow(mWindowId, mIconSize.width(), mIconSize.height());
+        xfitMan().resizeWindow(mWindowId, req_size.width(), req_size.height());
 
     if (mIconId)
-        xfitMan().resizeWindow(mIconId,   mIconSize.width(), mIconSize.height());
+        xfitMan().resizeWindow(mIconId, req_size.width(), req_size.height());
 }
 
 
@@ -247,27 +260,31 @@ void TrayIcon::setIconSize(QSize iconSize)
  ************************************************/
 bool TrayIcon::event(QEvent *event)
 {
-    switch (event->type())
+    if (mWindowId)
     {
-    case QEvent::Paint:
-        draw(static_cast<QPaintEvent*>(event));
-        break;
+        switch (event->type())
+        {
+        case QEvent::Paint:
+            draw(static_cast<QPaintEvent*>(event));
+            break;
 
-    case QEvent::Resize:
-    {
-        QRect rect = iconGeometry();
-        xfitMan().moveWindow(mWindowId, rect.left(), rect.top());
-    }
-        break;
+        case QEvent::Move:
+        case QEvent::Resize:
+        {
+            QRect rect = iconGeometry();
+            xfitMan().moveWindow(mWindowId, rect.left(), rect.top());
+        }
+            break;
 
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
-        event->accept();
-        break;
+        case QEvent::MouseButtonPress:
+        case QEvent::MouseButtonRelease:
+        case QEvent::MouseButtonDblClick:
+            event->accept();
+            break;
 
-    default:
-        break;
+        default:
+            break;
+        }
     }
 
     return QFrame::event(event);
@@ -353,6 +370,17 @@ void TrayIcon::draw(QPaintEvent* /*event*/)
     if(ximage)
         XDestroyImage(ximage);
 //    debug << "End paint icon **********************************";
+}
+
+
+/************************************************
+
+ ************************************************/
+void TrayIcon::windowDestroyed(Window w)
+{
+    //damage is destroyed if it's parent window was destroyed
+    if (mIconId == w)
+        mDamage = 0;
 }
 
 

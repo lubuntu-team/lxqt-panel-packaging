@@ -125,6 +125,7 @@ bool LXQtTray::nativeEventFilter(const QByteArray &eventType, void *message, lon
             icon = findIcon(event_window);
             if (icon)
             {
+                icon->windowDestroyed(event_window);
                 mIcons.removeAll(icon);
                 delete icon;
             }
@@ -359,6 +360,8 @@ void LXQtTray::startTray()
  ************************************************/
 void LXQtTray::stopTray()
 {
+    for (auto & icon : mIcons)
+        disconnect(icon, &QObject::destroyed, this, &LXQtTray::onIconDestroyed);
     qDeleteAll(mIcons);
     if (mTrayId)
     {
@@ -372,16 +375,21 @@ void LXQtTray::stopTray()
 /************************************************
 
  ************************************************/
+void LXQtTray::onIconDestroyed(QObject * icon)
+{
+    //in the time QOjbect::destroyed is emitted, the child destructor
+    //is already finished, so the qobject_cast to child will return nullptr in all cases
+    mIcons.removeAll(static_cast<TrayIcon *>(icon));
+}
+
+/************************************************
+
+ ************************************************/
 void LXQtTray::addIcon(Window winId)
 {
-    TrayIcon* icon = new TrayIcon(winId, this);
-    if (!icon->isValid())
-    {
-        delete icon;
-        return;
-    }
-
+    TrayIcon* icon = new TrayIcon(winId, mIconSize, this);
     mIcons.append(icon);
     mLayout->addWidget(icon);
+    connect(icon, &QObject::destroyed, this, &LXQtTray::onIconDestroyed);
 }
 

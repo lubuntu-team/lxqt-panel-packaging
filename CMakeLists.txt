@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.0.2 FATAL_ERROR)
 project(lxqt-panel)
 
 option(UPDATE_TRANSLATIONS "Update source translation translations/*.ts files" OFF)
+option(PULL_TRANSLATIONS "Pull translations" ON)
 
 # additional cmake files
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -34,8 +35,6 @@ if (CMAKE_COMPILER_IS_GNUCXX)
   # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-no-undefined")
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-
 #########################################################################
 
 add_definitions (-Wall)
@@ -63,7 +62,10 @@ include(LXQtTranslate)
 
 # Warning: This must be before add_subdirectory(panel). Move with caution.
 set(PLUGIN_DIR "${CMAKE_INSTALL_FULL_LIBDIR}/lxqt-panel")
-add_definitions(-DPLUGIN_DIR=\"${PLUGIN_DIR}\")
+add_definitions(
+    -DPLUGIN_DIR=\"${PLUGIN_DIR}\"
+    -DQT_USE_QSTRINGBUILDER
+)
 message(STATUS "Panel plugins location: ${PLUGIN_DIR}")
 
 #########################################################################

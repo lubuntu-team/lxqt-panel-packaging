@@ -47,6 +47,9 @@
 
 
 class QMenu;
+class QWidgetAction;
+class QLineEdit;
+class ActionView;
 class LXQtBar;
 
 namespace LXQt {
@@ -79,6 +82,7 @@ protected:
 
 private:
     void setMenuFontSize();
+    void setButtonIcon();
 
 private:
     QToolButton mButton;
@@ -86,6 +90,15 @@ private:
     QMenu* mMenu;
     GlobalKeyShortcut::Action *mShortcut;
     MenuStyle mTopMenuStyle;
+    QWidgetAction * mSearchEditAction;
+    QLineEdit * mSearchEdit;
+    QWidgetAction * mSearchViewAction;
+    ActionView * mSearchView;
+    QAction * mMakeDirtyAction;
+    bool mFilterMenu; //!< searching should perform hiding nonmatching items in menu
+    bool mFilterShow; //!< searching should list matching items in top menu
+    bool mFilterShowHideMenu; //!< while searching all (original) menu entries should be hidden
+    bool mHeavyMenuChanges; //!< flag for filtering some mMenu events while heavy changes are performed
 
 #ifdef HAVE_MENU_CACHE
     MenuCache* mMenuCache;
@@ -107,6 +120,8 @@ protected slots:
 private slots:
     void showMenu();
     void showHideMenu();
+    void searchTextChanged(QString const & text);
+    void setSearchFocus(QAction *action);
 };
 
 class LXQtMainMenuPluginLibrary: public QObject, public ILXQtPanelPluginLibrary

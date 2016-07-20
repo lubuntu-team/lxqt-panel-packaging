@@ -155,7 +155,6 @@ void PanelPluginsModel::removePlugin(pluginslist_t::iterator plugin)
         beginRemoveRows(QModelIndex(), row, row);
         mPlugins.erase(plugin);
         endRemoveRows();
-        mActive = mPlugins.isEmpty() ? QModelIndex() : createIndex(mPlugins.size() > row ? row : row - 1, 0);
         emit pluginRemoved(p); // p can be nullptr
         mPanel->settings()->setValue(mNamesKey, pluginNames());
         if (nullptr != p)
@@ -174,17 +173,41 @@ void PanelPluginsModel::removePlugin()
 void PanelPluginsModel::movePlugin(Plugin * plugin, QString const & nameAfter)
 {
     //merge list of plugins (try to preserve original position)
+    //subtract mPlugin.begin() from the found Plugins to get the model index
     const int from =
         std::find_if(mPlugins.begin(), mPlugins.end(), [plugin] (pluginslist_t::const_reference obj) { return plugin == obj.second.data(); })
         - mPlugins.begin();
     const int to =
         std::find_if(mPlugins.begin(), mPlugins.end(), [nameAfter] (pluginslist_t::const_reference obj) { return nameAfter == obj.first; })
         - mPlugins.begin();
+    /* 'from' is the current position of the Plugin to be moved ("moved Plugin"),
+     * 'to' is the position of the Plugin behind the one that is being moved
+     * ("behind Plugin"). There are several cases to distinguish:
+     * 1. from > to: The moved Plugin had been behind the behind Plugin before
+     * and is moved to the front of the behind Plugin. The moved Plugin will
+     * be inserted at position 'to', the behind Plugin and all the following
+     * Plugins (until the former position of the moved Plugin) will increment
+     * their indexes.
+     * 2. from < to: The moved Plugin had already been located before the
+     * behind Plugin. In this case, the move operation only reorders the
+     * Plugins before the behind Plugin. All the Plugins between the moved
+     * Plugin and the behind Plugin will decrement their index. Therefore, the
+     * movedPlugin will not be at position 'to' but rather on position 'to-1'.
+     * 3. from == to: This does not make sense, we catch this case to prevent
+     * errors.
+     * 4. from == to-1: The moved Plugin has not moved because it had already
+     * been located in front of the behind Plugin.
+     */
     const int to_plugins = from < to ? to - 1 : to;
 
     if (from != to && from != to_plugins)
     {
+        /* Although the new position of the moved Plugin will be 'to-1' if
+         * from < to, we insert 'to' here. This is exactly how it is done
+         * in the Qt documentation.
+         */
         beginMoveRows(QModelIndex(), from, from, QModelIndex(), to);
+        // For the QList::move method, use the right position
         mPlugins.move(from, to_plugins);
         endMoveRows();
         emit pluginMoved(plugin);
@@ -228,7 +251,7 @@ void PanelPluginsModel::loadPlugins(QStringList const & desktopDirs)
 
 QPointer<Plugin> PanelPluginsModel::loadPlugin(LXQt::PluginInfo const & desktopFile, QString const & settingsGroup)
 {
-    std::unique_ptr<Plugin> plugin(new Plugin(desktopFile, mPanel->settings()->fileName(), settingsGroup, mPanel));
+    std::unique_ptr<Plugin> plugin(new Plugin(desktopFile, mPanel->settings(), settingsGroup, mPanel));
     if (plugin->isLoaded())
     {
         connect(mPanel, &LXQtPanel::realigned, plugin.get(), &Plugin::realign);
@@ -261,23 +284,18 @@ QString PanelPluginsModel::findNewPluginSettingsGroup(const QString &pluginType)
     }
 }
 
-void PanelPluginsModel::onActivatedIndex(QModelIndex const & index)
+bool PanelPluginsModel::isIndexValid(QModelIndex const & index) const
 {
-    mActive = index;
+    return index.isValid() && QModelIndex() == index.parent()
+        && 0 == index.column() && mPlugins.size() > index.row();
 }
 
-bool PanelPluginsModel::isActiveIndexValid() const
+void PanelPluginsModel::onMovePluginUp(QModelIndex const & index)
 {
-    return mActive.isValid() && QModelIndex() == mActive.parent()
-        && 0 == mActive.column() && mPlugins.size() > mActive.row();
-}
-
-void PanelPluginsModel::onMovePluginUp()
-{
-    if (!isActiveIndexValid())
+    if (!isIndexValid(index))
         return;
 
-    const int row = mActive.row();
+    const int row = index.row();
     if (0 >= row)
         return; //can't move up
 
@@ -295,12 +313,12 @@ void PanelPluginsModel::onMovePluginUp()
     mPanel->settings()->setValue(mNamesKey, pluginNames());
 }
 
-void PanelPluginsModel::onMovePluginDown()
+void PanelPluginsModel::onMovePluginDown(QModelIndex const & index)
 {
-    if (!isActiveIndexValid())
+    if (!isIndexValid(index))
         return;
 
-    const int row = mActive.row();
+    const int row = index.row();
     if (mPlugins.size() <= row + 1)
         return; //can't move down
 
@@ -318,22 +336,22 @@ void PanelPluginsModel::onMovePluginDown()
     mPanel->settings()->setValue(mNamesKey, pluginNames());
 }
 
-void PanelPluginsModel::onConfigurePlugin()
+void PanelPluginsModel::onConfigurePlugin(QModelIndex const & index)
 {
-    if (!isActiveIndexValid())
+    if (!isIndexValid(index))
         return;
 
-    Plugin * const plugin = mPlugins[mActive.row()].second.data();
+    Plugin * const plugin = mPlugins[index.row()].second.data();
     if (nullptr != plugin && (ILXQtPanelPlugin::HaveConfigDialog & plugin->iPlugin()->flags()))
         plugin->showConfigureDialog();
 }
 
-void PanelPluginsModel::onRemovePlugin()
+void PanelPluginsModel::onRemovePlugin(QModelIndex const & index)
 {
-    if (!isActiveIndexValid())
+    if (!isIndexValid(index))
         return;
 
-    auto plugin = mPlugins.begin() + mActive.row();
+    auto plugin = mPlugins.begin() + index.row();
     if (plugin->second.isNull())
         removePlugin(std::move(plugin));
     else

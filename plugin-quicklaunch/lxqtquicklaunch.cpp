@@ -36,13 +36,13 @@
 #include <QFileInfo>
 #include <QLabel>
 #include <QMessageBox>
-#include <QSettings>
 #include <QToolButton>
 #include <QUrl>
-#include <QSettings>
+#include <QDebug>
 #include <XdgDesktopFile>
 #include <XdgIcon>
 #include <LXQt/GridLayout>
+#include "../panel/pluginsettings.h"
 
 
 LXQtQuickLaunch::LXQtQuickLaunch(ILXQtPanelPlugin *plugin, QWidget* parent) :
@@ -55,20 +55,16 @@ LXQtQuickLaunch::LXQtQuickLaunch(ILXQtPanelPlugin *plugin, QWidget* parent) :
     mLayout = new LXQt::GridLayout(this);
     setLayout(mLayout);
 
-    QSettings *settings = mPlugin->settings();
-    int count = settings->beginReadArray("apps");
-
     QString desktop;
     QString file;
     QString execname;
     QString exec;
     QString icon;
-    for (int i = 0; i < count; ++i)
+    for (const QMap<QString, QVariant> &app : mPlugin->settings()->readArray("apps"))
     {
-        settings->setArrayIndex(i);
-        desktop = settings->value("desktop", "").toString();
-        file = settings->value("file", "").toString();
-        if (! desktop.isEmpty())
+        desktop = app.value("desktop", "").toString();
+        file = app.value("file", "").toString();
+        if (!desktop.isEmpty())
         {
             XdgDesktopFile xdg;
             if (!xdg.load(desktop))
@@ -90,9 +86,9 @@ LXQtQuickLaunch::LXQtQuickLaunch(ILXQtPanelPlugin *plugin, QWidget* parent) :
         }
         else
         {
-            execname = settings->value("name", "").toString();
-            exec = settings->value("exec", "").toString();
-            icon = settings->value("icon", "").toString();
+            execname = app.value("name", "").toString();
+            exec = app.value("exec", "").toString();
+            icon = app.value("icon", "").toString();
             if (icon.isNull())
             {
                 qDebug() << "Icon" << icon << "is not valid (isNull). Skipped.";
@@ -101,8 +97,6 @@ LXQtQuickLaunch::LXQtQuickLaunch(ILXQtPanelPlugin *plugin, QWidget* parent) :
             addButton(new QuickLaunchAction(execname, exec, icon, this));
         }
     } // for
-
-    settings->endArray();
 
     if (mLayout->isEmpty())
         showPlaceHolder();
@@ -158,7 +152,7 @@ void LXQtQuickLaunch::realign()
 void LXQtQuickLaunch::addButton(QuickLaunchAction* action)
 {
     mLayout->setEnabled(false);
-    QuickLaunchButton* btn = new QuickLaunchButton(action, this);
+    QuickLaunchButton* btn = new QuickLaunchButton(action, mPlugin, this);
     mLayout->addWidget(btn);
 
     connect(btn, SIGNAL(switchButtons(QuickLaunchButton*,QuickLaunchButton*)), this, SLOT(switchButtons(QuickLaunchButton*,QuickLaunchButton*)));
@@ -194,7 +188,7 @@ void LXQtQuickLaunch::dropEvent(QDropEvent *e)
 {
     const QMimeData *mime = e->mimeData();
 
-    foreach (QUrl url, mime->urls().toSet())
+    foreach (const QUrl &url, mime->urls().toSet())
     {
         QString fileName(url.isLocalFile() ? url.toLocalFile() : url.url());
         QFileInfo fi(fileName);
@@ -290,30 +284,29 @@ void LXQtQuickLaunch::buttonMoveRight()
 
 void LXQtQuickLaunch::saveSettings()
 {
-    QSettings *settings = mPlugin->settings();
+    PluginSettings *settings = mPlugin->settings();
     settings->remove("apps");
-    settings->beginWriteArray("apps");
-    int i = 0;
 
-    for(int j=0; j<mLayout->count(); ++j)
+    QList<QMap<QString, QVariant> > hashList;
+    int size = mLayout->count();
+    for (int j = 0; j < size; ++j)
     {
         QuickLaunchButton *b = qobject_cast<QuickLaunchButton*>(mLayout->itemAt(j)->widget());
-        if(!b)
+        if (!b)
             continue;
 
-        settings->setArrayIndex(i);
-
-        QHashIterator<QString,QString> it(b->settingsMap());
+        // convert QHash<QString, QString> to QMap<QString, QVariant>
+        QMap<QString, QVariant> map;
+        QHashIterator<QString, QString> it(b->settingsMap());
         while (it.hasNext())
         {
             it.next();
-            settings->setValue(it.key(), it.value());
+            map[it.key()] = it.value();
         }
-
-        ++i;
+        hashList << map;
     }
 
-    settings->endArray();
+    settings->setArray("apps", hashList);
 }
 
 

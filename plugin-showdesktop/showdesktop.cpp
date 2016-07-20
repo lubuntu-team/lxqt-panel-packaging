@@ -25,7 +25,6 @@
  *
  * END_COMMON_COPYRIGHT_HEADER */
 
-#include <QToolButton>
 #include <QAction>
 #include <QX11Info>
 #include <lxqt-globalkeys.h>
@@ -34,6 +33,7 @@
 #include <KWindowSystem/KWindowSystem>
 #include <KWindowSystem/NETWM>
 #include "showdesktop.h"
+#include "../panel/pluginsettings.h"
 
 // Still needed for lxde/lxqt#338
 #include <X11/Xlib.h>
@@ -57,6 +57,7 @@ ShowDesktop::ShowDesktop(const ILXQtPanelPluginStartupInfo &startupInfo) :
 
     mButton.setDefaultAction(act);
     mButton.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    mButton.setAutoRaise(true);
 }
 
 void ShowDesktop::shortcutRegistered()
