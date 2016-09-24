@@ -34,6 +34,7 @@
 #include <QMessageBox>
 #include <QPalette>
 
+static constexpr double DEFAULT_MAX = 200; // 200 Celsius
 
 LXQtSensors::LXQtSensors(ILXQtPanelPlugin *plugin, QWidget* parent):
     QFrame(parent),
@@ -140,6 +141,9 @@ void LXQtSensors::updateSensorReadings()
     // Iterator for temperature progress bars
     QList<ProgressBar*>::iterator temperatureProgressBarsIt =
         mTemperatureProgressBars.begin();
+    const bool use_fahrenheit = mSettings->value("useFahrenheitScale").toBool();
+    const bool warn_high = mSettings->value("warningAboutHighTemperature").toBool();
+    const double default_max = use_fahrenheit ? celsiusToFahrenheit(DEFAULT_MAX) : DEFAULT_MAX;
 
     for (int i = 0; i < mDetectedChips.size(); ++i)
     {
@@ -151,34 +155,17 @@ void LXQtSensors::updateSensorReadings()
             {
                 tooltip = features[j].getLabel() + " (" + QChar(0x00B0);
 
-                if (mSettings->value("useFahrenheitScale").toBool())
-                {
-                    critTemp = celsiusToFahrenheit(
-                        features[j].getValue(SENSORS_SUBFEATURE_TEMP_CRIT));
-                    maxTemp = celsiusToFahrenheit(
-                        features[j].getValue(SENSORS_SUBFEATURE_TEMP_MAX));
-                    minTemp = celsiusToFahrenheit(
-                        features[j].getValue(SENSORS_SUBFEATURE_TEMP_MIN));
-                    curTemp = celsiusToFahrenheit(
-                        features[j].getValue(SENSORS_SUBFEATURE_TEMP_INPUT));
+                critTemp = features[j].getValue(SENSORS_SUBFEATURE_TEMP_CRIT);
+                maxTemp = features[j].getValue(SENSORS_SUBFEATURE_TEMP_MAX);
+                minTemp = features[j].getValue(SENSORS_SUBFEATURE_TEMP_MIN);
+                curTemp = features[j].getValue(SENSORS_SUBFEATURE_TEMP_INPUT);
 
-                    tooltip += "F)";
-                }
-                else
-                {
-                    critTemp = features[j].getValue(SENSORS_SUBFEATURE_TEMP_CRIT);
-                    maxTemp = features[j].getValue(SENSORS_SUBFEATURE_TEMP_MAX);
-                    minTemp = features[j].getValue(SENSORS_SUBFEATURE_TEMP_MIN);
-                    curTemp = features[j].getValue(SENSORS_SUBFEATURE_TEMP_INPUT);
-
-                    tooltip += "C)";
-                }
-
+                double temp_to_check = maxTemp == 0.0 ? critTemp : maxTemp;
 
                 // Check if temperature is too high
-                if (curTemp >= maxTemp)
+                if (temp_to_check != 0.0 && curTemp >= temp_to_check)
                 {
-                    if (mSettings->value("warningAboutHighTemperature").toBool())
+                    if (warn_high)
                     {
                         // Add current progress bar to the "warning container"
                         mHighTemperatureProgressBars.insert(*temperatureProgressBarsIt);
@@ -193,8 +180,23 @@ void LXQtSensors::updateSensorReadings()
                     highTemperature = false;
                 }
 
+                if (use_fahrenheit)
+                {
+                    critTemp = celsiusToFahrenheit(critTemp);
+                    maxTemp = celsiusToFahrenheit(maxTemp);
+                    minTemp = celsiusToFahrenheit(minTemp);
+                    curTemp = celsiusToFahrenheit(curTemp);
+
+                    tooltip += "F)";
+                }
+                else
+                {
+                    tooltip += "C)";
+                }
+
+
                 // Set maximum temperature
-                (*temperatureProgressBarsIt)->setMaximum(critTemp);
+                (*temperatureProgressBarsIt)->setMaximum(critTemp == 0.0 ? default_max : critTemp);
                 // Set minimum temperature
                 (*temperatureProgressBarsIt)->setMinimum(minTemp);
                 // Set current temperature
