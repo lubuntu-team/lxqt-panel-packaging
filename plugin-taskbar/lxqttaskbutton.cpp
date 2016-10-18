@@ -32,6 +32,8 @@
 #include "lxqttaskgroup.h"
 #include "lxqttaskbar.h"
 
+#include <LXQt/Settings>
+
 #include <QDebug>
 #include <XdgIcon>
 #include <QTimer>
@@ -80,6 +82,7 @@ LXQtTaskButton::LXQtTaskButton(const WId window, LXQtTaskBar * taskbar, QWidget 
     mOrigin(Qt::TopLeftCorner),
     mDrawPixmap(false),
     mParentTaskBar(taskbar),
+    mPlugin(mParentTaskBar->plugin()),
     mDNDTimer(new QTimer(this))
 {
     Q_ASSERT(taskbar);
@@ -98,6 +101,8 @@ LXQtTaskButton::LXQtTaskButton(const WId window, LXQtTaskBar * taskbar, QWidget 
     mDNDTimer->setSingleShot(true);
     mDNDTimer->setInterval(700);
     connect(mDNDTimer, SIGNAL(timeout()), this, SLOT(activateWithDraggable()));
+    connect(LXQt::Settings::globalSettings(), SIGNAL(iconThemeChanged()), this, SLOT(updateIcon()));
+    connect(mParentTaskBar, &LXQtTaskBar::iconByClassChanged, this, &LXQtTaskButton::updateIcon);
 }
 
 /************************************************
@@ -124,9 +129,15 @@ void LXQtTaskButton::updateText()
 void LXQtTaskButton::updateIcon()
 {
     QIcon ico;
-    QPixmap pix = KWindowSystem::icon(mWindow);
-    ico.addPixmap(pix);
-    setIcon(!pix.isNull() ? ico : XdgIcon::defaultApplicationIcon());
+    if (mParentTaskBar->isIconByClass())
+    {
+        ico = XdgIcon::fromTheme(QString::fromUtf8(KWindowInfo{mWindow, 0, NET::WM2WindowClass}.windowClassClass()).toLower());
+    }
+    if (ico.isNull())
+    {
+        ico = KWindowSystem::icon(mWindow);
+    }
+    setIcon(ico.isNull() ? XdgIcon::defaultApplicationIcon() : ico);
 }
 
 /************************************************
@@ -590,6 +601,7 @@ void LXQtTaskButton::contextMenuEvent(QContextMenuEvent* event)
     a = menu->addAction(XdgIcon::fromTheme("process-stop"), tr("&Close"));
     connect(a, SIGNAL(triggered(bool)), this, SLOT(closeApplication()));
     menu->setGeometry(mParentTaskBar->panel()->calculatePopupWindowPos(mapToGlobal(event->pos()), menu->sizeHint()));
+    mPlugin->willShowWindow(menu);
     menu->show();
 }
 

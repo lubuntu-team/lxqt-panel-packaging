@@ -33,7 +33,25 @@
 #include <dbusmenu-qt5/dbusmenuimporter.h>
 #include "../panel/ilxqtpanelplugin.h"
 #include "sniasync.h"
+#include <XdgIcon>
 
+namespace
+{
+    /*! \brief specialized DBusMenuImporter to correctly create actions' icons based
+     * on name
+     */
+    class MenuImporter : public DBusMenuImporter
+    {
+    public:
+        using DBusMenuImporter::DBusMenuImporter;
+
+    protected:
+        virtual QIcon iconForName(const QString & name) override
+        {
+            return XdgIcon::fromTheme(name);
+        }
+    };
+}
 
 StatusNotifierButton::StatusNotifierButton(QString service, QString objectPath, ILXQtPanelPlugin* plugin, QWidget *parent)
     : QToolButton(parent),
@@ -42,6 +60,7 @@ StatusNotifierButton::StatusNotifierButton(QString service, QString objectPath, 
     mFallbackIcon(QIcon::fromTheme("application-x-executable")),
     mPlugin(plugin)
 {
+    setAutoRaise(true);
     interface = new SniAsync(service, objectPath, QDBusConnection::sessionBus(), this);
 
     connect(interface, &SniAsync::NewIcon, this, &StatusNotifierButton::newIcon);
@@ -53,8 +72,7 @@ StatusNotifierButton::StatusNotifierButton(QString service, QString objectPath, 
     interface->propertyGetAsync(QLatin1String("Menu"), [this] (QDBusObjectPath path) {
         if (!path.path().isEmpty())
         {
-            mMenu = (new DBusMenuImporter(interface->service(), path.path(), this))->menu();
-            dynamic_cast<QObject &>(*mMenu).setParent(this);
+            mMenu = (new MenuImporter{interface->service(), path.path(), this})->menu();
             mMenu->setObjectName(QLatin1String("StatusNotifierMenu"));
         }
     });
@@ -129,11 +147,11 @@ void StatusNotifierButton::refetchIcon(Status status)
 
                     if (themeDir.cd("hicolor") || (themeDir.cd("icons") && themeDir.cd("hicolor")))
                     {
-                        QStringList sizes = themeDir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
-                        foreach (QString dir, sizes)
+                        const QStringList sizes = themeDir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
+                        foreach (const QString &dir, sizes)
                         {
-                            QStringList dirs = QDir(themeDir.filePath(dir)).entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
-                            foreach (QString innerDir, dirs)
+                            const QStringList dirs = QDir(themeDir.filePath(dir)).entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
+                            foreach (const QString &innerDir, dirs)
                             {
                                 QString file = themeDir.absolutePath() + "/" + dir + "/" + innerDir + "/" + iconName + ".png";
                                 if (QFile::exists(file))
@@ -249,8 +267,10 @@ void StatusNotifierButton::mouseReleaseEvent(QMouseEvent *event)
     else if (Qt::RightButton == event->button())
     {
         if (mMenu)
-            mMenu->popup(QCursor::pos());
-        else
+        {
+            mPlugin->willShowWindow(mMenu);
+            mMenu->popup(mPlugin->panel()->calculatePopupWindowPos(QCursor::pos(), mMenu->sizeHint()).topLeft());
+        } else
             interface->ContextMenu(QCursor::pos().x(), QCursor::pos().y());
     }
 

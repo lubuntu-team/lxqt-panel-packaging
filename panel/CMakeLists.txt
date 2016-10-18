@@ -2,10 +2,13 @@ set(PROJECT lxqt-panel)
 
 set(PRIV_HEADERS
     panelpluginsmodel.h
+    windownotifier.h
     lxqtpanel.h
     lxqtpanelapplication.h
+    lxqtpanelapplication_p.h
     lxqtpanellayout.h
     plugin.h
+    pluginsettings_p.h
     lxqtpanellimits.h
     popupmenu.h
     pluginmoveprocessor.h
@@ -19,6 +22,7 @@ set(PRIV_HEADERS
 # using LXQt namespace in the public headers.
 set(PUB_HEADERS
     lxqtpanelglobals.h
+    pluginsettings.h
     ilxqtpanelplugin.h
     ilxqtpanel.h
 )
@@ -26,10 +30,12 @@ set(PUB_HEADERS
 set(SOURCES
     main.cpp
     panelpluginsmodel.cpp
+    windownotifier.cpp
     lxqtpanel.cpp
     lxqtpanelapplication.cpp
     lxqtpanellayout.cpp
     plugin.cpp
+    pluginsettings.cpp
     popupmenu.cpp
     pluginmoveprocessor.cpp
     lxqtpanelpluginconfigdialog.cpp
@@ -58,6 +64,11 @@ add_definitions(-DCOMPILE_LXQT_PANEL)
 set(PLUGIN_DESKTOPS_DIR "${CMAKE_INSTALL_FULL_DATAROOTDIR}/lxqt/${PROJECT}")
 add_definitions(-DPLUGIN_DESKTOPS_DIR=\"${PLUGIN_DESKTOPS_DIR}\")
 
+if (WITH_SCREENSAVER_FALLBACK)
+    message(STATUS "Building with conversion of deprecated 'screensaver' plugin")
+    add_definitions(-DWITH_SCREENSAVER_FALLBACK "-DLXQT_LOCK_DESKTOP=\"${CMAKE_INSTALL_FULL_DATAROOTDIR}/applications/lxqt-lockscreen.desktop\"")
+endif ()
+
 project(${PROJECT})
 
 set(QTX_LIBRARIES Qt5::Widgets Qt5::Xml Qt5::DBus)
@@ -73,6 +84,16 @@ lxqt_translate_ts(QM_FILES SOURCES
         ${UI}
     INSTALL_DIR
         "${LXQT_TRANSLATIONS_DIR}/${PROJECT_NAME}"
+    PULL_TRANSLATIONS
+        ${PULL_TRANSLATIONS}
+    CLEAN_TRANSLATIONS
+        ${CLEAN_TRANSLATIONS}
+    TRANSLATIONS_REPO
+        ${TRANSLATIONS_REPO}
+    TRANSLATIONS_REFSPEC
+        ${TRANSLATIONS_REFSPEC}
+    REPO_SUBDIR
+        "${PROJECT_NAME}/panel"
 )
 
 lxqt_app_translation_loader(SOURCES ${PROJECT_NAME})
@@ -95,3 +116,8 @@ target_link_libraries(${PROJECT}
 install(TARGETS ${PROJECT} RUNTIME DESTINATION bin)
 install(FILES ${CONFIG_FILES} DESTINATION ${LXQT_ETC_XDG_DIR}/lxqt)
 install(FILES ${PUB_HEADERS} DESTINATION include/lxqt)
+install(FILES
+    man/lxqt-panel.1
+    DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
+    COMPONENT Runtime
+)

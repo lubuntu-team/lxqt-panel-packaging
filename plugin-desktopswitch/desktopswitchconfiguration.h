@@ -28,31 +28,28 @@
 #ifndef DESKTOPSWITCHCERCONFIGURATION_H
 #define DESKTOPSWITCHCERCONFIGURATION_H
 
-#include <LXQt/Settings>
+#include "../panel/lxqtpanelpluginconfigdialog.h"
+#include "../panel/pluginsettings.h"
 
-#include <QDialog>
 #include <QFormLayout>
 #include <QLineEdit>
 
-class QSettings;
 class QAbstractButton;
 
 namespace Ui {
     class DesktopSwitchConfiguration;
 }
 
-class DesktopSwitchConfiguration : public QDialog
+class DesktopSwitchConfiguration : public LXQtPanelPluginConfigDialog
 {
     Q_OBJECT
 
 public:
-    explicit DesktopSwitchConfiguration(QSettings *settings, QWidget *parent = 0);
+    explicit DesktopSwitchConfiguration(PluginSettings *settings, QWidget *parent = nullptr);
     ~DesktopSwitchConfiguration();
 
 private:
     Ui::DesktopSwitchConfiguration *ui;
-    QSettings *mSettings;
-    LXQt::SettingsCache mOldSettings;
 
 private slots:
     /*
@@ -60,7 +57,6 @@ private slots:
     */
     void loadSettings();
     void loadDesktopsNames();
-    void dialogButtonsAction(QAbstractButton *btn);
     void rowsChanged(int value);
     void labelTypeChanged(int type);
 };

@@ -118,6 +118,7 @@ class LayoutItemGrid
 {
 public:
     explicit LayoutItemGrid();
+    ~LayoutItemGrid();
 
     void addItem(QLayoutItem *item);
     int count() const { return mItems.count(); }
@@ -186,6 +187,11 @@ LayoutItemGrid::LayoutItemGrid()
     mLineSize = 0;
     mHoriz = true;
     clear();
+}
+
+LayoutItemGrid::~LayoutItemGrid()
+{
+    qDeleteAll(mItems);
 }
 
 
@@ -416,7 +422,7 @@ LXQtPanelLayout::LXQtPanelLayout(QWidget *parent) :
     mPosition(ILXQtPanel::PositionBottom),
     mAnimate(false)
 {
-    setMargin(0);
+    setContentsMargins(0, 0, 0, 0);
 }
 
 
@@ -633,6 +639,7 @@ void LXQtPanelLayout::setItemGeometry(QLayoutItem *item, const QRect &geometry, 
  ************************************************/
 void LXQtPanelLayout::setGeometryHoriz(const QRect &geometry)
 {
+    const bool visual_h_reversed = parentWidget() && parentWidget()->isRightToLeft();
     // Calc expFactor for expandable plugins like TaskBar.
     double expFactor;
     {
@@ -644,9 +651,11 @@ void LXQtPanelLayout::setGeometryHoriz(const QRect &geometry)
 
     // Calc baselines for plugins like button.
     QVector<int> baseLines(qMax(mLeftGrid->colCount(), mRightGrid->colCount()));
+    const int bh = geometry.height() / baseLines.count();
+    const int base_center = bh >> 1;
+    const int height_remain = 0 < bh ? geometry.height() % baseLines.size() : 0;
     {
-        int bh = geometry.height() / baseLines.count();
-        int base = geometry.top() + (bh >> 1);
+        int base = geometry.top();
         for (auto i = baseLines.begin(), i_e = baseLines.end(); i_e != i; ++i, base += bh)
         {
             *i = base;
@@ -672,6 +681,7 @@ void LXQtPanelLayout::setGeometryHoriz(const QRect &geometry)
     for (int r=0; r<mLeftGrid->rowCount(); ++r)
     {
         int rw = 0;
+        int remain = height_remain;
         for (int c=0; c<mLeftGrid->usedColCount(); ++c)
         {
             const LayoutItemInfo &info = mLeftGrid->itemInfo(r, c);
@@ -691,13 +701,19 @@ void LXQtPanelLayout::setGeometryHoriz(const QRect &geometry)
                 }
                 else
                 {
-                    rect.setHeight(qMin(info.geometry.height(), geometry.height()));
+                    const int height = qMin(qMin(info.geometry.height(), geometry.height()), bh + (0 < remain-- ? 1 : 0));
+                    rect.setHeight(height);
                     rect.setWidth(qMin(info.geometry.width(), geometry.width()));
-                    rect.moveCenter(QPoint(0, baseLines[c]));
+                    if (height < bh)
+                        rect.moveCenter(QPoint(0, baseLines[c] + base_center));
+                    else
+                        rect.moveTop(baseLines[c]);
                     rect.moveLeft(left);
                 }
 
                 rw = qMax(rw, rect.width());
+                if (visual_h_reversed)
+                    rect.moveLeft(geometry.left() + geometry.right() - rect.x() - rect.width() + 1);
                 setItemGeometry(info.item, rect, mAnimate);
             }
         }
@@ -709,6 +725,7 @@ void LXQtPanelLayout::setGeometryHoriz(const QRect &geometry)
     for (int r=mRightGrid->rowCount()-1; r>=0; --r)
     {
         int rw = 0;
+        int remain = height_remain;
         for (int c=0; c<mRightGrid->usedColCount(); ++c)
         {
             const LayoutItemInfo &info = mRightGrid->itemInfo(r, c);
@@ -729,13 +746,19 @@ void LXQtPanelLayout::setGeometryHoriz(const QRect &geometry)
                 }
                 else
                 {
-                    rect.setHeight(qMin(info.geometry.height(), geometry.height()));
+                    const int height = qMin(qMin(info.geometry.height(), geometry.height()), bh + (0 < remain-- ? 1 : 0));
+                    rect.setHeight(height);
                     rect.setWidth(qMin(info.geometry.width(), geometry.width()));
-                    rect.moveCenter(QPoint(0, baseLines[c]));
+                    if (height < bh)
+                        rect.moveCenter(QPoint(0, baseLines[c] + base_center));
+                    else
+                        rect.moveTop(baseLines[c]);
                     rect.moveRight(right);
                 }
 
                 rw = qMax(rw, rect.width());
+                if (visual_h_reversed)
+                    rect.moveLeft(geometry.left() + geometry.right() - rect.x() - rect.width() + 1);
                 setItemGeometry(info.item, rect, mAnimate);
             }
         }
@@ -749,6 +772,7 @@ void LXQtPanelLayout::setGeometryHoriz(const QRect &geometry)
  ************************************************/
 void LXQtPanelLayout::setGeometryVert(const QRect &geometry)
 {
+    const bool visual_h_reversed = parentWidget() && parentWidget()->isRightToLeft();
     // Calc expFactor for expandable plugins like TaskBar.
     double expFactor;
     {
@@ -760,9 +784,11 @@ void LXQtPanelLayout::setGeometryVert(const QRect &geometry)
 
     // Calc baselines for plugins like button.
     QVector<int> baseLines(qMax(mLeftGrid->colCount(), mRightGrid->colCount()));
+    const int bw = geometry.width() / baseLines.count();
+    const int base_center = bw >> 1;
+    const int width_remain = 0 < bw ? geometry.width() % baseLines.size() : 0;
     {
-        int bw = geometry.width() / baseLines.count();
-        int base = geometry.left() + (bw >> 1);
+        int base = geometry.left();
         for (auto i = baseLines.begin(), i_e = baseLines.end(); i_e != i; ++i, base += bw)
         {
             *i = base;
@@ -787,6 +813,7 @@ void LXQtPanelLayout::setGeometryVert(const QRect &geometry)
     for (int r=0; r<mLeftGrid->rowCount(); ++r)
     {
         int rh = 0;
+        int remain = width_remain;
         for (int c=0; c<mLeftGrid->usedColCount(); ++c)
         {
             const LayoutItemInfo &info = mLeftGrid->itemInfo(r, c);
@@ -807,12 +834,18 @@ void LXQtPanelLayout::setGeometryVert(const QRect &geometry)
                 else
                 {
                     rect.setHeight(qMin(info.geometry.height(), geometry.height()));
-                    rect.setWidth(qMin(info.geometry.width(), geometry.width()));
-                    rect.moveCenter(QPoint(baseLines[c], 0));
+                    const int width = qMin(qMin(info.geometry.width(), geometry.width()), bw + (0 < remain-- ? 1 : 0));
+                    rect.setWidth(width);
+                    if (width < bw)
+                        rect.moveCenter(QPoint(baseLines[c] + base_center, 0));
+                    else
+                        rect.moveLeft(baseLines[c]);
                     rect.moveTop(top);
                 }
 
                 rh = qMax(rh, rect.height());
+                if (visual_h_reversed)
+                    rect.moveLeft(geometry.left() + geometry.right() - rect.x() - rect.width() + 1);
                 setItemGeometry(info.item, rect, mAnimate);
             }
         }
@@ -825,6 +858,7 @@ void LXQtPanelLayout::setGeometryVert(const QRect &geometry)
     for (int r=mRightGrid->rowCount()-1; r>=0; --r)
     {
         int rh = 0;
+        int remain = width_remain;
         for (int c=0; c<mRightGrid->usedColCount(); ++c)
         {
             const LayoutItemInfo &info = mRightGrid->itemInfo(r, c);
@@ -845,12 +879,18 @@ void LXQtPanelLayout::setGeometryVert(const QRect &geometry)
                 else
                 {
                     rect.setHeight(qMin(info.geometry.height(), geometry.height()));
-                    rect.setWidth(qMin(info.geometry.width(), geometry.width()));
-                    rect.moveCenter(QPoint(baseLines[c], 0));
+                    const int width = qMin(qMin(info.geometry.width(), geometry.width()), bw + (0 < remain-- ? 1 : 0));
+                    rect.setWidth(width);
+                    if (width < bw)
+                        rect.moveCenter(QPoint(baseLines[c] + base_center, 0));
+                    else
+                        rect.moveLeft(baseLines[c]);
                     rect.moveBottom(bottom);
                 }
 
                 rh = qMax(rh, rect.height());
+                if (visual_h_reversed)
+                    rect.moveLeft(geometry.left() + geometry.right() - rect.x() - rect.width() + 1);
                 setItemGeometry(info.item, rect, mAnimate);
             }
         }

@@ -50,11 +50,10 @@ class LXQtTaskGroup: public LXQtTaskButton
     Q_OBJECT
 
 public:
-    LXQtTaskGroup(const QString & groupName, QIcon icon ,ILXQtPanelPlugin * plugin, LXQtTaskBar * parent);
+    LXQtTaskGroup(const QString & groupName, WId window, LXQtTaskBar * parent);
 
     QString groupName() const { return mGroupName; }
 
-    void removeButton(WId window);
     int buttonsCount() const;
     int visibleButtonsCount() const;
 
@@ -66,12 +65,13 @@ public:
     LXQtTaskButton * getNextPrevChildButton(bool next, bool circular);
 
     bool onWindowChanged(WId window, NET::Properties prop, NET::Properties2 prop2);
-    void refreshIconsGeometry();
-    void showOnlySettingChanged();
     void setAutoRotation(bool value, ILXQtPanel::Position position);
     void setToolButtonsStyle(Qt::ToolButtonStyle style);
 
     void setPopupVisible(bool visible = true, bool fast = false);
+
+public slots:
+    void onWindowRemoved(WId window);
 
 protected:
     QMimeData * mimeData();
@@ -91,28 +91,28 @@ private slots:
     void onClicked(bool checked);
     void onChildButtonClicked();
     void onActiveWindowChanged(WId window);
-    void onWindowRemoved(WId window);
     void onDesktopChanged(int number);
 
     void closeGroup();
+    void refreshIconsGeometry();
+    void refreshVisibility();
+    void groupPopupShown(LXQtTaskGroup* sender);
 
 signals:
     void groupBecomeEmpty(QString name);
     void visibilityChanged(bool visible);
     void popupShown(LXQtTaskGroup* sender);
-    void windowDisowned(WId window);
 
 private:
     QString mGroupName;
     LXQtGroupPopup * mPopup;
     LXQtTaskButtonHash mButtonHash;
-    ILXQtPanelPlugin * mPlugin;
     bool mPreventPopup;
+    bool mSingleButton; //!< flag if this group should act as a "standard" button (no groupping or only one "shown" window in group)
 
     QSize recalculateFrameSize();
     QPoint recalculateFramePosition();
     void recalculateFrameIfVisible();
-    void refreshVisibility();
     void regroup();
 };
 

@@ -74,13 +74,10 @@ public:
     bool isOnCurrentScreen() const;
     bool isMinimized() const;
     void updateText();
-    void updateIcon();
 
     Qt::Corner origin() const;
     virtual void setAutoRotation(bool value, ILXQtPanel::Position position);
 
-    LXQtTaskGroup * parentGroup(void) const {return mParentGroup;}
-    void setParentGroup(LXQtTaskGroup * group) {mParentGroup = group;}
     LXQtTaskBar * parentTaskBar() const {return mParentTaskBar;}
 
     void refreshIconGeometry(QRect const & geom);
@@ -102,6 +99,8 @@ public slots:
 
     void setOrigin(Qt::Corner);
 
+    void updateIcon();
+
 protected:
     virtual void dragEnterEvent(QDragEnterEvent *event);
     virtual void dragMoveEvent(QDragMoveEvent * event);
@@ -117,6 +116,8 @@ protected:
     virtual QMimeData * mimeData();
     static bool sDraggging;
 
+    inline ILXQtPanelPlugin * plugin() const { return mPlugin; }
+
 private:
     WId mWindow;
     bool mUrgencyHint;
@@ -124,8 +125,8 @@ private:
     Qt::Corner mOrigin;
     QPixmap mPixmap;
     bool mDrawPixmap;
-    LXQtTaskGroup * mParentGroup;
     LXQtTaskBar * mParentTaskBar;
+    ILXQtPanelPlugin * mPlugin;
 
     // Timer for when draggind something into a button (the button's window
     // must be activated so that the use can continue dragging to the window

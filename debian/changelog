@@ -1,3 +1,29 @@
+lxqt-panel (0.11.0-2) unstable; urgency=medium
+
+  * Cherry-picking upstream release 0.11.0.
+  * Synced debian foo with experimental
+  * Bumped Standards to 3.9.8, no changes needed
+  * Bumped compat to 10
+  * Removed --parallel from rules, standard compat 10
+  * Bumped minimum version debhelper (>= 10)
+  * Bumped minimum version liblxqt0-dev (>= 0.11.0)
+  * Bumped minimum version liblxqt-globalkeys0-dev (>= 0.11.0),
+  * Bumped minimum version liblxqt-globalkeys-ui0-dev (>= 0.11.0),
+  * Bumped minimum version libsysstat-qt5-0-dev (>= 0.3.2)
+  * Added build-dependency libqt5svg5-dev
+  * Added build-dependency libqtxdg-dev (>= 2.0.0)
+  * Added build-dependency libqt5xdgiconloader-dev (>= 2.0.0)
+  * Added Recommends lxqt-panel-l10n
+  * Fixed VCS fields, point to the right branch
+  * Fixed copyrights Format field to https
+  * Bumped years in copyrights
+  * Added translation control to rules
+  * Added hardening options
+  * Set CMAKE_BUILD_TYPE=RelWithDebInfo
+  * Exported LC_ALL=C.UTF-8, make builds reproducible
+
+ -- Alf Gaida <agaida@siduction.org>  Tue, 18 Oct 2016 22:10:42 +0200
+
 lxqt-panel (0.10.0-8) unstable; urgency=medium
 
   [ Ralf Jung ]

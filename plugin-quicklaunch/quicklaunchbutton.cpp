@@ -27,6 +27,7 @@
 
 #include "quicklaunchbutton.h"
 #include "lxqtquicklaunch.h"
+#include "../panel/ilxqtpanelplugin.h"
 #include <QAction>
 #include <QDrag>
 #include <QMenu>
@@ -39,12 +40,14 @@
 #define MIMETYPE "x-lxqt/quicklaunch-button"
 
 
-QuickLaunchButton::QuickLaunchButton(QuickLaunchAction * act, QWidget * parent)
+QuickLaunchButton::QuickLaunchButton(QuickLaunchAction * act, ILXQtPanelPlugin * plugin, QWidget * parent)
     : QToolButton(parent),
-      mAct(act)
+      mAct(act),
+      mPlugin(plugin)
 {
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setAcceptDrops(true);
+    setAutoRaise(true);
 
     setDefaultAction(mAct);
     mAct->setParent(this);
@@ -93,7 +96,8 @@ void QuickLaunchButton::this_customContextMenuRequested(const QPoint & pos)
 
     mMoveLeftAct->setEnabled( panel && panel->indexOfButton(this) > 0);
     mMoveRightAct->setEnabled(panel && panel->indexOfButton(this) < panel->countOfButtons() - 1);
-    mMenu->popup(mapToGlobal(pos));
+    mPlugin->willShowWindow(mMenu);
+    mMenu->popup(mPlugin->calculatePopupWindowPos(mMenu->sizeHint()).topLeft());
 }
 
 

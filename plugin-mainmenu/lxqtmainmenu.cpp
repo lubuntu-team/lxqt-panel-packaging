@@ -29,33 +29,25 @@
 #include "lxqtmainmenu.h"
 #include "lxqtmainmenuconfiguration.h"
 #include "../panel/lxqtpanel.h"
-#include <QDebug>
-#include <XdgDesktopFile>
-#include <XmlHelper>
-#include <QSettings>
-#include <QFileInfo>
+#include "actionview.h"
 #include <QAction>
 #include <QTimer>
 #include <QMessageBox>
 #include <QEvent>
 #include <QKeyEvent>
-#include <LXQt/PowerManager>
-#include <LXQt/ScreenSaver>
+#include <QResizeEvent>
+#include <QWidgetAction>
+#include <QLineEdit>
 #include <lxqt-globalkeys.h>
 #include <algorithm> // for find_if()
 #include <KWindowSystem/KWindowSystem>
+#include <QApplication>
 
-#include <XdgIcon>
-#include <XdgDesktopFile>
 #include <XdgMenuWidget>
 
 #ifdef HAVE_MENU_CACHE
 #include "xdgcachedmenu.h"
 #endif
-
-#include <QPixmap>
-#include <QStack>
-#include <QCursor>
 
 #define DEFAULT_SHORTCUT "Alt+F1"
 
@@ -63,7 +55,14 @@ LXQtMainMenu::LXQtMainMenu(const ILXQtPanelPluginStartupInfo &startupInfo):
     QObject(),
     ILXQtPanelPlugin(startupInfo),
     mMenu(0),
-    mShortcut(0)
+    mShortcut(0),
+    mSearchEditAction{new QWidgetAction{this}},
+    mSearchViewAction{new QWidgetAction{this}},
+    mMakeDirtyAction{new QAction{this}},
+    mFilterMenu(true),
+    mFilterShow(true),
+    mFilterShowHideMenu(true),
+    mHeavyMenuChanges(false)
 {
 #ifdef HAVE_MENU_CACHE
     mMenuCache = NULL;
@@ -71,26 +70,49 @@ LXQtMainMenu::LXQtMainMenu(const ILXQtPanelPluginStartupInfo &startupInfo):
 #endif
 
     mDelayedPopup.setSingleShot(true);
-    mDelayedPopup.setInterval(250);
+    mDelayedPopup.setInterval(200);
     connect(&mDelayedPopup, &QTimer::timeout, this, &LXQtMainMenu::showHideMenu);
     mHideTimer.setSingleShot(true);
     mHideTimer.setInterval(250);
 
+    mButton.setAutoRaise(true);
     mButton.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
-    mButton.installEventFilter(this);
+    //Notes:
+    //1. installing event filter to parent widget to avoid infinite loop
+    //   (while setting icon we also need to set the style)
+    //2. delaying of installEventFilter because in c-tor mButton has no parent widget
+    //   (parent is assigned in panel's logic after widget() call)
+    QTimer::singleShot(0, [this] { Q_ASSERT(mButton.parentWidget()); mButton.parentWidget()->installEventFilter(this); });
 
     connect(&mButton, &QToolButton::clicked, this, &LXQtMainMenu::showHideMenu);
 
-    settingsChanged();
+    mSearchView = new ActionView;
+    mSearchView->setVisible(false);
+    connect(mSearchView, &QAbstractItemView::activated, this, &LXQtMainMenu::showHideMenu);
+    mSearchViewAction->setDefaultWidget(mSearchView);
+    mSearchEdit = new QLineEdit;
+    mSearchEdit->setClearButtonEnabled(true);
+    mSearchEdit->setPlaceholderText(LXQtMainMenu::tr("Search..."));
+    connect(mSearchEdit, &QLineEdit::textChanged, this, &LXQtMainMenu::searchTextChanged);
+    connect(mSearchEdit, &QLineEdit::returnPressed, mSearchView, &ActionView::activateCurrent);
+    mSearchEditAction->setDefaultWidget(mSearchEdit);
+    QTimer::singleShot(0, [this] { settingsChanged(); });
 
-    mShortcut = GlobalKeyShortcut::Client::instance()->addAction(QString{}, QString("/panel/%1/show_hide").arg(settings()->group()), tr("Show/hide main menu"), this);
+    mShortcut = GlobalKeyShortcut::Client::instance()->addAction(QString{}, QString("/panel/%1/show_hide").arg(settings()->group()), LXQtMainMenu::tr("Show/hide main menu"), this);
     if (mShortcut)
     {
         connect(mShortcut, &GlobalKeyShortcut::Action::registrationFinished, [this] {
             if (mShortcut->shortcut().isEmpty())
                 mShortcut->changeShortcut(DEFAULT_SHORTCUT);
         });
-        connect(mShortcut, &GlobalKeyShortcut::Action::activated, [this] { if (!mHideTimer.isActive()) mDelayedPopup.start(); });
+        connect(mShortcut, &GlobalKeyShortcut::Action::activated, [this] {
+            if (!mHideTimer.isActive())
+                // Delay this a little -- if we don't do this, search field
+                // won't be able to capture focus
+                // See <https://github.com/lxde/lxqt-panel/pull/131> and
+                // <https://github.com/lxde/lxqt-panel/pull/312>
+                mDelayedPopup.start();
+        });
     }
 }
 
@@ -100,7 +122,12 @@ LXQtMainMenu::LXQtMainMenu(const ILXQtPanelPluginStartupInfo &startupInfo):
  ************************************************/
 LXQtMainMenu::~LXQtMainMenu()
 {
-    mButton.removeEventFilter(this);
+    mButton.parentWidget()->removeEventFilter(this);
+    if (mMenu)
+    {
+        mMenu->removeAction(mSearchEditAction);
+        mMenu->removeAction(mSearchViewAction);
+    }
 #ifdef HAVE_MENU_CACHE
     if(mMenuCache)
     {
@@ -130,9 +157,18 @@ void LXQtMainMenu::showMenu()
     if (!mMenu)
         return;
 
+    willShowWindow(mMenu);
     // Just using Qt`s activateWindow() won't work on some WMs like Kwin.
     // Solution is to execute menu 1ms later using timer
     mMenu->popup(calculatePopupWindowPos(mMenu->sizeHint()).topLeft());
+    if (mFilterMenu || mFilterShow)
+    {
+        //Note: part of the workadound for https://bugreports.qt.io/browse/QTBUG-52021
+        mSearchEdit->setReadOnly(false);
+        //the setReadOnly also changes the cursor, override it back to normal
+        mSearchEdit->unsetCursor();
+        mSearchEdit->setFocus();
+    }
 }
 
 #ifdef HAVE_MENU_CACHE
@@ -148,6 +184,7 @@ void LXQtMainMenu::menuCacheReloadNotify(MenuCache* cache, gpointer user_data)
  ************************************************/
 void LXQtMainMenu::settingsChanged()
 {
+    setButtonIcon();
     if (settings()->value("showText", false).toBool())
     {
         mButton.setText(settings()->value("text", "Start").toString());
@@ -199,42 +236,145 @@ void LXQtMainMenu::settingsChanged()
 
     setMenuFontSize();
 
+    //clear the search to not leaving the menu in wrong state
+    mSearchEdit->setText(QString{});
+    mFilterMenu = settings()->value("filterMenu", true).toBool();
+    mFilterShow = settings()->value("filterShow", true).toBool();
+    mFilterShowHideMenu = settings()->value("filterShowHideMenu", true).toBool();
+    if (mMenu)
+    {
+        mSearchEdit->setVisible(mFilterMenu || mFilterShow);
+        mSearchEditAction->setVisible(mFilterMenu || mFilterShow);
+    }
+    mSearchView->setMaxItemsToShow(settings()->value("filterShowMaxItems", 10).toInt());
+    mSearchView->setMaxItemWidth(settings()->value("filterShowMaxWidth", 300).toInt());
+
     realign();
 }
 
+static bool filterMenu(QMenu * menu, QString const & filter)
+{
+    bool has_visible = false;
+    for (auto const & action : menu->actions())
+    {
+        if (QMenu * sub_menu = action->menu())
+        {
+            action->setVisible(filterMenu(sub_menu, filter)/*recursion*/);
+            has_visible |= action->isVisible();
+        } else if (nullptr != qobject_cast<QWidgetAction *>(action))
+        {
+            //our searching widget
+            has_visible = true;
+        } else if (!action->isSeparator())
+        {
+            //real menu action -> app
+            action->setVisible(filter.isEmpty() || action->text().contains(filter, Qt::CaseInsensitive) || action->toolTip().contains(filter, Qt::CaseInsensitive));
+            has_visible |= action->isVisible();
+        }
+    }
+    return has_visible;
+}
+
+static void showHideMenuEntries(QMenu * menu, bool show)
+{
+    //show/hide the top menu entries
+    for (auto const & action : menu->actions())
+    {
+        if (nullptr == qobject_cast<QWidgetAction *>(action))
+        {
+            action->setVisible(show);
+        }
+    }
+}
+
+/************************************************
+
+ ************************************************/
+void LXQtMainMenu::searchTextChanged(QString const & text)
+{
+    if (mFilterShow)
+    {
+        mHeavyMenuChanges = true;
+        const bool shown = !text.isEmpty();
+        if (mFilterShowHideMenu)
+            showHideMenuEntries(mMenu, !shown);
+        if (shown)
+            mSearchView->setFilter(text);
+        mSearchView->setVisible(shown);
+        mSearchViewAction->setVisible(shown);
+        //TODO: how to force the menu to recalculate it's size in a more elegant way?
+        mMenu->addAction(mMakeDirtyAction);
+        mMenu->removeAction(mMakeDirtyAction);
+        mHeavyMenuChanges = false;
+    }
+    if (mFilterMenu && !(mFilterShow && mFilterShowHideMenu))
+        filterMenu(mMenu, text);
+
+}
+
+/************************************************
+
+ ************************************************/
+void LXQtMainMenu::setSearchFocus(QAction *action)
+{
+    if (mFilterMenu || mFilterShow)
+    {
+        if(action == mSearchEditAction)
+            mSearchEdit->setFocus();
+        else
+            mSearchEdit->clearFocus();
+    }
+}
 
 /************************************************
 
  ************************************************/
 void LXQtMainMenu::buildMenu()
 {
+    if(mMenu)
+    {
+        mMenu->removeAction(mSearchEditAction);
+        mMenu->removeAction(mSearchViewAction);
+        delete mMenu;
+    }
 #ifdef HAVE_MENU_CACHE
-    XdgCachedMenu* menu = new XdgCachedMenu(mMenuCache, &mButton);
+    mMenu = new XdgCachedMenu(mMenuCache, &mButton);
 #else
-    XdgMenuWidget *menu = new XdgMenuWidget(mXdgMenu, "", &mButton);
+    mMenu = new XdgMenuWidget(mXdgMenu, "", &mButton);
 #endif
-    menu->setObjectName("TopLevelMainMenu");
-    menu->setStyle(&mTopMenuStyle);
+    mMenu->setObjectName("TopLevelMainMenu");
+    // Note: the QWidget::ensurePolished() workarounds problem with transparent
+    // QLineEdit (mSearchEditAction) in menu with Breeze style
+    // https://bugs.kde.org/show_bug.cgi?id=368048
+    mMenu->ensurePolished();
+    mMenu->setStyle(&mTopMenuStyle);
 
-    menu->addSeparator();
+    mMenu->addSeparator();
 
-    Q_FOREACH(QAction* action, menu->actions())
+    Q_FOREACH(QAction* action, mMenu->actions())
     {
         if (action->menu())
             action->menu()->installEventFilter(this);
     }
 
-    menu->installEventFilter(this);
-    connect(menu, &QMenu::aboutToHide, &mHideTimer, static_cast<void (QTimer::*)()>(&QTimer::start));
-    connect(menu, &QMenu::aboutToShow, &mHideTimer, &QTimer::stop);
-    // panel notification (needed in case of auto-hide)
-    connect(menu, &QMenu::aboutToHide, dynamic_cast<LXQtPanel *>(panel()), &LXQtPanel::hidePanel);
+    mMenu->installEventFilter(this);
+    connect(mMenu, &QMenu::aboutToHide, &mHideTimer, static_cast<void (QTimer::*)()>(&QTimer::start));
+    connect(mMenu, &QMenu::aboutToShow, &mHideTimer, &QTimer::stop);
 
-    QMenu *oldMenu = mMenu;
-    mMenu = menu;
-    if(oldMenu)
-        delete oldMenu;
+    mMenu->addSeparator();
+    mMenu->addAction(mSearchViewAction);
+    mMenu->addAction(mSearchEditAction);
+    connect(mMenu, &QMenu::hovered, this, &LXQtMainMenu::setSearchFocus);
+    //Note: setting readOnly to true to avoid wake-ups upon the Qt's internal "blink" cursor timer
+    //(if the readOnly is not set, the "blink" timer is active also in case the menu is not shown ->
+    //QWidgetLineControl::updateNeeded is performed w/o any need)
+    //https://bugreports.qt.io/browse/QTBUG-52021
+    connect(mMenu, &QMenu::aboutToHide, [this] { mSearchEdit->setReadOnly(true); });
+    mSearchEdit->setVisible(mFilterMenu || mFilterShow);
+    mSearchEditAction->setVisible(mFilterMenu || mFilterShow);
+    mSearchView->fillActions(mMenu);
 
+    searchTextChanged(mSearchEdit->text());
     setMenuFontSize();
 }
 
@@ -261,10 +401,30 @@ void LXQtMainMenu::setMenuFontSize()
         {
             subMenu->setFont(menuFont);
         }
+        mSearchEdit->setFont(menuFont);
+        mSearchView->setFont(menuFont);
     }
 
     //icon size the same as the font height
-    mTopMenuStyle.setIconSize(QFontMetrics(menuFont).height());
+    const int icon_size = QFontMetrics(menuFont).height();
+    mTopMenuStyle.setIconSize(icon_size);
+    mSearchView->setIconSize(QSize{icon_size, icon_size});
+}
+
+
+/************************************************
+
+ ************************************************/
+void LXQtMainMenu::setButtonIcon()
+{
+    if (settings()->value("ownIcon", false).toBool())
+    {
+        mButton.setStyleSheet(QString("#MainMenu { qproperty-icon: url(%1); }")
+                .arg(settings()->value(QLatin1String("icon"), QLatin1String(LXQT_GRAPHICS_DIR"/helix.svg")).toString()));
+    } else
+    {
+        mButton.setStyleSheet(QString());
+    }
 }
 
 
@@ -273,7 +433,7 @@ void LXQtMainMenu::setMenuFontSize()
  ************************************************/
 QDialog *LXQtMainMenu::configureDialog()
 {
-    return new LXQtMainMenuConfiguration(*settings(), mShortcut, DEFAULT_SHORTCUT);
+    return new LXQtMainMenuConfiguration(settings(), mShortcut, DEFAULT_SHORTCUT);
 }
 /************************************************
 
@@ -289,14 +449,13 @@ struct MatchAction
 
 bool LXQtMainMenu::eventFilter(QObject *obj, QEvent *event)
 {
-    if(obj == &mButton)
+    if(obj == mButton.parentWidget())
     {
         // the application is given a new QStyle
         if(event->type() == QEvent::StyleChange)
         {
-            // reset proxy style for the menus so they can apply the new styles
-            mTopMenuStyle.setBaseStyle(NULL);
             setMenuFontSize();
+            setButtonIcon();
         }
     }
     else if(QMenu* menu = qobject_cast<QMenu*>(obj))
@@ -324,6 +483,36 @@ bool LXQtMainMenu::eventFilter(QObject *obj, QEvent *event)
                     it = std::find_if(actions.begin(), it, MatchAction(key));
                 if(it != actions.end())
                     menu->setActiveAction(*it);
+            }
+        }
+
+        if (obj == mMenu)
+        {
+            if (event->type() == QEvent::Resize)
+            {
+                QResizeEvent * e = dynamic_cast<QResizeEvent *>(event);
+                if (e->oldSize().isValid() && e->oldSize() != e->size())
+                {
+                    mMenu->move(calculatePopupWindowPos(e->size()).topLeft());
+                }
+            } else if (event->type() == QEvent::KeyPress)
+            {
+                QKeyEvent * e = dynamic_cast<QKeyEvent*>(event);
+                if (Qt::Key_Escape == e->key())
+                {
+                    if (!mSearchEdit->text().isEmpty())
+                    {
+                        mSearchEdit->setText(QString{});
+                        //filter out this to not close the menu
+                        return true;
+                    }
+                }
+            } else if (QEvent::ActionChanged == event->type()
+                    || QEvent::ActionAdded == event->type())
+            {
+                //filter this if we are performing heavy changes to reduce flicker
+                if (mHeavyMenuChanges)
+                    return true;
             }
         }
     }

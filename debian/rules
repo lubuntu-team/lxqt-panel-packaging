@@ -1,7 +1,9 @@
 #!/usr/bin/make -f
-#export DH_VERBOSE=1
+# export DH_VERBOSE=1
 
+export LC_ALL=C.UTF-8
 export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
 DEB_HOST_ARCH_OS := $(shell dpkg-architecture -qDEB_HOST_ARCH_OS 2>/dev/null)
 
@@ -10,12 +12,16 @@ ifeq ($(DEB_HOST_ARCH_OS), kfreebsd)
 endif
 
 ifeq ($(DEB_HOST_ARCH_OS), hurd)
-    NOT_LINUX := -DCPULOAD_PLUGIN=NO -DNETWORKMONITOR_PLUGIN=NO -DVOLUME_PLUGIN=NO -DSENSORS_PLUGIN=NO  
+    NOT_LINUX := -DCPULOAD_PLUGIN=NO -DNETWORKMONITOR_PLUGIN=NO -DVOLUME_PLUGIN=NO -DSENSORS_PLUGIN=NO
 endif
 
 %:
-	dh ${@} --buildsystem cmake \
-		--parallel
+	dh ${@} --buildsystem cmake
 
 override_dh_auto_configure:
-	dh_auto_configure -- -DDOM_PLUGIN=YES $(NOT_LINUX)
+	dh_auto_configure --\
+		-DPULL_TRANSLATIONS=OFF\
+		-DUPDATE_TRANSLATIONS=OFF\
+		-DDOM_PLUGIN=YES\
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo\
+		$(NOT_LINUX)

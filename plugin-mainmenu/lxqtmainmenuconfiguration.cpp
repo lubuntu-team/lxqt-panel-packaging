@@ -31,14 +31,13 @@
 #include <XdgMenu>
 #include <XdgIcon>
 #include <lxqt-globalkeys.h>
+#include <LXQt/Settings>
 
 #include <QFileDialog>
 
-LXQtMainMenuConfiguration::LXQtMainMenuConfiguration(QSettings &settings, GlobalKeyShortcut::Action * shortcut, const QString &defaultShortcut, QWidget *parent) :
-    QDialog(parent),
+LXQtMainMenuConfiguration::LXQtMainMenuConfiguration(PluginSettings *settings, GlobalKeyShortcut::Action * shortcut, const QString &defaultShortcut, QWidget *parent) :
+    LXQtPanelPluginConfigDialog(settings, parent),
     ui(new Ui::LXQtMainMenuConfiguration),
-    mSettings(settings),
-    mOldSettings(settings),
     mDefaultShortcut(defaultShortcut),
     mShortcut(shortcut)
 {
@@ -46,7 +45,9 @@ LXQtMainMenuConfiguration::LXQtMainMenuConfiguration(QSettings &settings, Global
     setObjectName("MainMenuConfigurationWindow");
     ui->setupUi(this);
 
-    ui->chooseMenuFilePB->setIcon(XdgIcon::fromTheme("folder"));
+    QIcon folder{XdgIcon::fromTheme("folder")};
+    ui->chooseMenuFilePB->setIcon(folder);
+    ui->iconPB->setIcon(folder);
 
     connect(ui->buttons, SIGNAL(clicked(QAbstractButton*)), this, SLOT(dialogButtonsAction(QAbstractButton*)));
 
@@ -55,9 +56,15 @@ LXQtMainMenuConfiguration::LXQtMainMenuConfiguration(QSettings &settings, Global
     connect(ui->showTextCB, SIGNAL(toggled(bool)), this, SLOT(showTextChanged(bool)));
     connect(ui->textLE, SIGNAL(textEdited(QString)), this, SLOT(textButtonChanged(QString)));
     connect(ui->chooseMenuFilePB, SIGNAL(clicked()), this, SLOT(chooseMenuFile()));
-    connect(ui->menuFilePathLE, &QLineEdit::textChanged, [this] (QString const & file)
+    connect(ui->menuFilePathLE, &QLineEdit::textChanged, [&] (QString const & file)
         {
-            mSettings.setValue(QLatin1String("menu_file"), file);
+            this->settings().setValue(QLatin1String("menu_file"), file);
+        });
+    connect(ui->iconCB, &QCheckBox::toggled, [this] (bool value) { this->settings().setValue("ownIcon", value); });
+    connect(ui->iconPB, &QAbstractButton::clicked, this, &LXQtMainMenuConfiguration::chooseIcon);
+    connect(ui->iconLE, &QLineEdit::textChanged, [&] (QString const & path)
+        {
+            this->settings().setValue(QLatin1String("icon"), path);
         });
 
     connect(ui->shortcutEd, SIGNAL(shortcutGrabbed(QString)), this, SLOT(shortcutChanged(QString)));
@@ -67,6 +74,27 @@ LXQtMainMenuConfiguration::LXQtMainMenuConfiguration(QSettings &settings, Global
     connect(ui->customFontSizeSB, SIGNAL(valueChanged(int)), this, SLOT(customFontSizeChanged(int)));
 
     connect(mShortcut, &GlobalKeyShortcut::Action::shortcutChanged, this, &LXQtMainMenuConfiguration::globalShortcutChanged);
+
+    connect(ui->filterMenuCB, &QCheckBox::toggled, [this] (bool enabled)
+        {
+            this->settings().setValue("filterMenu", enabled);
+        });
+    connect(ui->filterShowCB, &QCheckBox::toggled, [this] (bool enabled)
+        {
+            this->settings().setValue("filterShow", enabled);
+        });
+    connect(ui->filterShowMaxItemsSB, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value)
+        {
+            this->settings().setValue("filterShowMaxItems", value);
+        });
+    connect(ui->filterShowMaxWidthSB, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value)
+        {
+            this->settings().setValue("filterShowMaxWidth", value);
+        });
+    connect(ui->filterShowHideMenuCB, &QCheckBox::toggled, [this] (bool enabled)
+        {
+            this->settings().setValue("filterShowHideMenu", enabled);
+        });
 }
 
 LXQtMainMenuConfiguration::~LXQtMainMenuConfiguration()
@@ -76,10 +104,12 @@ LXQtMainMenuConfiguration::~LXQtMainMenuConfiguration()
 
 void LXQtMainMenuConfiguration::loadSettings()
 {
-    ui->showTextCB->setChecked(mSettings.value("showText", false).toBool());
-    ui->textLE->setText(mSettings.value("text", "").toString());
+    ui->iconCB->setChecked(settings().value("ownIcon", false).toBool());
+    ui->iconLE->setText(settings().value("icon", QLatin1String(LXQT_GRAPHICS_DIR"/helix.svg")).toString());
+    ui->showTextCB->setChecked(settings().value("showText", false).toBool());
+    ui->textLE->setText(settings().value("text", "").toString());
 
-    QString menuFile = mSettings.value("menu_file", "").toString();
+    QString menuFile = settings().value("menu_file", "").toString();
     if (menuFile.isEmpty())
     {
         menuFile = XdgMenu::getMenuFileName();
@@ -87,23 +117,51 @@ void LXQtMainMenuConfiguration::loadSettings()
     ui->menuFilePathLE->setText(menuFile);
     ui->shortcutEd->setText(nullptr != mShortcut ? mShortcut->shortcut() : mDefaultShortcut);
 
-    ui->customFontCB->setChecked(mSettings.value("customFont", false).toBool());
+    ui->customFontCB->setChecked(settings().value("customFont", false).toBool());
     LXQt::Settings lxqtSettings("lxqt"); //load system font size as init value
     QFont systemFont;
     lxqtSettings.beginGroup(QLatin1String("Qt"));
     systemFont.fromString(lxqtSettings.value("font", this->font()).toString());
     lxqtSettings.endGroup();
-    ui->customFontSizeSB->setValue(mSettings.value("customFontSize", systemFont.pointSize()).toInt());
+    ui->customFontSizeSB->setValue(settings().value("customFontSize", systemFont.pointSize()).toInt());
+    ui->filterMenuCB->setChecked(settings().value("filterMenu", true).toBool());
+    const bool filter_show = settings().value("filterShow", true).toBool();
+    ui->filterShowCB->setChecked(filter_show);
+    ui->filterShowMaxItemsL->setEnabled(filter_show);
+    ui->filterShowMaxItemsSB->setEnabled(filter_show);
+    ui->filterShowMaxItemsSB->setValue(settings().value("filterShowMaxItems", 10).toInt());
+    ui->filterShowMaxWidthL->setEnabled(filter_show);
+    ui->filterShowMaxWidthSB->setEnabled(filter_show);
+    ui->filterShowMaxWidthSB->setValue(settings().value("filterShowMaxWidth", 300).toInt());
+    ui->filterShowHideMenuCB->setEnabled(filter_show);
+    ui->filterShowHideMenuCB->setChecked(settings().value("filterShowHideMenu", true).toBool());
 }
+
 
 void LXQtMainMenuConfiguration::textButtonChanged(const QString &value)
 {
-    mSettings.setValue("text", value);
+    settings().setValue("text", value);
 }
 
 void LXQtMainMenuConfiguration::showTextChanged(bool value)
 {
-    mSettings.setValue("showText", value);
+    settings().setValue("showText", value);
+}
+
+void LXQtMainMenuConfiguration::chooseIcon()
+{
+    QFileInfo f{ui->iconLE->text()};
+    QDir dir = f.dir();
+    QFileDialog *d = new QFileDialog(this,
+                                     tr("Choose icon file"),
+                                     !f.filePath().isEmpty() && dir.exists() ? dir.path() : QLatin1String(LXQT_GRAPHICS_DIR),
+                                     tr("Images (*.svg *.png)"));
+    d->setWindowModality(Qt::WindowModal);
+    d->setAttribute(Qt::WA_DeleteOnClose);
+    connect(d, &QFileDialog::fileSelected, [&] (const QString &icon) {
+        ui->iconLE->setText(icon);
+    });
+    d->show();
 }
 
 void LXQtMainMenuConfiguration::chooseMenuFile()
@@ -136,25 +194,12 @@ void LXQtMainMenuConfiguration::shortcutReset()
     shortcutChanged(mDefaultShortcut);
 }
 
-void LXQtMainMenuConfiguration::dialogButtonsAction(QAbstractButton *btn)
-{
-    if (ui->buttons->buttonRole(btn) == QDialogButtonBox::ResetRole)
-    {
-        mOldSettings.loadToSettings();
-        loadSettings();
-    }
-    else
-    {
-        close();
-    }
-}
-
 void LXQtMainMenuConfiguration::customFontChanged(bool value)
 {
-    mSettings.setValue("customFont", value);
+    settings().setValue("customFont", value);
 }
 
 void LXQtMainMenuConfiguration::customFontSizeChanged(int value)
 {
-    mSettings.setValue("customFontSize", value);
+    settings().setValue("customFontSize", value);
 }
