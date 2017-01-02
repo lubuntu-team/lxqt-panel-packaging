@@ -6,25 +6,22 @@ Uploaders: Alf Gaida <agaida@siduction.org>,
 Section: x11
 Priority: optional
 Build-Depends: debhelper (>= 10),
-               cmake (>= 3.0.2),
                libasound2-dev,
                libdbusmenu-qt5-dev,
                libglib2.0-dev,
                libicu-dev,
                libkf5windowsystem-dev,
                libkf5solid-dev,
-               liblxqt0-dev (>= 0.11.0),
-               liblxqt-globalkeys0-dev (>= 0.11.0),
-               liblxqt-globalkeys-ui0-dev (>= 0.11.0),
+               liblxqt0-dev (>= 0.11.1),
+               liblxqt-globalkeys0-dev (>= 0.11.1),
+               liblxqt-globalkeys-ui0-dev (>= 0.11.1),
                libmenu-cache-dev,
                libpulse-dev,
                libqt5svg5-dev,
                libqt5x11extras5-dev,
-               libqt5xdg-dev (>= 2.0.0),
-               libqt5xdgiconloader-dev (>= 2.0.0),
                libsensors4-dev [!hurd-any],
                libstatgrab-dev [linux-any],
-               libsysstat-qt5-0-dev (>= 0.3.2),
+               libsysstat-qt5-0-dev (>= 0.3.3),
                libx11-dev,
                libxcomposite-dev,
                libxcb-util0-dev,
@@ -33,13 +30,10 @@ Build-Depends: debhelper (>= 10),
                libxdamage-dev,
                libxkbcommon-dev,
                libxkbcommon-x11-dev,
-               libxrender-dev,
-               pkg-config,
-               qttools5-dev,
-               qttools5-dev-tools
+               libxrender-dev
 Standards-Version: 3.9.8
 Vcs-Browser: https://anonscm.debian.org/cgit/pkg-lxqt/lxqt-panel.git/?h=debian/sid
-Vcs-Git: https://anonscm.debian.org/git/pkg-lxqt/lxqt-panel.git
+Vcs-Git: https://anonscm.debian.org/git/pkg-lxqt/lxqt-panel.git -b debian/sid
 Homepage: https://github.com/lxde/lxqt-panel
 
 Package: lxqt-panel
