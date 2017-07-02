@@ -31,7 +31,7 @@ Build-Depends: debhelper (>= 10),
                libxkbcommon-dev,
                libxkbcommon-x11-dev,
                libxrender-dev
-Standards-Version: 3.9.8
+Standards-Version: 4.0.0
 Vcs-Browser: https://anonscm.debian.org/cgit/pkg-lxqt/lxqt-panel.git/?h=debian/sid
 Vcs-Git: https://anonscm.debian.org/git/pkg-lxqt/lxqt-panel.git -b debian/sid
 Homepage: https://github.com/lxde/lxqt-panel
@@ -40,8 +40,17 @@ Package: lxqt-panel
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
-         lxmenu-data
-Recommends: lxqt-panel-l10n
+         lxmenu-data,
+         lxqt-about,
+         lxqt-policykit
+Recommends: lxqt-config,
+            lxqt-panel-l10n,
+            lxqt-qtplugin,
+            lxqt-runner,
+            lxqt-session,
+            pavucontrol-qt | pavucontrol,
+            qlipper
+Suggests: lxqt | lxqt-core
 Description: LXQt desktop panel
  The LXQt desktop panel
  .

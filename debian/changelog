@@ -1,3 +1,14 @@
+lxqt-panel (0.11.1-2) unstable; urgency=medium
+
+  * Bumped Standards to 4.0.0 - no changes needed
+  * Added to Dependencies: lxqt-about, lxqt-policykit 
+  * Added Recommends: lxqt-config, lxqt-panel-l10n, lxqt-qtplugin, lxqt-runner,
+    lxqt-session, pavucontrol-qt | pavucontrol, qlipper
+    (Closes: #866255)
+  * Suggests: lxqt | lxqt-core
+
+ -- Alf Gaida <agaida@siduction.org>  Sun, 02 Jul 2017 13:25:03 +0200
+
 lxqt-panel (0.11.1-1) unstable; urgency=medium
 
   * Cherry-picking upstream release 0.11.0 (Closes: #821382).
