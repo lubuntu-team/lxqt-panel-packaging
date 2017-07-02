@@ -44,6 +44,7 @@ Depends: ${misc:Depends},
          lxqt-about,
          lxqt-policykit
 Recommends: lxqt-config,
+            lxqt-notificationd,
             lxqt-panel-l10n,
             lxqt-qtplugin,
             lxqt-runner,
