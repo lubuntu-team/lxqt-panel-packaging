@@ -151,19 +151,6 @@
     </widget>
    </item>
    <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>41</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item>
     <widget class="QGroupBox" name="searchGB">
      <property name="title">
       <string>Search</string>
@@ -224,8 +211,28 @@
         </property>
        </widget>
       </item>
+      <item row="4" column="0" colspan="3">
+       <widget class="QCheckBox" name="filterClearCB">
+        <property name="text">
+         <string>Clear search upon showing menu</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>41</height>
+      </size>
+     </property>
+    </spacer>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttons">

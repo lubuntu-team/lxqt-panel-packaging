@@ -35,8 +35,8 @@
 #include <QDebug>
 
 XdgCachedMenuAction::XdgCachedMenuAction(MenuCacheItem* item, QObject* parent):
-    QAction(parent),
-    item_(menu_cache_item_ref(item))
+    QAction{parent}
+    , iconName_{QString::fromUtf8(menu_cache_item_get_icon(item))}
 {
     QString title = QString::fromUtf8(menu_cache_item_get_name(item));
     title = title.replace('&', QLatin1String("&&")); // & is reserved for mnemonics
@@ -47,19 +47,18 @@ XdgCachedMenuAction::XdgCachedMenuAction(MenuCacheItem* item, QObject* parent):
         QString comment = QString::fromUtf8(menu_cache_item_get_comment(item));
         setToolTip(comment);
     }
-}
-
-XdgCachedMenuAction::~XdgCachedMenuAction()
-{
-  if(item_)
-    menu_cache_item_unref(item_);
+    if (char * file_path = menu_cache_item_get_file_path(item))
+    {
+        filePath_ = QString::fromUtf8(file_path);
+        g_free(file_path);
+    }
 }
 
 void XdgCachedMenuAction::updateIcon()
 {
     if(icon().isNull())
     {
-        QIcon icon = XdgIcon::fromTheme(menu_cache_item_get_icon(item_));
+        QIcon icon = XdgIcon::fromTheme(iconName_, QIcon::fromTheme("unknown"));
         setIcon(icon);
     }
 }
@@ -72,7 +71,7 @@ XdgCachedMenu::XdgCachedMenu(QWidget* parent): QMenu(parent)
 XdgCachedMenu::XdgCachedMenu(MenuCache* menuCache, QWidget* parent): QMenu(parent)
 {
     // qDebug() << "CREATE MENU FROM CACHE" << menuCache;
-    MenuCacheDir* dir = menu_cache_get_root_dir(menuCache);
+    MenuCacheDir* dir = menu_cache_dup_root_dir(menuCache);
 
     // get current desktop name or fallback to LXQt
     const QByteArray xdgDesktop = qgetenv("XDG_CURRENT_DESKTOP");
@@ -80,6 +79,7 @@ XdgCachedMenu::XdgCachedMenu(MenuCache* menuCache, QWidget* parent): QMenu(paren
     menu_cache_desktop_ = menu_cache_get_desktop_env_flag(menuCache, desktop.constData());
 
     addMenuItems(this, dir);
+    menu_cache_item_unref(MENU_CACHE_ITEM(dir));
     connect(this, SIGNAL(aboutToShow()), SLOT(onAboutToShow()));
 }
 
@@ -89,7 +89,8 @@ XdgCachedMenu::~XdgCachedMenu()
 
 void XdgCachedMenu::addMenuItems(QMenu* menu, MenuCacheDir* dir)
 {
-  for(GSList* l = menu_cache_dir_get_children(dir); l; l = l->next)
+  GSList* list = menu_cache_dir_list_children(dir);
+  for(GSList * l = list; l; l = l->next)
   {
     MenuCacheItem* item = (MenuCacheItem*)l->data;
     MenuCacheType type = menu_cache_item_get_type(item);
@@ -122,16 +123,17 @@ void XdgCachedMenu::addMenuItems(QMenu* menu, MenuCacheDir* dir)
         addMenuItems(submenu, MENU_CACHE_DIR(item));
       }
     }
+    menu_cache_item_unref(item);
   }
+  if (list)
+      g_slist_free(list);
 }
 
 void XdgCachedMenu::onItemTrigerred()
 {
     XdgCachedMenuAction* action = static_cast<XdgCachedMenuAction*>(sender());
     XdgDesktopFile df;
-    char* desktop_file = menu_cache_item_get_file_path(action->item());
-    df.load(desktop_file);
-    g_free(desktop_file);
+    df.load(action->filePath());
     df.startDetached();
 }
 
@@ -176,9 +178,7 @@ void XdgCachedMenu::handleMouseMoveEvent(QMouseEvent *event)
         return;
 
     QList<QUrl> urls;
-    char* desktop_file = menu_cache_item_get_file_path(a->item());
-    urls << QUrl(QString("file://%1").arg(desktop_file));
-    g_free(desktop_file);
+    urls << QUrl(QString("file://%1").arg(a->filePath()));
 
     QMimeData *mimeData = new QMimeData();
     mimeData->setUrls(urls);

@@ -40,6 +40,7 @@
 #include <QToolTip>
 #include "audioengine.h"
 #include <QDebug>
+#include <QWheelEvent>
 
 VolumePopup::VolumePopup(QWidget* parent):
     QDialog(parent, Qt::Dialog | Qt::WindowStaysOnTopHint | Qt::CustomizeWindowHint | Qt::Popup | Qt::X11BypassWindowManagerHint),
@@ -60,6 +61,7 @@ VolumePopup::VolumePopup(QWidget* parent):
     // the volume slider shows 0-100 and volumes of all devices
     // should be converted to percentages.
     m_volumeSlider->setRange(0, 100);
+    m_volumeSlider->installEventFilter(this);
 
     m_muteToggleButton = new QPushButton(this);
     m_muteToggleButton->setIcon(XdgIcon::fromTheme(QStringList() << "audio-volume-muted"));
@@ -89,6 +91,20 @@ bool VolumePopup::event(QEvent *event)
     return QDialog::event(event);
 }
 
+bool VolumePopup::eventFilter(QObject * watched, QEvent * event)
+{
+    if (watched == m_volumeSlider)
+    {
+        if (event->type() == QEvent::Wheel)
+        {
+            handleWheelEvent(dynamic_cast<QWheelEvent *>(event));
+            return true;
+        }
+        return false;
+    }
+    return QDialog::eventFilter(watched, event);
+}
+
 void VolumePopup::enterEvent(QEvent *event)
 {
     emit mouseEntered();
@@ -106,9 +122,7 @@ void VolumePopup::handleSliderValueChanged(int value)
         return;
     // qDebug("VolumePopup::handleSliderValueChanged: %d\n", value);
     m_device->setVolume(value);
-    m_volumeSlider->setToolTip(QString("%1%").arg(value));
-    dynamic_cast<QWidget&>(*parent()).setToolTip(m_volumeSlider->toolTip()); //parent is the button on panel
-    QToolTip::showText(QCursor::pos(),  m_volumeSlider->toolTip(), m_volumeSlider);
+    QTimer::singleShot(0, this, [this] { QToolTip::showText(QCursor::pos(), m_volumeSlider->toolTip()); });
 }
 
 void VolumePopup::handleMuteToggleClicked()
@@ -177,7 +191,8 @@ void VolumePopup::openAt(QPoint pos, Qt::Corner anchor)
 
 void VolumePopup::handleWheelEvent(QWheelEvent *event)
 {
-    m_volumeSlider->event(reinterpret_cast<QEvent*>(event));
+    m_volumeSlider->setSliderPosition(m_volumeSlider->sliderPosition()
+            + (event->angleDelta().y() / QWheelEvent::DefaultDeltasPerStep * m_volumeSlider->singleStep()));
 }
 
 void VolumePopup::setDevice(AudioDevice *device)
