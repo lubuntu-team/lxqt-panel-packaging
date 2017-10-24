@@ -1,3 +1,16 @@
+lxqt-panel (0.12.0-1) experimental; urgency=medium
+
+  * Cherry-picking upstream release 0.12.0.
+  * Switched to experimental
+  * Bumped liblxqt0-dev to >= 0.12.0
+  * Bumped liblxqt-globalkeys0-dev to >= 0.12.0
+  * Bumped liblxqt-globalkeys-ui0-dev to >= 0.12.0
+  * Bumped libsysstat-qt5-0-dev to >= 0.4.0
+  * Bumped Standards to 4.1.1 - no changes needed
+  * Removed patches - patch was taken from upstream
+
+ -- Alf Gaida <agaida@siduction.org>  Tue, 24 Oct 2017 22:32:05 +0200
+
 lxqt-panel (0.11.1-4) unstable; urgency=medium
 
   * Removed some not needed versions from build dependencies

@@ -41,6 +41,8 @@ LXQtMountPlugin::LXQtMountPlugin(const ILXQtPanelPluginStartupInfo &startupInfo)
 
     connect(mButton, &QToolButton::clicked, mPopup, &Popup::showHide);
     connect(mPopup, &Popup::visibilityChanged, mButton, &QToolButton::setDown);
+    // Note: postpone creation of the mDeviceAction to not fire it in startup time
+    QTimer::singleShot(0, this, &LXQtMountPlugin::settingsChanged);
 }
 
 LXQtMountPlugin::~LXQtMountPlugin()
@@ -74,11 +76,8 @@ void LXQtMountPlugin::settingsChanged()
         delete mDeviceAction;
         mDeviceAction = DeviceAction::create(actionId, this);
 
-        connect(Solid::DeviceNotifier::instance(), &Solid::DeviceNotifier::deviceAdded,
-                mDeviceAction, &DeviceAction::onDeviceAdded);
-
-        connect(Solid::DeviceNotifier::instance(), &Solid::DeviceNotifier::deviceRemoved,
-                mDeviceAction, &DeviceAction::onDeviceRemoved);
+        connect(mPopup, &Popup::deviceAdded, mDeviceAction, &DeviceAction::onDeviceAdded);
+        connect(mPopup, &Popup::deviceRemoved, mDeviceAction, &DeviceAction::onDeviceRemoved);
     }
 
 }
