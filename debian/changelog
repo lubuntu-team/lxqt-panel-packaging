@@ -1,3 +1,11 @@
+lxqt-panel (0.12.0-2) experimental; urgency=medium
+
+  * Added missed breaks and replaces for lxqt-common << 0.12.0
+    (Closes: #879910) - Thanks Andreas Beckmann <anbe@debian.org>
+  * Time off fixed upstream (Closes: #855379)
+
+ -- Alf Gaida <agaida@siduction.org>  Fri, 27 Oct 2017 23:27:44 +0200
+
 lxqt-panel (0.12.0-1) experimental; urgency=medium
 
   * Cherry-picking upstream release 0.12.0.
