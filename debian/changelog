@@ -1,3 +1,10 @@
+lxqt-panel (0.12.0-3) experimental; urgency=medium
+
+  * Fixed host OS query in rules - we really want to know the system
+    instead of set it 
+
+ -- Alf Gaida <agaida@siduction.org>  Sun, 29 Oct 2017 21:27:27 +0100
+
 lxqt-panel (0.12.0-2) experimental; urgency=medium
 
   * Added missed breaks and replaces for lxqt-common << 0.12.0

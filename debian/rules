@@ -5,13 +5,13 @@ export LC_ALL=C.UTF-8
 export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
-DEB_HOST_ARCH_OS := $(shell dpkg-architecture -qDEB_HOST_ARCH_OS 2>/dev/null)
+WHICH_OS := $(shell dpkg-architecture -qDEB_HOST_ARCH_OS 2>/dev/null)
 
-ifeq ($(DEB_HOST_ARCH_OS), kfreebsd)
+ifeq ($(WHICH_OS), kfreebsd)
     NOT_LINUX := -DCPULOAD_PLUGIN=NO -DNETWORKMONITOR_PLUGIN=NO -DVOLUME_PLUGIN=NO
 endif
 
-ifeq ($(DEB_HOST_ARCH_OS), hurd)
+ifeq ($(WHICH_OS), hurd)
     NOT_LINUX := -DCPULOAD_PLUGIN=NO -DNETWORKMONITOR_PLUGIN=NO -DVOLUME_PLUGIN=NO -DSENSORS_PLUGIN=NO
 endif
 
