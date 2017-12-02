@@ -1,6 +1,12 @@
+lxqt-panel (0.12.0-5) experimental; urgency=medium
+
+  * Ported back the config move to /usr/share/xdg (Closes: #883034) 
+
+ -- Alf Gaida <agaida@siduction.org>  Sat, 02 Dec 2017 03:23:04 +0100
+
 lxqt-panel (0.12.0-4) experimental; urgency=medium
 
-  * ported back some cosmetics (volume % and clock size) 
+  * Ported back some cosmetics (volume % and clock size)
     (Closes: #880150)
 
  -- Alf Gaida <agaida@siduction.org>  Sun, 05 Nov 2017 01:49:39 +0100
@@ -8,7 +14,7 @@ lxqt-panel (0.12.0-4) experimental; urgency=medium
 lxqt-panel (0.12.0-3) experimental; urgency=medium
 
   * Fixed host OS query in rules - we really want to know the system
-    instead of set it 
+    instead of set it
 
  -- Alf Gaida <agaida@siduction.org>  Sun, 29 Oct 2017 21:27:27 +0100
 
@@ -38,7 +44,7 @@ lxqt-panel (0.11.1-4) unstable; urgency=medium
   * Removed some not needed versions from build dependencies
   * Bumped Standards to 4.1.0 - no changes needed
   * Ported back fix for explicit keyword (Closes: #873599)
-    Thanks Adrian Bunk for spotting this. 
+    Thanks Adrian Bunk for spotting this.
 
  -- Alf Gaida <agaida@siduction.org>  Mon, 04 Sep 2017 01:29:45 +0200
 
@@ -51,7 +57,7 @@ lxqt-panel (0.11.1-3) unstable; urgency=medium
 lxqt-panel (0.11.1-2) unstable; urgency=medium
 
   * Bumped Standards to 4.0.0 - no changes needed
-  * Added to Dependencies: lxqt-about, lxqt-policykit 
+  * Added to Dependencies: lxqt-about, lxqt-policykit
   * Added Recommends: lxqt-config, lxqt-panel-l10n, lxqt-qtplugin, lxqt-runner,
     lxqt-session, pavucontrol-qt | pavucontrol, qlipper
     (Closes: #866255)
@@ -75,7 +81,7 @@ lxqt-panel (0.11.1-1) unstable; urgency=medium
     - liblxqt-globalkeys-ui0-dev (>= 0.11.1)
     - libsysstat-qt5-0-dev (>= 0.3.3)
   * Fixed VCS-Git, pointing to the right branch
-  * Bumped years in d/copyright 
+  * Bumped years in d/copyright
 
  -- Alf Gaida <agaida@siduction.org>  Mon, 02 Jan 2017 18:12:54 +0100
 
