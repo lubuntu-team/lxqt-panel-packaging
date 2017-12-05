@@ -12,16 +12,16 @@ Build-Depends: debhelper (>= 10),
                libicu-dev,
                libkf5windowsystem-dev,
                libkf5solid-dev,
-               liblxqt0-dev,
-               liblxqt-globalkeys0-dev,
-               liblxqt-globalkeys-ui0-dev,
+               liblxqt0-dev (>= 0.12.0),
+               liblxqt-globalkeys0-dev (>= 0.12.0),
+               liblxqt-globalkeys-ui0-dev (>= 0.12.0),
                libmenu-cache-dev,
                libpulse-dev,
                libqt5svg5-dev,
                libqt5x11extras5-dev,
                libsensors4-dev [!hurd-any],
                libstatgrab-dev [linux-any],
-               libsysstat-qt5-0-dev,
+               libsysstat-qt5-0-dev (>= 0.4.0),
                libx11-dev,
                libxcomposite-dev,
                libxcb-util0-dev,
@@ -31,9 +31,9 @@ Build-Depends: debhelper (>= 10),
                libxkbcommon-dev,
                libxkbcommon-x11-dev,
                libxrender-dev
-Standards-Version: 4.1.0
-Vcs-Browser: https://anonscm.debian.org/cgit/pkg-lxqt/lxqt-panel.git/?h=debian/sid
-Vcs-Git: https://anonscm.debian.org/git/pkg-lxqt/lxqt-panel.git -b debian/sid
+Standards-Version: 4.1.1
+Vcs-Browser: https://anonscm.debian.org/cgit/pkg-lxqt/lxqt-panel.git/?h=debian/experimental
+Vcs-Git: https://anonscm.debian.org/git/pkg-lxqt/lxqt-panel.git -b debian/experimental
 Homepage: https://github.com/lxde/lxqt-panel
 
 Package: lxqt-panel
@@ -52,6 +52,8 @@ Recommends: lxqt-config,
             pavucontrol-qt | pavucontrol,
             qlipper
 Suggests: lxqt | lxqt-core
+Breaks: lxqt-common (<< 0.12.0)
+Replaces: lxqt-common (<< 0.12.0)
 Description: LXQt desktop panel
  The LXQt desktop panel
  .
