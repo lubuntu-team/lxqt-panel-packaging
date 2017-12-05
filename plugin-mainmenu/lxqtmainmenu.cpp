@@ -61,6 +61,7 @@ LXQtMainMenu::LXQtMainMenu(const ILXQtPanelPluginStartupInfo &startupInfo):
     mMakeDirtyAction{new QAction{this}},
     mFilterMenu(true),
     mFilterShow(true),
+    mFilterClear(false),
     mFilterShowHideMenu(true),
     mHeavyMenuChanges(false)
 {
@@ -127,6 +128,7 @@ LXQtMainMenu::~LXQtMainMenu()
     {
         mMenu->removeAction(mSearchEditAction);
         mMenu->removeAction(mSearchViewAction);
+        delete mMenu;
     }
 #ifdef HAVE_MENU_CACHE
     if(mMenuCache)
@@ -163,6 +165,10 @@ void LXQtMainMenu::showMenu()
     mMenu->popup(calculatePopupWindowPos(mMenu->sizeHint()).topLeft());
     if (mFilterMenu || mFilterShow)
     {
+        if (mFilterClear && !mSearchEdit->text().isEmpty())
+        {
+            mSearchEdit->setText(QString{});
+        }
         //Note: part of the workadound for https://bugreports.qt.io/browse/QTBUG-52021
         mSearchEdit->setReadOnly(false);
         //the setReadOnly also changes the cursor, override it back to normal
@@ -213,8 +219,11 @@ void LXQtMainMenu::settingsChanged()
             menu_cache_unref(mMenuCache);
         }
         mMenuCache = menu_cache_lookup(mMenuFile.toLocal8Bit());
-        if (menu_cache_get_root_dir(mMenuCache))
+        if (MenuCacheDir * root = menu_cache_dup_root_dir(mMenuCache))
+        {
+            menu_cache_item_unref(MENU_CACHE_ITEM(root));
             buildMenu();
+        }
         mMenuCacheNotify = menu_cache_add_reload_notify(mMenuCache, (MenuCacheReloadNotify)menuCacheReloadNotify, this);
 #else
         mXdgMenu.setEnvironments(QStringList() << "X-LXQT" << "LXQt");
@@ -240,6 +249,7 @@ void LXQtMainMenu::settingsChanged()
     mSearchEdit->setText(QString{});
     mFilterMenu = settings()->value("filterMenu", true).toBool();
     mFilterShow = settings()->value("filterShow", true).toBool();
+    mFilterClear = settings()->value("filterClear", false).toBool();
     mFilterShowHideMenu = settings()->value("filterShowHideMenu", true).toBool();
     if (mMenu)
     {
@@ -287,6 +297,18 @@ static void showHideMenuEntries(QMenu * menu, bool show)
     }
 }
 
+static void setTranslucentMenus(QMenu * menu)
+{
+    menu->setAttribute(Qt::WA_TranslucentBackground);
+    for (auto const & action : menu->actions())
+    {
+        if (QMenu * sub_menu = action->menu())
+        {
+            setTranslucentMenus(sub_menu);
+        }
+    }
+}
+
 /************************************************
 
  ************************************************/
@@ -326,6 +348,16 @@ void LXQtMainMenu::setSearchFocus(QAction *action)
     }
 }
 
+static void menuInstallEventFilter(QMenu * menu, QObject * watcher)
+{
+    for (auto const & action : const_cast<QList<QAction *> const &&>(menu->actions()))
+    {
+        if (action->menu())
+            menuInstallEventFilter(action->menu(), watcher); // recursion
+    }
+    menu->installEventFilter(watcher);
+}
+
 /************************************************
 
  ************************************************/
@@ -343,6 +375,7 @@ void LXQtMainMenu::buildMenu()
     mMenu = new XdgMenuWidget(mXdgMenu, "", &mButton);
 #endif
     mMenu->setObjectName("TopLevelMainMenu");
+    setTranslucentMenus(mMenu);
     // Note: the QWidget::ensurePolished() workarounds problem with transparent
     // QLineEdit (mSearchEditAction) in menu with Breeze style
     // https://bugs.kde.org/show_bug.cgi?id=368048
@@ -351,13 +384,7 @@ void LXQtMainMenu::buildMenu()
 
     mMenu->addSeparator();
 
-    Q_FOREACH(QAction* action, mMenu->actions())
-    {
-        if (action->menu())
-            action->menu()->installEventFilter(this);
-    }
-
-    mMenu->installEventFilter(this);
+    menuInstallEventFilter(mMenu, this);
     connect(mMenu, &QMenu::aboutToHide, &mHideTimer, static_cast<void (QTimer::*)()>(&QTimer::start));
     connect(mMenu, &QMenu::aboutToShow, &mHideTimer, &QTimer::stop);
 
@@ -470,19 +497,21 @@ bool LXQtMainMenu::eventFilter(QObject *obj, QEvent *event)
                 mMenu->hide(); // close the app menu
                 return true;
             }
-            else // go to the menu item starts with the pressed key
+            else // go to the menu item which starts with the pressed key if there is an active action.
             {
                 QString key = keyEvent->text();
                 if(key.isEmpty())
                     return false;
                 QAction* action = menu->activeAction();
-                QList<QAction*> actions = menu->actions();
-                QList<QAction*>::iterator it = qFind(actions.begin(), actions.end(), action);
-                it = std::find_if(it + 1, actions.end(), MatchAction(key));
-                if(it == actions.end())
-                    it = std::find_if(actions.begin(), it, MatchAction(key));
-                if(it != actions.end())
-                    menu->setActiveAction(*it);
+                if(action !=0) {
+                    QList<QAction*> actions = menu->actions();
+                    QList<QAction*>::iterator it = qFind(actions.begin(), actions.end(), action);
+                    it = std::find_if(it + 1, actions.end(), MatchAction(key));
+                    if(it == actions.end())
+                        it = std::find_if(actions.begin(), it, MatchAction(key));
+                    if(it != actions.end())
+                        menu->setActiveAction(*it);
+                }
             }
         }
 

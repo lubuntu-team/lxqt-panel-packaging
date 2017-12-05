@@ -58,6 +58,11 @@ find_package(lxqt REQUIRED)
 find_package(lxqt-globalkeys REQUIRED)
 find_package(lxqt-globalkeys-ui REQUIRED)
 
+# Patch Version
+set(LXQT_PANEL_PATCH_VERSION 0)
+
+set(LXQT_PANEL_VERSION ${LXQT_MAJOR_VERSION}.${LXQT_MINOR_VERSION}.${LXQT_PANEL_PATCH_VERSION})
+add_definitions("-DLXQT_PANEL_VERSION=\"${LXQT_PANEL_VERSION}\"")
 
 include(LXQtTranslate)
 
@@ -266,3 +271,7 @@ endforeach()
 message(STATUS "*********************************************************************")
 
 add_subdirectory(panel)
+
+# merged from lxqt-common
+add_subdirectory(autostart)
+add_subdirectory(menu)
