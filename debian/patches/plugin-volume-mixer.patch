@@ -1,0 +1,16 @@
+Description: Use pavucontrol-qt instead pavucontrol
+ backported from upstream, can disappear with the next release
+Author: Alf Gaida <agaida@siduction.org>
+Last-Update: 2017-12-16
+
+--- lxqt-panel-0.12.0.orig/plugin-volume/lxqtvolumeconfiguration.h
++++ lxqt-panel-0.12.0/plugin-volume/lxqtvolumeconfiguration.h
+@@ -47,7 +47,7 @@
+ #define SETTINGS_DEFAULT_DEVICE                 0
+ #define SETTINGS_DEFAULT_STEP                   3
+ #ifdef USE_PULSEAUDIO
+-    #define SETTINGS_DEFAULT_MIXER_COMMAND      "pavucontrol"
++    #define SETTINGS_DEFAULT_MIXER_COMMAND      "pavucontrol-qt"
+     #define SETTINGS_DEFAULT_AUDIO_ENGINE       "PulseAudio"
+ #elif defined(USE_ALSA)
+     #define SETTINGS_DEFAULT_MIXER_COMMAND      "qasmixer"
