@@ -17,6 +17,9 @@ lxqt-panel (0.12.0-8ubuntu1) UNRELEASED; urgency=medium
       + taskbar: Avoid conditionals on unintialized values by proper
         initialization of data members
         * Upstream commit 1cb5778.
+    - Avoid infinite recursion when no icon is available.
+      + avoid-infinite-recursion-icons.patch
+      + Upstream commit b9b4133.
 
  -- Simon Quigley <tsimonq2@ubuntu.com>  Mon, 05 Feb 2018 19:00:18 -0600
 

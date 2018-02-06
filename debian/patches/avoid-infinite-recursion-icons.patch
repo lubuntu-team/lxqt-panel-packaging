@@ -1,0 +1,19 @@
+Description: Avoid infinite recursion when no icon is available
+Author: comicfans <comicfans44@gmail.com>
+Origin: backport
+Bug: https://github.com/lxde/lxqt/issues/1431
+Applied-Upstream: b9b4133
+Last-Update: 2018-02-05
+--- a/plugin-mainmenu/xdgcachedmenu.cpp
++++ b/plugin-mainmenu/xdgcachedmenu.cpp
+@@ -60,6 +60,10 @@ void XdgCachedMenuAction::updateIcon()
+     if(icon().isNull())
+     {
+         QIcon icon = XdgIcon::fromTheme(iconName_, QIcon::fromTheme("unknown"));
++        // Some themes may lack the "unknown" icon; checking null prevents
++        // infinite recursion (setIcon->dataChanged->updateIcon->setIcon)
++        if (icon.isNull())
++            return;
+         setIcon(icon);
+     }
+ }

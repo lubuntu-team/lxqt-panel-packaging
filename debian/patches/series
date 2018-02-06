@@ -6,3 +6,4 @@ plugin-volume-mixer.patch
 fix-wrongly-positioned-popups.patch
 use-specific-panel-icon.patch
 fix-memory-leaks.patch
+avoid-infinite-recursion-icons.patch
