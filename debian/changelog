@@ -8,6 +8,15 @@ lxqt-panel (0.12.0-8ubuntu1) UNRELEASED; urgency=medium
     - plugin-volume: Use a specific icon for the panel.
       + use-specific-panel-icon.patch
       + Upstream commit eaa65e5.
+    - Fix various memory leaks.
+      + fix-memory-leaks.patch
+      + mainmenu: Fix possible leaks in menu-cache usage.
+        * Upstream commit 04630d4.
+      + mount: Fix leak by correctly assigning the QObject parent.
+        * Upstream commit d1bd23f.
+      + taskbar: Avoid conditionals on unintialized values by proper
+        initialization of data members
+        * Upstream commit 1cb5778.
 
  -- Simon Quigley <tsimonq2@ubuntu.com>  Mon, 05 Feb 2018 19:00:18 -0600
 

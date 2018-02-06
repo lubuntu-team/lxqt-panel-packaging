@@ -1,0 +1,86 @@
+Description: Fix various memory leaks
+ This commit contains three patches that was done in one upstream pull request
+ but the commits weren't squashed. The commit descriptions are as follows:
+ - mainmenu: Fix possible leaks in menu-cache usage
+ - mount: Fix leak by correctly assigning the QObject parent
+ - taskbar: Avoid conditionals on unintialized values by proper initialization
+   of data members
+Author: Palo Kisa <palo.kisa@gmail.com>
+Origin: backport
+Bug: https://github.com/lxde/lxqt/issues/1415
+Applied-Upstream: commit:04630d4, commit:d1bd23f, commit:1cb5778
+Last-Update: 2018-02-05
+--- a/plugin-mainmenu/xdgcachedmenu.cpp
++++ b/plugin-mainmenu/xdgcachedmenu.cpp
+@@ -33,6 +33,7 @@
+ #include <QHelpEvent>
+ #include <QMimeData>
+ #include <QDebug>
++#include <memory>
+ 
+ XdgCachedMenuAction::XdgCachedMenuAction(MenuCacheItem* item, QObject* parent):
+     QAction{parent}
+@@ -92,7 +93,10 @@ void XdgCachedMenu::addMenuItems(QMenu*
+   GSList* list = menu_cache_dir_list_children(dir);
+   for(GSList * l = list; l; l = l->next)
+   {
+-    MenuCacheItem* item = (MenuCacheItem*)l->data;
++    // Note: C++14 is needed for usage of the std::make_unique
++    //auto guard = std::make_unique(static_cast<MenuCacheItem *>(l->data), menu_cache_item_unref);
++    std::unique_ptr<MenuCacheItem, gboolean (*)(MenuCacheItem* item)> guard{static_cast<MenuCacheItem *>(l->data), menu_cache_item_unref};
++    MenuCacheItem* item = guard.get();
+     MenuCacheType type = menu_cache_item_get_type(item);
+ 
+     if(type == MENU_CACHE_TYPE_SEP)
+@@ -123,7 +127,6 @@ void XdgCachedMenu::addMenuItems(QMenu*
+         addMenuItems(submenu, MENU_CACHE_DIR(item));
+       }
+     }
+-    menu_cache_item_unref(item);
+   }
+   if (list)
+       g_slist_free(list);
+--- a/plugin-mount/actions/deviceaction.cpp
++++ b/plugin-mount/actions/deviceaction.cpp
+@@ -42,8 +42,9 @@
+ #define ACT_INFO_UPPER      QString(ACT_INFO).toUpper()
+ #define ACT_MENU_UPPER      QString(ACT_MENU).toUpper()
+ 
+-DeviceAction::DeviceAction(LXQtMountPlugin *plugin, QObject *parent):
+-    mPlugin(plugin)
++DeviceAction::DeviceAction(LXQtMountPlugin *plugin, QObject *parent)
++    : QObject(parent)
++    , mPlugin(plugin)
+ {
+ }
+ 
+--- a/plugin-mount/lxqtmountplugin.cpp
++++ b/plugin-mount/lxqtmountplugin.cpp
+@@ -74,7 +74,7 @@ void LXQtMountPlugin::settingsChanged()
+     if (mDeviceAction == nullptr || mDeviceAction->Type() != actionId)
+     {
+         delete mDeviceAction;
+-        mDeviceAction = DeviceAction::create(actionId, this);
++        mDeviceAction = DeviceAction::create(actionId, this, this);
+ 
+         connect(mPopup, &Popup::deviceAdded, mDeviceAction, &DeviceAction::onDeviceAdded);
+         connect(mPopup, &Popup::deviceRemoved, mDeviceAction, &DeviceAction::onDeviceRemoved);
+--- a/plugin-taskbar/lxqttaskbar.cpp
++++ b/plugin-taskbar/lxqttaskbar.cpp
+@@ -58,6 +58,8 @@ LXQtTaskBar::LXQtTaskBar(ILXQtPanelPlugi
+     QFrame(parent),
+     mSignalMapper(new QSignalMapper(this)),
+     mButtonStyle(Qt::ToolButtonTextBesideIcon),
++    mButtonWidth(400),
++    mButtonHeight(100),
+     mCloseOnMiddleClick(true),
+     mRaiseOnCurrentDesktop(true),
+     mShowOnlyOneDesktopTasks(false),
+@@ -65,6 +67,7 @@ LXQtTaskBar::LXQtTaskBar(ILXQtPanelPlugi
+     mShowOnlyCurrentScreenTasks(false),
+     mShowOnlyMinimizedTasks(false),
+     mAutoRotate(true),
++    mGroupingEnabled(true),
+     mShowGroupOnHover(true),
+     mIconByClass(false),
+     mCycleOnWheelScroll(true),
