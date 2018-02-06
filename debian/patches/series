@@ -4,3 +4,4 @@ plugin-volume-mixer.patch
 
 # Ubuntu-specific patches
 fix-wrongly-positioned-popups.patch
+use-specific-panel-icon.patch

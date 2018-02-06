@@ -5,6 +5,9 @@ lxqt-panel (0.12.0-8ubuntu1) UNRELEASED; urgency=medium
     - Fix wrongly positioned popups (LP: #1527013).
       + fix-wrongly-positioned-popups.patch
       + Upstream commit 7391172.
+    - plugin-volume: Use a specific icon for the panel.
+      + use-specific-panel-icon.patch
+      + Upstream commit eaa65e5.
 
  -- Simon Quigley <tsimonq2@ubuntu.com>  Mon, 05 Feb 2018 19:00:18 -0600
 
