@@ -8,3 +8,4 @@ use-specific-panel-icon.patch
 fix-memory-leaks.patch
 avoid-infinite-recursion-icons.patch
 add-move-resize-items.patch
+set-initial-task-button-correctly.patch
