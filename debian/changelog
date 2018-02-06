@@ -1,4 +1,4 @@
-lxqt-panel (0.12.0-8ubuntu1) UNRELEASED; urgency=medium
+lxqt-panel (0.12.0-8ubuntu1) bionic; urgency=medium
 
   * Cherry-pick some upstream commits because the upstream release cycle is
     horribly slow (and without this it'll be years before they come in):
@@ -27,7 +27,7 @@ lxqt-panel (0.12.0-8ubuntu1) UNRELEASED; urgency=medium
       + set-initial-task-button-correctly.patch
       + Upstream commit 563d6bf.
 
- -- Simon Quigley <tsimonq2@ubuntu.com>  Mon, 05 Feb 2018 19:00:18 -0600
+ -- Simon Quigley <tsimonq2@ubuntu.com>  Mon, 05 Feb 2018 20:04:48 -0600
 
 lxqt-panel (0.12.0-8build1) bionic; urgency=medium
 
