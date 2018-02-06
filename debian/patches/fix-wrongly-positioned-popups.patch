@@ -24,7 +24,7 @@ Last-Update: 2018-02-05
  
 -    return calculatePopupWindowPos(panel_plugin->mapToGlobal(QPoint(0, 0)), windowSize);
 +    // Note: assuming there are not contentMargins around the "BackgroundWidget" (LXQtPanelWidget)
-+    return calculatePopupWindowPos(globalGeometry().topLeft() + panel_plugin->geometry().topLeft(), windowSize);
++    return calculatePopupWindowPos(globalGometry().topLeft() + panel_plugin->geometry().topLeft(), windowSize);
  }
  
  
