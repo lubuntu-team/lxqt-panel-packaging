@@ -1,3 +1,4 @@
 clock-and-volume.patch
 move-configs.patch
 plugin-volume-mixer.patch
+use-menu-cache.patch

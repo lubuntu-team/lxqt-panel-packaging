@@ -1,6 +1,20 @@
+lxqt-panel (0.12.0-9) unstable; urgency=medium
+
+  * Ported back USE_MENU_CACHE handling
+  * Removed build dependency on libmenu-cache-dev (Closes: #896512)
+  * Ported back USE_MENU_CACHE handling
+  * Moved lxqt-about from dependencies to recommends (Closes: #894640)
+  * Bumped debhelper version to 11~
+  * Bumped compat to 11
+  * Bumped Standards to 4.1.4, no changes needed
+  * Fixed VCS fields for salsa
+  * Removed trailing whitespaces
+
+ -- Alf Gaida <agaida@siduction.org>  Mon, 23 Apr 2018 19:47:29 +0200
+
 lxqt-panel (0.12.0-8) unstable; urgency=medium
 
-  * Fix plugin-volume, use pavucontrol-qt (Closes: #884547) 
+  * Fix plugin-volume, use pavucontrol-qt (Closes: #884547)
 
  -- Alf Gaida <agaida@siduction.org>  Sat, 16 Dec 2017 18:36:45 +0100
 
@@ -20,7 +34,7 @@ lxqt-panel (0.12.0-6) unstable; urgency=medium
 
 lxqt-panel (0.12.0-5) experimental; urgency=medium
 
-  * Ported back the config move to /usr/share/xdg (Closes: #883034) 
+  * Ported back the config move to /usr/share/xdg (Closes: #883034)
 
  -- Alf Gaida <agaida@siduction.org>  Sat, 02 Dec 2017 03:23:04 +0100
 
