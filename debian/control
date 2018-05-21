@@ -32,8 +32,10 @@ Build-Depends: debhelper (>= 11~),
                libxkbcommon-x11-dev,
                libxrender-dev
 Standards-Version: 4.1.4
-Vcs-Browser: https://salsa.debian.org/lxqt-team/lxqt-panel
-Vcs-Git: https://salsa.debian.org/lxqt-team/lxqt-panel.git
+Vcs-Browser: https://phab.lubuntu.me/source/lxqt-panel/
+Vcs-Git: https://phab.lubuntu.me/source/lxqt-panel.git
+XS-Debian-Vcs-Browser: https://salsa.debian.org/lxqt-team/lxqt-panel
+XS-Debian-Vcs-Git: https://salsa.debian.org/lxqt-team/lxqt-panel.git
 Homepage: https://github.com/lxqt/lxqt-panel
 
 Package: lxqt-panel
