@@ -1,0 +1,28 @@
+Description: Make menu-cache optional
+ Backport from upstream
+
+Last-Update: 2018-04-23
+
+--- lxqt-panel-0.12.0.orig/CMakeLists.txt
++++ lxqt-panel-0.12.0/CMakeLists.txt
+@@ -4,6 +4,9 @@ project(lxqt-panel)
+ option(UPDATE_TRANSLATIONS "Update source translation translations/*.ts files" OFF)
+ option(PULL_TRANSLATIONS "Pull translations" ON)
+ option(WITH_SCREENSAVER_FALLBACK "Include support for converting the deprecated 'screensaver' plugin to 'quicklaunch'. This requires the lxqt-leave (lxqt-session) to be installed in runtime." ON)
++# plugin-mainmenu
++option(USE_MENU_CACHE "Use menu-cached (no noticable penalty even on a 2004 single core pentium if not used)" OFF)
++
+
+ # additional cmake files
+ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+--- lxqt-panel-0.12.0.orig/plugin-mainmenu/CMakeLists.txt
++++ lxqt-panel-0.12.0/plugin-mainmenu/CMakeLists.txt
+@@ -20,7 +20,7 @@ set(UIS
+
+
+ # optionally use libmenu-cache to generate the application menu
+-if(NOT WITHOUT_MENU_CACHE)
++if(USE_MENU_CACHE)
+     find_package(MenuCache "0.3.3")
+ endif()
+

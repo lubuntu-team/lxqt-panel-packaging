@@ -1,6 +1,7 @@
 clock-and-volume.patch
 move-configs.patch
 plugin-volume-mixer.patch
+use-menu-cache.patch
 
 # Ubuntu-specific patches
 fix-wrongly-positioned-popups.patch
