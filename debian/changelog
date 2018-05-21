@@ -27,6 +27,7 @@ lxqt-panel (0.12.0-9ubuntu1) UNRELEASED; urgency=medium
         * set-initial-task-button-correctly.patch
         * Upstream commit 563d6bf.
   * Change the Vcs entries to be Lubuntu-specific.
+  * Fix typo in the patch description of fix-memory-leaks.patch.
 
  -- Simon Quigley <tsimonq2@ubuntu.com>  Mon, 21 May 2018 00:20:20 -0500
 

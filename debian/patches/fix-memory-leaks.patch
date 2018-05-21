@@ -3,7 +3,7 @@ Description: Fix various memory leaks
  but the commits weren't squashed. The commit descriptions are as follows:
  - mainmenu: Fix possible leaks in menu-cache usage
  - mount: Fix leak by correctly assigning the QObject parent
- - taskbar: Avoid conditionals on unintialized values by proper initialization
+ - taskbar: Avoid conditionals on uninitialized values by proper initialization
    of data members
 Author: Palo Kisa <palo.kisa@gmail.com>
 Origin: backport
