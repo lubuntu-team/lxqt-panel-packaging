@@ -1,3 +1,34 @@
+lxqt-panel (0.12.0-9ubuntu1) UNRELEASED; urgency=medium
+
+  * Merge from Debian Sid. Remaining changes:
+    - Cherry-pick some upstream commits:
+      + Fix wrongly positioned popups (LP: #1527013).
+        * fix-wrongly-positioned-popups.patch
+        * Upstream commit 7391172.
+      + plugin-volume: Use a specific icon for the panel.
+        * use-specific-panel-icon.patch
+        * Upstream commit eaa65e5.
+      + Fix various memory leaks.
+        * fix-memory-leaks.patch
+        * mainmenu: Fix possible leaks in menu-cache usage.
+          - Upstream commit 04630d4.
+        * mount: Fix leak by correctly assigning the QObject parent.
+          - Upstream commit d1bd23f.
+        * taskbar: Avoid conditionals on unintialized values by proper
+          initialization of data members
+          - Upstream commit 1cb5778.
+      + Avoid infinite recursion when no icon is available.
+        * avoid-infinite-recursion-icons.patch
+        * Upstream commit b9b4133.
+      + Add Move and Resize items in the task-button context menu.
+        * add-move-resize-items.patch
+        * Upstream commit b69fe72.
+      + Set the initial task button text (and icon) correctly.
+        * set-initial-task-button-correctly.patch
+        * Upstream commit 563d6bf.
+
+ -- Simon Quigley <tsimonq2@ubuntu.com>  Mon, 21 May 2018 00:20:20 -0500
+
 lxqt-panel (0.12.0-9) unstable; urgency=medium
 
   * Ported back USE_MENU_CACHE handling
