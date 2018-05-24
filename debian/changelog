@@ -2,6 +2,7 @@ lxqt-panel (0.13.0-0ubuntu1) UNRELEASED; urgency=medium
 
   * New upstream release.
   * Update build dependencies.
+  * Update copyright.
 
  -- Simon Quigley <tsimonq2@ubuntu.com>  Wed, 23 May 2018 22:31:03 -0500
 
