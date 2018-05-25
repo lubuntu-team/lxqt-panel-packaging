@@ -1,0 +1,1994 @@
+From 3eb1a8b1471a817a49152218f7262b915d67923c Mon Sep 17 00:00:00 2001
+From: palinek <palinek@users.noreply.github.com>
+Date: Fri, 25 May 2018 05:39:03 +0200
+Subject: [PATCH] Definitely remove plugin-clock (#470)
+
+---
+ CMakeLists.txt                                     |  12 +-
+ panel/plugin.cpp                                   |   5 -
+ plugin-clock/CMakeLists.txt                        |  19 --
+ plugin-clock/calendarpopup.cpp                     |  57 ----
+ plugin-clock/calendarpopup.h                       |  49 ---
+ plugin-clock/lxqtclock.cpp                         | 346 ---------------------
+ plugin-clock/lxqtclock.h                           | 105 -------
+ plugin-clock/lxqtclockconfiguration.cpp            | 301 ------------------
+ plugin-clock/lxqtclockconfiguration.h              |  79 -----
+ plugin-clock/lxqtclockconfiguration.ui             | 232 --------------
+ plugin-clock/resources/clock.desktop.in            |   8 -
+ plugin-clock/translations/clock_ar.desktop         |   2 -
+ plugin-clock/translations/clock_cs.desktop         |  12 -
+ plugin-clock/translations/clock_cs_CZ.desktop      |  12 -
+ plugin-clock/translations/clock_da.desktop         |  12 -
+ plugin-clock/translations/clock_de.desktop         |   2 -
+ plugin-clock/translations/clock_el.desktop         |  12 -
+ plugin-clock/translations/clock_eo.desktop         |  12 -
+ plugin-clock/translations/clock_es.desktop         |   2 -
+ plugin-clock/translations/clock_es_VE.desktop      |  12 -
+ plugin-clock/translations/clock_eu.desktop         |  12 -
+ plugin-clock/translations/clock_fi.desktop         |  12 -
+ plugin-clock/translations/clock_fr.desktop         |   3 -
+ plugin-clock/translations/clock_hu.desktop         |  12 -
+ plugin-clock/translations/clock_ia.desktop         |  10 -
+ plugin-clock/translations/clock_id_ID.desktop      |  10 -
+ plugin-clock/translations/clock_it.desktop         |   3 -
+ plugin-clock/translations/clock_ja.desktop         |  12 -
+ plugin-clock/translations/clock_ko.desktop         |  10 -
+ plugin-clock/translations/clock_lt.desktop         |  12 -
+ plugin-clock/translations/clock_nl.desktop         |  12 -
+ plugin-clock/translations/clock_pl.desktop         |  12 -
+ plugin-clock/translations/clock_pt.desktop         |  12 -
+ plugin-clock/translations/clock_pt_BR.desktop      |  12 -
+ plugin-clock/translations/clock_ro_RO.desktop      |  12 -
+ plugin-clock/translations/clock_ru.desktop         |  12 -
+ plugin-clock/translations/clock_sk.desktop         |  12 -
+ plugin-clock/translations/clock_sl.desktop         |  12 -
+ plugin-clock/translations/clock_sr.desktop         |  12 -
+ .../translations/clock_sr@ijekavian.desktop        |   2 -
+ .../translations/clock_sr@ijekavianlatin.desktop   |   2 -
+ plugin-clock/translations/clock_sr@latin.desktop   |  12 -
+ plugin-clock/translations/clock_th_TH.desktop      |  12 -
+ plugin-clock/translations/clock_tr.desktop         |  12 -
+ plugin-clock/translations/clock_uk.desktop         |  12 -
+ .../translations/clock_zh_CN.GB2312.desktop        |  10 -
+ plugin-clock/translations/clock_zh_CN.desktop      |  12 -
+ plugin-clock/translations/clock_zh_TW.desktop      |  12 -
+ 48 files changed, 2 insertions(+), 1579 deletions(-)
+ delete mode 100644 plugin-clock/CMakeLists.txt
+ delete mode 100644 plugin-clock/calendarpopup.cpp
+ delete mode 100644 plugin-clock/calendarpopup.h
+ delete mode 100644 plugin-clock/lxqtclock.cpp
+ delete mode 100644 plugin-clock/lxqtclock.h
+ delete mode 100644 plugin-clock/lxqtclockconfiguration.cpp
+ delete mode 100644 plugin-clock/lxqtclockconfiguration.h
+ delete mode 100644 plugin-clock/lxqtclockconfiguration.ui
+ delete mode 100644 plugin-clock/resources/clock.desktop.in
+ delete mode 100644 plugin-clock/translations/clock_ar.desktop
+ delete mode 100644 plugin-clock/translations/clock_cs.desktop
+ delete mode 100644 plugin-clock/translations/clock_cs_CZ.desktop
+ delete mode 100644 plugin-clock/translations/clock_da.desktop
+ delete mode 100644 plugin-clock/translations/clock_de.desktop
+ delete mode 100644 plugin-clock/translations/clock_el.desktop
+ delete mode 100644 plugin-clock/translations/clock_eo.desktop
+ delete mode 100644 plugin-clock/translations/clock_es.desktop
+ delete mode 100644 plugin-clock/translations/clock_es_VE.desktop
+ delete mode 100644 plugin-clock/translations/clock_eu.desktop
+ delete mode 100644 plugin-clock/translations/clock_fi.desktop
+ delete mode 100644 plugin-clock/translations/clock_fr.desktop
+ delete mode 100644 plugin-clock/translations/clock_hu.desktop
+ delete mode 100644 plugin-clock/translations/clock_ia.desktop
+ delete mode 100644 plugin-clock/translations/clock_id_ID.desktop
+ delete mode 100644 plugin-clock/translations/clock_it.desktop
+ delete mode 100644 plugin-clock/translations/clock_ja.desktop
+ delete mode 100644 plugin-clock/translations/clock_ko.desktop
+ delete mode 100644 plugin-clock/translations/clock_lt.desktop
+ delete mode 100644 plugin-clock/translations/clock_nl.desktop
+ delete mode 100644 plugin-clock/translations/clock_pl.desktop
+ delete mode 100644 plugin-clock/translations/clock_pt.desktop
+ delete mode 100644 plugin-clock/translations/clock_pt_BR.desktop
+ delete mode 100644 plugin-clock/translations/clock_ro_RO.desktop
+ delete mode 100644 plugin-clock/translations/clock_ru.desktop
+ delete mode 100644 plugin-clock/translations/clock_sk.desktop
+ delete mode 100644 plugin-clock/translations/clock_sl.desktop
+ delete mode 100644 plugin-clock/translations/clock_sr.desktop
+ delete mode 100644 plugin-clock/translations/clock_sr@ijekavian.desktop
+ delete mode 100644 plugin-clock/translations/clock_sr@ijekavianlatin.desktop
+ delete mode 100644 plugin-clock/translations/clock_sr@latin.desktop
+ delete mode 100644 plugin-clock/translations/clock_th_TH.desktop
+ delete mode 100644 plugin-clock/translations/clock_tr.desktop
+ delete mode 100644 plugin-clock/translations/clock_uk.desktop
+ delete mode 100644 plugin-clock/translations/clock_zh_CN.GB2312.desktop
+ delete mode 100644 plugin-clock/translations/clock_zh_CN.desktop
+ delete mode 100644 plugin-clock/translations/clock_zh_TW.desktop
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index feacd09f..961b727a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -85,22 +85,14 @@ message(STATUS "Panel plugins location: ${PLUGIN_DIR}")
+ 
+ # Plugin system
+ # You can enable/disable building of the plugin using cmake options.
+-#    cmake -DCLOCK_PLUGIN=Yes .. # Enable clock plugin
+-#    cmake -DCLOCK_PLUGIN=No ..  # Disable clock plugin
++#    cmake -DWORLDCLOCK_PLUGIN=Yes .. # Enable worldclock plugin
++#    cmake -DWORLDCLOCK_PLUGIN=No ..  # Disable worldclock plugin
+ 
+ include("cmake/BuildPlugin.cmake")
+ 
+ set(ENABLED_PLUGINS) # list of enabled plugins
+ set(STATIC_PLUGINS) # list of statically linked plugins
+ 
+-setByDefault(CLOCK_PLUGIN Yes)
+-if(CLOCK_PLUGIN)
+-    list(APPEND STATIC_PLUGINS "clock")
+-    add_definitions(-DWITH_CLOCK_PLUGIN)
+-    list(APPEND ENABLED_PLUGINS "Clock")
+-    add_subdirectory(plugin-clock)
+-endif()
+-
+ setByDefault(COLORPICKER_PLUGIN Yes)
+ if(COLORPICKER_PLUGIN)
+     list(APPEND ENABLED_PLUGINS "Color Picker")
+diff --git a/panel/plugin.cpp b/panel/plugin.cpp
+index ca0c2a18..36b8640f 100644
+--- a/panel/plugin.cpp
++++ b/panel/plugin.cpp
+@@ -50,8 +50,6 @@
+ #include <XdgIcon>
+ 
+ // statically linked built-in plugins
+-#include "../plugin-clock/lxqtclock.h" // clock
+-extern void * loadPluginTranslation_clock_helper;
+ #include "../plugin-desktopswitch/desktopswitch.h" // desktopswitch
+ extern void * loadPluginTranslation_desktopswitch_helper;
+ #include "../plugin-mainmenu/lxqtmainmenu.h" // mainmenu
+@@ -194,9 +192,6 @@ namespace
+     //NOTE2: we need to reference some (dummy) symbol from (autogenerated) LXQtPluginTranslationLoader.cpp
+     // to be not stripped (as unused/unreferenced) in static linking time
+     static plugin_tuple_t const static_plugins[] = {
+-#if defined(WITH_CLOCK_PLUGIN)
+-        std::make_tuple(QLatin1String("clock"), plugin_ptr_t{new LXQtClockPluginLibrary}, loadPluginTranslation_clock_helper),// clock
+-#endif
+ #if defined(WITH_DESKTOPSWITCH_PLUGIN)
+         std::make_tuple(QLatin1String("desktopswitch"), plugin_ptr_t{new DesktopSwitchPluginLibrary}, loadPluginTranslation_desktopswitch_helper),// desktopswitch
+ #endif
+diff --git a/plugin-clock/CMakeLists.txt b/plugin-clock/CMakeLists.txt
+deleted file mode 100644
+index d0447619..00000000
+--- a/plugin-clock/CMakeLists.txt
++++ /dev/null
+@@ -1,19 +0,0 @@
+-set(PLUGIN "clock")
+-
+-set(HEADERS
+-    lxqtclock.h
+-    lxqtclockconfiguration.h
+-    calendarpopup.h
+-)
+-
+-set(SOURCES
+-    lxqtclock.cpp
+-    lxqtclockconfiguration.cpp
+-    calendarpopup.cpp
+-)
+-
+-set(UIS
+-    lxqtclockconfiguration.ui
+-)
+-
+-BUILD_LXQT_PLUGIN(${PLUGIN})
+diff --git a/plugin-clock/calendarpopup.cpp b/plugin-clock/calendarpopup.cpp
+deleted file mode 100644
+index d9455f49..00000000
+--- a/plugin-clock/calendarpopup.cpp
++++ /dev/null
+@@ -1,57 +0,0 @@
+-/* BEGIN_COMMON_COPYRIGHT_HEADER
+- * (c)LGPL2+
+- *
+- * LXQt - a lightweight, Qt based, desktop toolset
+- * https://lxqt.org
+- *
+- * Copyright: 2014 LXQt team
+- * Authors:
+- *   Paulo Lieuthier <paulolieuthier@gmail.com>
+- *
+- * This program or library is free software; you can redistribute it
+- * and/or modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation; either
+- * version 2.1 of the License, or (at your option) any later version.
+- *
+- * This library is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * Lesser General Public License for more details.
+-
+- * You should have received a copy of the GNU Lesser General
+- * Public License along with this library; if not, write to the
+- * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+- * Boston, MA 02110-1301 USA
+- *
+- * END_COMMON_COPYRIGHT_HEADER */
+-
+-#include "calendarpopup.h"
+-#include <QHBoxLayout>
+-#include <QEvent>
+-
+-CalendarPopup::CalendarPopup(QWidget *parent):
+-    QDialog(parent, Qt::Window | Qt::WindowStaysOnTopHint | Qt::CustomizeWindowHint | Qt::Popup | Qt::X11BypassWindowManagerHint)
+-{
+-    setLayout(new QHBoxLayout(this));
+-    layout()->setMargin(1);
+-
+-    cal = new QCalendarWidget(this);
+-    layout()->addWidget(cal);
+-    adjustSize();
+-}
+-
+-CalendarPopup::~CalendarPopup()
+-{
+-}
+-
+-void CalendarPopup::show()
+-{
+-    cal->setSelectedDate(QDate::currentDate());
+-    activateWindow();
+-    QDialog::show();
+-}
+-
+-void CalendarPopup::setFirstDayOfWeek(Qt::DayOfWeek wday)
+-{
+-    cal->setFirstDayOfWeek(wday);
+-}
+diff --git a/plugin-clock/calendarpopup.h b/plugin-clock/calendarpopup.h
+deleted file mode 100644
+index a2c52752..00000000
+--- a/plugin-clock/calendarpopup.h
++++ /dev/null
+@@ -1,49 +0,0 @@
+-/* BEGIN_COMMON_COPYRIGHT_HEADER
+- * (c)LGPL2+
+- *
+- * LXQt - a lightweight, Qt based, desktop toolset
+- * https://lxqt.org
+- *
+- * Copyright: 2014 LXQt team
+- * Authors:
+- *   Paulo Lieuthier <paulolieuthier@gmail.com>
+- *
+- * This program or library is free software; you can redistribute it
+- * and/or modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation; either
+- * version 2.1 of the License, or (at your option) any later version.
+- *
+- * This library is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * Lesser General Public License for more details.
+-
+- * You should have received a copy of the GNU Lesser General
+- * Public License along with this library; if not, write to the
+- * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+- * Boston, MA 02110-1301 USA
+- *
+- * END_COMMON_COPYRIGHT_HEADER */
+-
+-#ifndef CALENDARPOPUP_H
+-#define CALENDARPOPUP_H
+-
+-#include <QDialog>
+-#include <QCalendarWidget>
+-
+-class CalendarPopup :  public QDialog
+-{
+-    Q_OBJECT
+-
+-public:
+-    CalendarPopup(QWidget *parent = 0);
+-    ~CalendarPopup();
+-    void setFirstDayOfWeek(Qt::DayOfWeek wday);
+-
+-    void show();
+-
+-private:
+-    QCalendarWidget *cal;
+-};
+-
+-#endif // CALENDARPOPUP_H
+diff --git a/plugin-clock/lxqtclock.cpp b/plugin-clock/lxqtclock.cpp
+deleted file mode 100644
+index 537f81bb..00000000
+--- a/plugin-clock/lxqtclock.cpp
++++ /dev/null
+@@ -1,346 +0,0 @@
+-/* BEGIN_COMMON_COPYRIGHT_HEADER
+- * (c)LGPL2+
+- *
+- * LXQt - a lightweight, Qt based, desktop toolset
+- * https://lxqt.org
+- *
+- * Copyright: 2010-2013 Razor team
+- * Authors:
+- *   Christopher "VdoP" Regali
+- *   Alexander Sokoloff <sokoloff.a@gmail.com>
+- *   Maciej Płaza <plaza.maciej@gmail.com>
+- *   Kuzma Shapran <kuzma.shapran@gmail.com>
+- *
+- * This program or library is free software; you can redistribute it
+- * and/or modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation; either
+- * version 2.1 of the License, or (at your option) any later version.
+- *
+- * This library is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * Lesser General Public License for more details.
+-
+- * You should have received a copy of the GNU Lesser General
+- * Public License along with this library; if not, write to the
+- * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+- * Boston, MA 02110-1301 USA
+- *
+- * END_COMMON_COPYRIGHT_HEADER */
+-
+-
+-#include "lxqtclock.h"
+-
+-#include <QDialog>
+-#include <QLabel>
+-#include <QVBoxLayout>
+-#include <QMouseEvent>
+-
+-#include <QDateTime>
+-#include <QTimer>
+-#include <QPoint>
+-#include <QRect>
+-#include <QProxyStyle>
+-#include <QPainter>
+-
+-#include <QDebug>
+-#include <LXQt/Notification>
+-
+-static void notifyAboutDeprecation(PluginSettings * settings)
+-{
+-    // this is called only from LXQtClock c-tor...so just from main thread, no locking needed
+-    // Note: we get/store the "dont_show" in section of particular instance of clock => this is not 100% valid
+-    // for al possible changes of panel configuration, but we can live with this
+-    static bool notification_done = settings->value(QLatin1String("dont_show_deprecation"), false).toBool();
+-    if (!notification_done)
+-    {
+-        LXQt::Notification * notification = new LXQt::Notification{LXQtClock::tr("Date&Time (clock) plugin is deprecated")};
+-        notification->setBody(LXQtClock::tr("The <strong>clock</strong> plugin is deprecated and will be removed in future version of LXQt. Consider"
+-                    " replacing it with <strong>worldclock</strong>.<br/>"));
+-        notification->setActions({LXQtClock::tr("don't show this again")});
+-        notification->setTimeout(5000);
+-        QObject::connect(notification, &LXQt::Notification::actionActivated, settings, [notification, settings] (int actionNumber) -> void
+-                {
+-                    if (actionNumber == 0)
+-                        settings->setValue(QLatin1String("dont_show_deprecation"), true);
+-                    notification->close();
+-                });
+-        QObject::connect(notification, &LXQt::Notification::notificationClosed, notification, &QObject::deleteLater);
+-        notification->update();
+-        notification_done = true;
+-    }
+-}
+-
+-/**
+- * @file lxqtclock.cpp
+- * @brief implements LXQtclock and LXQtclockgui
+- * @author Christopher "VdoP" Regali
+- * @author Kuzma Shapran
+- */
+-
+-class DownscaleFontStyle : public QProxyStyle
+-{
+-    using QProxyStyle::QProxyStyle;
+-public:
+-
+-    virtual void drawItemText(QPainter * painter, const QRect & rect, int flags
+-            , const QPalette & pal, bool enabled, const QString & text
+-            , QPalette::ColorRole textRole = QPalette::NoRole) const override
+-    {
+-        while (1 < painter->font().pointSize()
+-                && !(rect.size() - painter->fontMetrics().boundingRect(text).size()).isValid())
+-        {
+-            QFont f{painter->font()};
+-            f.setPointSize(f.pointSize() - 1);
+-            painter->setFont(f);
+-        }
+-        return QProxyStyle::drawItemText(painter, rect, flags, pal, enabled, text, textRole);
+-    }
+-};
+-
+-/**
+- * @brief constructor
+- */
+-LXQtClock::LXQtClock(const ILXQtPanelPluginStartupInfo &startupInfo):
+-    QObject(),
+-    ILXQtPanelPlugin(startupInfo),
+-    mAutoRotate(true),
+-    mTextStyle{new DownscaleFontStyle},
+-    mCurrentCharCount(0)
+-{
+-    QTimer::singleShot(0, this, [this] { notifyAboutDeprecation(settings()); });
+-
+-    mMainWidget = new QWidget();
+-    mRotatedWidget = new LXQt::RotatedWidget(*(new QWidget()), mMainWidget);
+-    mContent = mRotatedWidget->content();
+-    mContent->setStyle(mTextStyle.data());
+-    mTimeLabel = new QLabel(mContent);
+-    mDateLabel = new QLabel(mContent);
+-
+-    QVBoxLayout *borderLayout = new QVBoxLayout(mMainWidget);
+-    borderLayout->setContentsMargins(0, 0, 0, 0);
+-    borderLayout->setSpacing(0);
+-    borderLayout->addWidget(mRotatedWidget, 0, Qt::AlignCenter);
+-
+-    mTimeLabel->setObjectName("TimeLabel");
+-    mDateLabel->setObjectName("DateLabel");
+-
+-    mTimeLabel->setAlignment(Qt::AlignCenter);
+-    mDateLabel->setAlignment(Qt::AlignCenter);
+-
+-    mContent->setLayout(new QVBoxLayout{mContent});
+-    mContent->layout()->setContentsMargins(0, 0, 0, 0);
+-    mContent->layout()->setSpacing(0);
+-    mContent->layout()->addWidget(mTimeLabel);
+-    mContent->layout()->addWidget(mDateLabel);
+-
+-    mClockTimer = new QTimer(this);
+-    mClockTimer->setTimerType(Qt::PreciseTimer);
+-    connect (mClockTimer, SIGNAL(timeout()), SLOT(updateTime()));
+-
+-    mClockFormat = "hh:mm";
+-
+-    mCalendarPopup = new CalendarPopup(mContent);
+-
+-    mMainWidget->installEventFilter(this);
+-    settingsChanged();
+-}
+-
+-/**
+- * @brief destructor
+- */
+-LXQtClock::~LXQtClock()
+-{
+-    delete mMainWidget;
+-}
+-
+-QDateTime LXQtClock::currentDateTime()
+-{
+-    return QDateTime(mUseUTC ? QDateTime::currentDateTimeUtc() : QDateTime::currentDateTime());
+-}
+-
+-/**
+- * @brief updates the time
+- * Color and font settings can be configured in Qt CSS
+- */
+-void LXQtClock::updateTime()
+-{
+-    //XXX: do we need this with PreciseTimer ?
+-    if (currentDateTime().time().msec() > 500)
+-        restartTimer();
+-
+-    showTime();
+-}
+-
+-void LXQtClock::showTime()
+-{
+-    QDateTime now{currentDateTime()};
+-    int new_char_count;
+-    if (mDateOnNewLine)
+-    {
+-        QString new_time = QLocale::system().toString(now, mTimeFormat);
+-        QString new_date = QLocale::system().toString(now, mDateFormat);
+-        new_char_count = qMax(new_time.size(), new_date.size());
+-        mTimeLabel->setText(new_time);
+-        mDateLabel->setText(new_date);
+-    }
+-    else
+-    {
+-        QString new_time = QLocale::system().toString(now, mClockFormat);
+-        new_char_count = new_time.size();
+-        mTimeLabel->setText(new_time);
+-    }
+-
+-    //Note: if transformation (custom rendering) is enabled we need the explicit update
+-    //(update doesn't cause superfluous paint events)
+-    mRotatedWidget->update();
+-
+-    if (mCurrentCharCount != new_char_count)
+-    {
+-        mCurrentCharCount = new_char_count;
+-        realign();
+-    }
+-}
+-
+-void LXQtClock::restartTimer()
+-{
+-    if (mClockTimer->isActive())
+-        mClockTimer->stop();
+-    int updateInterval = mClockTimer->interval();
+-    QDateTime now{currentDateTime()};
+-    int delay = updateInterval - ((now.time().msec() + now.time().second() * 1000) % updateInterval);
+-    QTimer::singleShot(delay, Qt::PreciseTimer, mClockTimer, SLOT(start()));
+-    QTimer::singleShot(delay, Qt::PreciseTimer, this, SLOT(updateTime()));
+-}
+-
+-void LXQtClock::settingsChanged()
+-{
+-    mFirstDayOfWeek = settings()->value("firstDayOfWeek", -1).toInt();
+-    if (-1 == mFirstDayOfWeek)
+-        mCalendarPopup->setFirstDayOfWeek(QLocale::system().firstDayOfWeek());
+-    else
+-        mCalendarPopup->setFirstDayOfWeek(static_cast<Qt::DayOfWeek>(mFirstDayOfWeek));
+-
+-    mTimeFormat = settings()->value("timeFormat", QLocale::system().timeFormat(QLocale::ShortFormat).toUpper().contains("AP") ? "h:mm AP" : "HH:mm").toString();
+-
+-    mUseUTC = settings()->value("UTC", false).toBool();
+-    if (mUseUTC)
+-        mTimeFormat += "' Z'";
+-
+-    mDateFormat = settings()->value("dateFormat", Qt::SystemLocaleShortDate).toString();
+-
+-    bool dateBeforeTime = (settings()->value("showDate", "no").toString().toLower() == "before");
+-    bool dateAfterTime = (settings()->value("showDate", "no").toString().toLower() == "after");
+-    mDateOnNewLine = (settings()->value("showDate", "no").toString().toLower() == "below");
+-
+-    mAutoRotate = settings()->value("autoRotate", true).toBool();
+-
+-    if (dateBeforeTime)
+-        mClockFormat = QString("%1 %2").arg(mDateFormat).arg(mTimeFormat);
+-    else if (dateAfterTime)
+-        mClockFormat = QString("%1 %2").arg(mTimeFormat).arg(mDateFormat);
+-    else
+-        mClockFormat = mTimeFormat;
+-
+-    mDateLabel->setHidden(!mDateOnNewLine);
+-
+-    // mDateFormat usually does not contain time portion, but since it's possible to use custom date format - it has to be supported. [Kuzma Shapran]
+-    int updateInterval = QString(mTimeFormat + " " + mDateFormat).replace(QRegExp("'[^']*'"),"").contains("s") ? 1000 : 60000;
+-
+-    QDateTime now = currentDateTime();
+-
+-    showTime();
+-
+-    if (mClockTimer->interval() != updateInterval)
+-    {
+-        mClockTimer->setInterval(updateInterval);
+-
+-        restartTimer();
+-    }
+-}
+-
+-void LXQtClock::realign()
+-{
+-    QSize size{QWIDGETSIZE_MAX, QWIDGETSIZE_MAX};
+-    Qt::Corner origin = Qt::TopLeftCorner;
+-    if (mAutoRotate || panel()->isHorizontal())
+-    {
+-        switch (panel()->position())
+-        {
+-        case ILXQtPanel::PositionTop:
+-        case ILXQtPanel::PositionBottom:
+-            origin = Qt::TopLeftCorner;
+-            break;
+-
+-        case ILXQtPanel::PositionLeft:
+-            origin = Qt::BottomLeftCorner;
+-            break;
+-
+-        case ILXQtPanel::PositionRight:
+-            origin = Qt::TopRightCorner;
+-            break;
+-        }
+-
+-        //set minwidth
+-        QFontMetrics metrics{mTimeLabel->font()};
+-        //Note: using a constant string of reasonably wide characters for computing the width
+-        //      (not the current text as width of text can differ for each particular string (based on font))
+-        size.setWidth(metrics.boundingRect(QString{mCurrentCharCount, 'A'}).width());
+-    } else if (!panel()->isHorizontal())
+-    {
+-        size.setWidth(panel()->globalGeometry().width());
+-    }
+-
+-    mTimeLabel->setFixedWidth(size.width());
+-    mDateLabel->setFixedWidth(size.width());
+-
+-    int label_height = mTimeLabel->sizeHint().height();
+-    size.setHeight(mDateOnNewLine ? label_height * 2 : label_height);
+-
+-    const bool changed = mContent->maximumSize() != size || mRotatedWidget->origin() != origin;
+-
+-    mContent->setFixedSize(size);
+-    mRotatedWidget->setOrigin(origin);
+-
+-    if (changed)
+-    {
+-        mRotatedWidget->adjustContentSize();
+-        mRotatedWidget->update();
+-    }
+-}
+-
+-void LXQtClock::activated(ActivationReason reason)
+-{
+-    if (reason != ILXQtPanelPlugin::Trigger)
+-        return;
+-
+-    if (!mCalendarPopup->isVisible())
+-    {
+-        QRect pos = calculatePopupWindowPos(mCalendarPopup->size());
+-        mCalendarPopup->move(pos.topLeft());
+-        willShowWindow(mCalendarPopup);
+-        mCalendarPopup->show();
+-    }
+-    else
+-    {
+-        mCalendarPopup->hide();
+-    }
+-}
+-
+-QDialog * LXQtClock::configureDialog()
+-{
+-     return new LXQtClockConfiguration(settings());
+-}
+-
+-bool LXQtClock::eventFilter(QObject *watched, QEvent *event)
+-{
+-    if (watched == mMainWidget)
+-    {
+-        if (event->type() == QEvent::ToolTip)
+-            mMainWidget->setToolTip(QDateTime::currentDateTime().toString(Qt::DefaultLocaleLongDate));
+-
+-        return false;
+-    }
+-
+-    return false;
+-}
+diff --git a/plugin-clock/lxqtclock.h b/plugin-clock/lxqtclock.h
+deleted file mode 100644
+index 990219e5..00000000
+--- a/plugin-clock/lxqtclock.h
++++ /dev/null
+@@ -1,105 +0,0 @@
+-/* BEGIN_COMMON_COPYRIGHT_HEADER
+- * (c)LGPL2+
+- *
+- * LXQt - a lightweight, Qt based, desktop toolset
+- * https://lxqt.org
+- *
+- * Copyright: 2010-2013 Razor team
+- * Authors:
+- *   Christopher "VdoP" Regali
+- *   Alexander Sokoloff <sokoloff.a@gmail.com>
+- *   Maciej Płaza <plaza.maciej@gmail.com>
+- *   Kuzma Shapran <kuzma.shapran@gmail.com>
+- *
+- * This program or library is free software; you can redistribute it
+- * and/or modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation; either
+- * version 2.1 of the License, or (at your option) any later version.
+- *
+- * This library is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * Lesser General Public License for more details.
+-
+- * You should have received a copy of the GNU Lesser General
+- * Public License along with this library; if not, write to the
+- * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+- * Boston, MA 02110-1301 USA
+- *
+- * END_COMMON_COPYRIGHT_HEADER */
+-
+-#ifndef LXQTCLOCK_H
+-#define LXQTCLOCK_H
+-
+-#include "../panel/ilxqtpanelplugin.h"
+-#include "lxqtclockconfiguration.h"
+-#include "calendarpopup.h"
+-#include <LXQt/RotatedWidget>
+-
+-#include <QString>
+-
+-class QLabel;
+-class QDialog;
+-class QTimer;
+-class QProxyStyle;
+-
+-class LXQtClock : public QObject, public ILXQtPanelPlugin
+-{
+-    Q_OBJECT
+-public:
+-    LXQtClock(const ILXQtPanelPluginStartupInfo &startupInfo);
+-    ~LXQtClock();
+-
+-    virtual Flags flags() const { return PreferRightAlignment | HaveConfigDialog ; }
+-    QString themeId() const { return "Clock"; }
+-    QWidget *widget() { return mMainWidget; }
+-    QDialog *configureDialog();
+-    void settingsChanged();
+-
+-    void activated(ActivationReason reason);
+-    bool isSeparate() const { return true; }
+-
+-    void realign();
+-
+-public slots:
+-    void updateTime();
+-
+-protected:
+-    bool eventFilter(QObject *watched, QEvent *event);
+-
+-private:
+-    QTimer* mClockTimer;
+-    QWidget *mMainWidget;
+-    QWidget *mContent;
+-    LXQt::RotatedWidget* mRotatedWidget;
+-    QLabel* mTimeLabel;
+-    QLabel* mDateLabel;
+-    QString mClockFormat;
+-    QString mToolTipFormat;
+-    CalendarPopup* mCalendarPopup;
+-    QString mTimeFormat;
+-    QString mDateFormat;
+-    bool mDateOnNewLine;
+-    bool mUseUTC;
+-    int mFirstDayOfWeek;
+-    bool mAutoRotate;
+-    QScopedPointer<QProxyStyle> mTextStyle;
+-    int mCurrentCharCount;
+-
+-    QDateTime currentDateTime();
+-    void showTime();
+-    void restartTimer();
+-};
+-
+-
+-class LXQtClockPluginLibrary: public QObject, public ILXQtPanelPluginLibrary
+-{
+-    Q_OBJECT
+-    // Q_PLUGIN_METADATA(IID "lxqt.org/Panel/PluginInterface/3.0")
+-    Q_INTERFACES(ILXQtPanelPluginLibrary)
+-public:
+-    ILXQtPanelPlugin *instance(const ILXQtPanelPluginStartupInfo &startupInfo) const { return new LXQtClock(startupInfo);}
+-};
+-
+-
+-#endif
+diff --git a/plugin-clock/lxqtclockconfiguration.cpp b/plugin-clock/lxqtclockconfiguration.cpp
+deleted file mode 100644
+index 777e28b1..00000000
+--- a/plugin-clock/lxqtclockconfiguration.cpp
++++ /dev/null
+@@ -1,301 +0,0 @@
+-/* BEGIN_COMMON_COPYRIGHT_HEADER
+- * (c)LGPL2+
+- *
+- * LXQt - a lightweight, Qt based, desktop toolset
+- * https://lxqt.org
+- *
+- * Copyright: 2011 Razor team
+- * Authors:
+- *   Maciej Płaza <plaza.maciej@gmail.com>
+- *
+- * This program or library is free software; you can redistribute it
+- * and/or modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation; either
+- * version 2.1 of the License, or (at your option) any later version.
+- *
+- * This library is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * Lesser General Public License for more details.
+-
+- * You should have received a copy of the GNU Lesser General
+- * Public License along with this library; if not, write to the
+- * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+- * Boston, MA 02110-1301 USA
+- *
+- * END_COMMON_COPYRIGHT_HEADER */
+-
+-
+-#include <QInputDialog>
+-#include <QStandardItemModel>
+-#include <QStandardItem>
+-
+-#include "lxqtclockconfiguration.h"
+-#include "ui_lxqtclockconfiguration.h"
+-
+-namespace
+-{
+-    class FirstDayCombo : public QStandardItemModel
+-    {
+-    public:
+-        FirstDayCombo()
+-        {
+-            QStandardItem* item = 0;
+-            int row = 0;
+-            item = new QStandardItem;
+-            item->setData(-1, Qt::UserRole);
+-            setItem(row, 0, item);
+-            item = new QStandardItem;
+-            item->setData(tr("<locale based>"), Qt::DisplayRole);
+-            setItem(row, 1, item);
+-            ++row;
+-            for (int wday = Qt::Monday; Qt::Sunday >= wday; ++wday, ++row)
+-            {
+-                item = new QStandardItem;
+-                item->setData(wday, Qt::UserRole);
+-                setItem(row, 0, item);
+-                item = new QStandardItem;
+-                item->setData(QLocale::system().dayName(wday), Qt::DisplayRole);
+-                setItem(row, 1, item);
+-            }
+-        }
+-
+-        int findIndex(int wday)
+-        {
+-            int i = rowCount() - 1;
+-            for ( ; 0 <= i; --i)
+-            {
+-                if (item(i)->data(Qt::UserRole).toInt() == wday)
+-                    break;
+-            }
+-            return i;
+-        }
+-
+-    };
+-}
+-
+-LXQtClockConfiguration::LXQtClockConfiguration(PluginSettings *settings, QWidget *parent) :
+-    LXQtPanelPluginConfigDialog(settings, parent),
+-    ui(new Ui::LXQtClockConfiguration),
+-    mOldIndex(1)
+-{
+-    setAttribute(Qt::WA_DeleteOnClose);
+-    setObjectName("ClockConfigurationWindow");
+-    ui->setupUi(this);
+-
+-    connect(ui->buttons, SIGNAL(clicked(QAbstractButton*)), SLOT(dialogButtonsAction(QAbstractButton*)));
+-
+-    ui->firstDayOfWeekCB->setModel(new FirstDayCombo);
+-    ui->firstDayOfWeekCB->setModelColumn(1);
+-
+-    loadSettings();
+-    /* We use clicked() and activated(int) because these signals aren't emitting after programmaticaly
+-      change of state */
+-
+-    connect(ui->dateFormatCOB, SIGNAL(activated(int)), SLOT(dateFormatActivated(int)));
+-
+-    connect(ui->showSecondsCB, SIGNAL(clicked()), SLOT(saveSettings()));
+-    connect(ui->ampmClockCB, SIGNAL(clicked()), SLOT(saveSettings()));
+-    connect(ui->useUtcCB, SIGNAL(clicked()), SLOT(saveSettings()));
+-    connect(ui->dontShowDateRB, SIGNAL(clicked()), SLOT(saveSettings()));
+-    connect(ui->showDateBeforeTimeRB, SIGNAL(clicked()), SLOT(saveSettings()));
+-    connect(ui->showDateAfterTimeRB, SIGNAL(clicked()), SLOT(saveSettings()));
+-    connect(ui->showDateBelowTimeRB, SIGNAL(clicked()), SLOT(saveSettings()));
+-
+-    connect(ui->autorotateCB, SIGNAL(clicked()), SLOT(saveSettings()));
+-    connect(ui->firstDayOfWeekCB, SIGNAL(activated(int)), SLOT(saveSettings()));
+-}
+-
+-LXQtClockConfiguration::~LXQtClockConfiguration()
+-{
+-    delete ui;
+-}
+-
+-static int currentYear = QDate::currentDate().year();
+-
+-void LXQtClockConfiguration::addDateFormat(const QString &format)
+-{
+-    if (ui->dateFormatCOB->findData(QVariant(format)) == -1)
+-        ui->dateFormatCOB->addItem(QDate(currentYear, 1, 1).toString(format), QVariant(format));
+-}
+-
+-void LXQtClockConfiguration::createDateFormats()
+-{
+-    ui->dateFormatCOB->clear();
+-
+-    QString systemDateLocale = QLocale::system().dateFormat(QLocale::ShortFormat).toUpper();
+-
+-    if (systemDateLocale.indexOf("Y") < systemDateLocale.indexOf("D"))
+-    // Big-endian (year, month, day) -> in some Asia countires like China or Japan
+-    {
+-        addDateFormat("MMM d");
+-        addDateFormat("MMMM d");
+-        addDateFormat("MMM d, ddd");
+-        addDateFormat("MMMM d, dddd");
+-        addDateFormat("yyyy MMM d");
+-        addDateFormat("yyyy MMMM d");
+-        addDateFormat("yyyy MMM d, ddd");
+-        addDateFormat("yyyy MMMM d, dddd");
+-        addDateFormat("MMM dd");
+-        addDateFormat("MMMM dd");
+-        addDateFormat("MMM dd, ddd");
+-        addDateFormat("MMMM dd, dddd");
+-        addDateFormat("yyyy MMM dd");
+-        addDateFormat("yyyy MMMM dd");
+-        addDateFormat("yyyy MMM dd, ddd");
+-        addDateFormat("yyyy MMMM dd, dddd");
+-    }
+-    else if (systemDateLocale.indexOf("M") < systemDateLocale.indexOf("D"))
+-    // Middle-endian (month, day, year) -> USA
+-    {
+-        addDateFormat("MMM d");
+-        addDateFormat("MMMM d");
+-        addDateFormat("ddd, MMM d");
+-        addDateFormat("dddd, MMMM d");
+-        addDateFormat("MMM d yyyy");
+-        addDateFormat("MMMM d yyyy");
+-        addDateFormat("ddd, MMM d yyyy");
+-        addDateFormat("dddd, MMMM d yyyy");
+-        addDateFormat("MMM dd");
+-        addDateFormat("MMMM dd");
+-        addDateFormat("ddd, MMM dd");
+-        addDateFormat("dddd, MMMM dd");
+-        addDateFormat("MMM dd yyyy");
+-        addDateFormat("MMMM dd yyyy");
+-        addDateFormat("ddd, MMM dd yyyy");
+-        addDateFormat("dddd, MMMM dd yyyy");
+-    }
+-    else
+-    // Little-endian (day, month, year) -> most of Europe
+-    {
+-        addDateFormat("d MMM");
+-        addDateFormat("d MMMM");
+-        addDateFormat("ddd, d MMM");
+-        addDateFormat("dddd, d MMMM");
+-        addDateFormat("d MMM yyyy");
+-        addDateFormat("d MMMM yyyy");
+-        addDateFormat("ddd, d MMM yyyy");
+-        addDateFormat("dddd, d MMMM yyyy");
+-        addDateFormat("dd MMM");
+-        addDateFormat("dd MMMM");
+-        addDateFormat("ddd, dd MMM");
+-        addDateFormat("dddd, dd MMMM");
+-        addDateFormat("dd MMM yyyy");
+-        addDateFormat("dd MMMM yyyy");
+-        addDateFormat("ddd, dd MMM yyyy");
+-        addDateFormat("dddd, dd MMMM yyyy");
+-    }
+-
+-    addDateFormat(QLocale::system().dateFormat(QLocale::ShortFormat));
+-    addDateFormat(QLocale::system().dateFormat(QLocale::LongFormat));
+-
+-    addDateFormat("yyyy-MM-dd"); // ISO
+-
+-    if (mCustomDateFormat.isEmpty())
+-        ui->dateFormatCOB->addItem("Custom ...", QVariant(mCustomDateFormat));
+-    else
+-        ui->dateFormatCOB->addItem(QString("Custom (%1) ...").arg(QDate(currentYear, 1, 1).toString(mCustomDateFormat)), QVariant(mCustomDateFormat));
+-}
+-
+-void LXQtClockConfiguration::loadSettings()
+-{
+-    QString systemDateLocale = QLocale::system().dateFormat(QLocale::ShortFormat).toUpper();
+-    QString systemTimeLocale = QLocale::system().timeFormat(QLocale::ShortFormat).toUpper();
+-
+-    QString timeFormat = settings().value("timeFormat", systemTimeLocale.contains("AP") ? "h:mm AP" : "HH:mm").toString();
+-
+-    ui->showSecondsCB->setChecked(timeFormat.indexOf("ss") > -1);
+-
+-    ui->ampmClockCB->setChecked(timeFormat.toUpper().indexOf("AP") > -1);
+-
+-    ui->useUtcCB->setChecked(settings().value("UTC", false).toBool());
+-
+-    ui->dontShowDateRB->setChecked(true);
+-    ui->showDateBeforeTimeRB->setChecked(settings().value("showDate", "no").toString().toLower() == "before");
+-    ui->showDateAfterTimeRB->setChecked(settings().value("showDate", "no").toString().toLower() == "after");
+-    ui->showDateBelowTimeRB->setChecked(settings().value("showDate", "no").toString().toLower() == "below");
+-
+-    mCustomDateFormat = settings().value("customDateFormat", QString()).toString();
+-    QString dateFormat = settings().value("dateFormat", QLocale::system().dateFormat(QLocale::ShortFormat)).toString();
+-
+-    createDateFormats();
+-
+-    if (mCustomDateFormat == dateFormat)
+-        ui->dateFormatCOB->setCurrentIndex(ui->dateFormatCOB->count() - 1);
+-    else
+-    {
+-        ui->dateFormatCOB->setCurrentIndex(ui->dateFormatCOB->findData(dateFormat));
+-        if (ui->dateFormatCOB->currentIndex() < 0)
+-            ui->dateFormatCOB->setCurrentIndex(1);
+-    }
+-    mOldIndex = ui->dateFormatCOB->currentIndex();
+-
+-    ui->autorotateCB->setChecked(settings().value("autoRotate", true).toBool());
+-    ui->firstDayOfWeekCB->setCurrentIndex(dynamic_cast<FirstDayCombo&>(*(ui->firstDayOfWeekCB->model())).findIndex(settings().value("firstDayOfWeek", -1).toInt()));
+-}
+-
+-void LXQtClockConfiguration::saveSettings()
+-{
+-    QString timeFormat(ui->ampmClockCB->isChecked() ? "h:mm AP" : "HH:mm");
+-
+-    if (ui->showSecondsCB->isChecked())
+-        timeFormat.insert(timeFormat.indexOf("mm") + 2, ":ss");
+-
+-    settings().setValue("timeFormat", timeFormat);
+-
+-    settings().setValue("UTC", ui->useUtcCB->isChecked());
+-
+-    settings().setValue("showDate",
+-        ui->showDateBeforeTimeRB->isChecked() ? "before" :
+-        (ui->showDateAfterTimeRB->isChecked() ? "after" :
+-        (ui->showDateBelowTimeRB->isChecked() ? "below" : "no" )));
+-
+-    settings().setValue("customDateFormat", mCustomDateFormat);
+-    if (ui->dateFormatCOB->currentIndex() == (ui->dateFormatCOB->count() - 1))
+-        settings().setValue("dateFormat", mCustomDateFormat);
+-    else
+-        settings().setValue("dateFormat", ui->dateFormatCOB->itemData(ui->dateFormatCOB->currentIndex()));
+-
+-    settings().setValue("autoRotate", ui->autorotateCB->isChecked());
+-    settings().setValue("firstDayOfWeek", dynamic_cast<QStandardItemModel&>(*ui->firstDayOfWeekCB->model()).item(ui->firstDayOfWeekCB->currentIndex(), 0)->data(Qt::UserRole));
+-}
+-
+-void LXQtClockConfiguration::dateFormatActivated(int index)
+-{
+-    if (index == ui->dateFormatCOB->count() - 1)
+-    {
+-        bool ok;
+-        QString newCustomDateFormat = QInputDialog::getText(this, tr("Input custom date format"), tr(
+-            "Interpreted sequences of date format are:\n"
+-            "\n"
+-            "d\tthe day as number without a leading zero (1 to 31)\n"
+-            "dd\tthe day as number with a leading zero (01 to 31)\n"
+-            "ddd\tthe abbreviated localized day name (e.g. 'Mon' to 'Sun').\n"
+-            "dddd\tthe long localized day name (e.g. 'Monday' to 'Sunday').\n"
+-            "M\tthe month as number without a leading zero (1-12)\n"
+-            "MM\tthe month as number with a leading zero (01-12)\n"
+-            "MMM\tthe abbreviated localized month name (e.g. 'Jan' to 'Dec').\n"
+-            "MMMM\tthe long localized month name (e.g. 'January' to 'December').\n"
+-            "yy\tthe year as two digit number (00-99)\n"
+-            "yyyy\tthe year as four digit number\n"
+-            "\n"
+-            "All other input characters will be treated as text.\n"
+-            "Any sequence of characters that are enclosed in single quotes (')\n"
+-            "will also be treated as text and not be used as an expression.\n"
+-            "\n"
+-            "\n"
+-            "Custom date format:"
+-            ), QLineEdit::Normal, mCustomDateFormat, &ok);
+-        if (ok)
+-        {
+-            mCustomDateFormat = newCustomDateFormat;
+-            mOldIndex = index;
+-            createDateFormats();
+-        }
+-        ui->dateFormatCOB->setCurrentIndex(mOldIndex);
+-    }
+-    else
+-        mOldIndex = index;
+-
+-    saveSettings();
+-}
+diff --git a/plugin-clock/lxqtclockconfiguration.h b/plugin-clock/lxqtclockconfiguration.h
+deleted file mode 100644
+index 6aaaeeb6..00000000
+--- a/plugin-clock/lxqtclockconfiguration.h
++++ /dev/null
+@@ -1,79 +0,0 @@
+-/* BEGIN_COMMON_COPYRIGHT_HEADER
+- * (c)LGPL2+
+- *
+- * LXQt - a lightweight, Qt based, desktop toolset
+- * https://lxqt.org
+- *
+- * Copyright: 2011 Razor team
+- * Authors:
+- *   Maciej Płaza <plaza.maciej@gmail.com>
+- *
+- * This program or library is free software; you can redistribute it
+- * and/or modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation; either
+- * version 2.1 of the License, or (at your option) any later version.
+- *
+- * This library is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * Lesser General Public License for more details.
+-
+- * You should have received a copy of the GNU Lesser General
+- * Public License along with this library; if not, write to the
+- * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+- * Boston, MA 02110-1301 USA
+- *
+- * END_COMMON_COPYRIGHT_HEADER */
+-
+-
+-#ifndef LXQTCLOCKCONFIGURATION_H
+-#define LXQTCLOCKCONFIGURATION_H
+-
+-#include "../panel/lxqtpanelpluginconfigdialog.h"
+-#include "../panel/pluginsettings.h"
+-
+-#include <QAbstractButton>
+-#include <QButtonGroup>
+-#include <QLocale>
+-#include <QDateTime>
+-
+-namespace Ui {
+-    class LXQtClockConfiguration;
+-}
+-
+-class LXQtClockConfiguration : public LXQtPanelPluginConfigDialog
+-{
+-    Q_OBJECT
+-
+-public:
+-    explicit LXQtClockConfiguration(PluginSettings *settings, QWidget *parent = 0);
+-    ~LXQtClockConfiguration();
+-
+-private:
+-    Ui::LXQtClockConfiguration *ui;
+-
+-    /*
+-      Read settings from conf file and put data into controls.
+-    */
+-    void loadSettings();
+-
+-    /*
+-      Creates a date formats consistent with the region read from locale.
+-    */
+-    void createDateFormats();
+-
+-private slots:
+-    /*
+-      Saves settings in conf file.
+-    */
+-    void saveSettings();
+-    void dateFormatActivated(int);
+-
+-private:
+-    int mOldIndex;
+-    QString mCustomDateFormat;
+-
+-    void addDateFormat(const QString &format);
+-};
+-
+-#endif // LXQTCLOCKCONFIGURATION_H
+diff --git a/plugin-clock/lxqtclockconfiguration.ui b/plugin-clock/lxqtclockconfiguration.ui
+deleted file mode 100644
+index 2912ef35..00000000
+--- a/plugin-clock/lxqtclockconfiguration.ui
++++ /dev/null
+@@ -1,232 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<ui version="4.0">
+- <class>LXQtClockConfiguration</class>
+- <widget class="QDialog" name="LXQtClockConfiguration">
+-  <property name="geometry">
+-   <rect>
+-    <x>0</x>
+-    <y>0</y>
+-    <width>330</width>
+-    <height>447</height>
+-   </rect>
+-  </property>
+-  <property name="windowTitle">
+-   <string>Clock Settings</string>
+-  </property>
+-  <layout class="QVBoxLayout" name="verticalLayout">
+-   <item>
+-    <widget class="QGroupBox" name="timeGB">
+-     <property name="title">
+-      <string>Time</string>
+-     </property>
+-     <layout class="QVBoxLayout" name="verticalLayout_2">
+-      <item>
+-       <widget class="QCheckBox" name="showSecondsCB">
+-        <property name="text">
+-         <string>&amp;Show seconds</string>
+-        </property>
+-       </widget>
+-      </item>
+-      <item>
+-       <widget class="QCheckBox" name="ampmClockCB">
+-        <property name="text">
+-         <string>12 &amp;hour style</string>
+-        </property>
+-       </widget>
+-      </item>
+-      <item>
+-       <widget class="QCheckBox" name="useUtcCB">
+-        <property name="text">
+-         <string>&amp;Use UTC</string>
+-        </property>
+-       </widget>
+-      </item>
+-     </layout>
+-    </widget>
+-   </item>
+-   <item>
+-    <widget class="QGroupBox" name="dateGB">
+-     <property name="title">
+-      <string>Date</string>
+-     </property>
+-     <layout class="QGridLayout" name="gridLayout_2" columnstretch="0,1">
+-      <item row="4" column="0">
+-       <widget class="QLabel" name="dateFormatL">
+-        <property name="enabled">
+-         <bool>false</bool>
+-        </property>
+-        <property name="text">
+-         <string>Date &amp;format</string>
+-        </property>
+-        <property name="buddy">
+-         <cstring>dateFormatCOB</cstring>
+-        </property>
+-       </widget>
+-      </item>
+-      <item row="4" column="1">
+-       <widget class="QComboBox" name="dateFormatCOB">
+-        <property name="enabled">
+-         <bool>false</bool>
+-        </property>
+-       </widget>
+-      </item>
+-      <item row="0" column="0" colspan="2">
+-       <widget class="QRadioButton" name="dontShowDateRB">
+-        <property name="text">
+-         <string>&amp;Do not show date</string>
+-        </property>
+-        <property name="checked">
+-         <bool>true</bool>
+-        </property>
+-       </widget>
+-      </item>
+-      <item row="1" column="0" colspan="2">
+-       <widget class="QRadioButton" name="showDateBeforeTimeRB">
+-        <property name="text">
+-         <string>Show date &amp;before time</string>
+-        </property>
+-       </widget>
+-      </item>
+-      <item row="2" column="0" colspan="2">
+-       <widget class="QRadioButton" name="showDateAfterTimeRB">
+-        <property name="text">
+-         <string>Show date &amp;after time</string>
+-        </property>
+-       </widget>
+-      </item>
+-      <item row="3" column="0" colspan="2">
+-       <widget class="QRadioButton" name="showDateBelowTimeRB">
+-        <property name="text">
+-         <string>Show date below time on new &amp;line</string>
+-        </property>
+-       </widget>
+-      </item>
+-      <item row="5" column="0">
+-       <widget class="QLabel" name="firstDayOfWeekL">
+-        <property name="text">
+-         <string>First day of week in calendar</string>
+-        </property>
+-        <property name="buddy">
+-         <cstring>firstDayOfWeekCB</cstring>
+-        </property>
+-       </widget>
+-      </item>
+-      <item row="5" column="1">
+-       <widget class="QComboBox" name="firstDayOfWeekCB">
+-       </widget>
+-      </item>
+-     </layout>
+-    </widget>
+-   </item>
+-   <item>
+-    <widget class="QGroupBox" name="orientationGB">
+-     <property name="title">
+-      <string>Orientation</string>
+-     </property>
+-     <layout class="QVBoxLayout" name="verticalLayout_3">
+-      <item>
+-       <widget class="QCheckBox" name="autorotateCB">
+-        <property name="text">
+-         <string>Auto&amp;rotate when the panel is vertical</string>
+-        </property>
+-        <property name="checked">
+-         <bool>true</bool>
+-        </property>
+-       </widget>
+-      </item>
+-     </layout>
+-    </widget>
+-   </item>
+-   <item>
+-    <spacer name="verticalSpacer">
+-     <property name="orientation">
+-      <enum>Qt::Vertical</enum>
+-     </property>
+-     <property name="sizeHint" stdset="0">
+-      <size>
+-       <width>20</width>
+-       <height>0</height>
+-      </size>
+-     </property>
+-    </spacer>
+-   </item>
+-   <item>
+-    <widget class="QDialogButtonBox" name="buttons">
+-     <property name="orientation">
+-      <enum>Qt::Horizontal</enum>
+-     </property>
+-     <property name="standardButtons">
+-      <set>QDialogButtonBox::Close|QDialogButtonBox::Reset</set>
+-     </property>
+-    </widget>
+-   </item>
+-  </layout>
+- </widget>
+- <resources/>
+- <connections>
+-  <connection>
+-   <sender>buttons</sender>
+-   <signal>accepted()</signal>
+-   <receiver>LXQtClockConfiguration</receiver>
+-   <slot>accept()</slot>
+-   <hints>
+-    <hint type="sourcelabel">
+-     <x>214</x>
+-     <y>350</y>
+-    </hint>
+-    <hint type="destinationlabel">
+-     <x>157</x>
+-     <y>274</y>
+-    </hint>
+-   </hints>
+-  </connection>
+-  <connection>
+-   <sender>buttons</sender>
+-   <signal>rejected()</signal>
+-   <receiver>LXQtClockConfiguration</receiver>
+-   <slot>reject()</slot>
+-   <hints>
+-    <hint type="sourcelabel">
+-     <x>214</x>
+-     <y>350</y>
+-    </hint>
+-    <hint type="destinationlabel">
+-     <x>196</x>
+-     <y>274</y>
+-    </hint>
+-   </hints>
+-  </connection>
+-  <connection>
+-   <sender>dontShowDateRB</sender>
+-   <signal>toggled(bool)</signal>
+-   <receiver>dateFormatL</receiver>
+-   <slot>setDisabled(bool)</slot>
+-   <hints>
+-    <hint type="sourcelabel">
+-     <x>68</x>
+-     <y>166</y>
+-    </hint>
+-    <hint type="destinationlabel">
+-     <x>63</x>
+-     <y>267</y>
+-    </hint>
+-   </hints>
+-  </connection>
+-  <connection>
+-   <sender>dontShowDateRB</sender>
+-   <signal>toggled(bool)</signal>
+-   <receiver>dateFormatCOB</receiver>
+-   <slot>setDisabled(bool)</slot>
+-   <hints>
+-    <hint type="sourcelabel">
+-     <x>174</x>
+-     <y>167</y>
+-    </hint>
+-    <hint type="destinationlabel">
+-     <x>239</x>
+-     <y>275</y>
+-    </hint>
+-   </hints>
+-  </connection>
+- </connections>
+-</ui>
+diff --git a/plugin-clock/resources/clock.desktop.in b/plugin-clock/resources/clock.desktop.in
+deleted file mode 100644
+index e6e99014..00000000
+--- a/plugin-clock/resources/clock.desktop.in
++++ /dev/null
+@@ -1,8 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-Icon=preferences-system-time
+-
+-#TRANSLATIONS_DIR=../translations
+diff --git a/plugin-clock/translations/clock_ar.desktop b/plugin-clock/translations/clock_ar.desktop
+deleted file mode 100644
+index cc1b687d..00000000
+--- a/plugin-clock/translations/clock_ar.desktop
++++ /dev/null
+@@ -1,2 +0,0 @@
+-Name[ar]=التّاريخ والوقت
+-Comment[ar]=تعرض الوقت الحاليّ. فيها تقويم.
+diff --git a/plugin-clock/translations/clock_cs.desktop b/plugin-clock/translations/clock_cs.desktop
+deleted file mode 100644
+index 20f62398..00000000
+--- a/plugin-clock/translations/clock_cs.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[cs]=Hodiny a kalendář
+-Name[cs]=Hodiny
+diff --git a/plugin-clock/translations/clock_cs_CZ.desktop b/plugin-clock/translations/clock_cs_CZ.desktop
+deleted file mode 100644
+index c99c1f0c..00000000
+--- a/plugin-clock/translations/clock_cs_CZ.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[cs_CZ]=Hodiny a kalendář
+-Name[cs_CZ]=Hodiny
+diff --git a/plugin-clock/translations/clock_da.desktop b/plugin-clock/translations/clock_da.desktop
+deleted file mode 100644
+index 4aa5ecdc..00000000
+--- a/plugin-clock/translations/clock_da.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-Icon=preferences-system-time
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-# Translations
+-Name[da]=Dato og klokkeslæt
+-Comment[da]=Viser den aktuelle tid. Der følger en kalender med.
+diff --git a/plugin-clock/translations/clock_de.desktop b/plugin-clock/translations/clock_de.desktop
+deleted file mode 100644
+index f24f08ed..00000000
+--- a/plugin-clock/translations/clock_de.desktop
++++ /dev/null
+@@ -1,2 +0,0 @@
+-Name[de]=Uhr und Kalender
+-Comment[de]=Zeigt die aktuelle Uhrzeit. Ein Kalender ist auch enthalten.
+diff --git a/plugin-clock/translations/clock_el.desktop b/plugin-clock/translations/clock_el.desktop
+deleted file mode 100644
+index 05f41b1f..00000000
+--- a/plugin-clock/translations/clock_el.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[el]=Ρολόι και ημερολόγιο
+-Name[el]=Ρολόι
+diff --git a/plugin-clock/translations/clock_eo.desktop b/plugin-clock/translations/clock_eo.desktop
+deleted file mode 100644
+index 1042ea54..00000000
+--- a/plugin-clock/translations/clock_eo.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[eo]=Horloĝo kaj kalendaro
+-Name[eo]=Horloĝo
+diff --git a/plugin-clock/translations/clock_es.desktop b/plugin-clock/translations/clock_es.desktop
+deleted file mode 100644
+index a579ef7e..00000000
+--- a/plugin-clock/translations/clock_es.desktop
++++ /dev/null
+@@ -1,2 +0,0 @@
+-Name[es]=Fecha y hora
+-Comment[es]=Muestra la hora actual. Incluye un calendario.
+diff --git a/plugin-clock/translations/clock_es_VE.desktop b/plugin-clock/translations/clock_es_VE.desktop
+deleted file mode 100644
+index 2621c2be..00000000
+--- a/plugin-clock/translations/clock_es_VE.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[es_VE]=Reloj y calendario
+-Name[es_VE]=Reloj
+diff --git a/plugin-clock/translations/clock_eu.desktop b/plugin-clock/translations/clock_eu.desktop
+deleted file mode 100644
+index 6edd4462..00000000
+--- a/plugin-clock/translations/clock_eu.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[eu]=Erlojua eta egutegia
+-Name[eu]=Erlojua
+diff --git a/plugin-clock/translations/clock_fi.desktop b/plugin-clock/translations/clock_fi.desktop
+deleted file mode 100644
+index 0035c6a3..00000000
+--- a/plugin-clock/translations/clock_fi.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[fi]=Kello ja kalenteri
+-Name[fi]=Kello
+diff --git a/plugin-clock/translations/clock_fr.desktop b/plugin-clock/translations/clock_fr.desktop
+deleted file mode 100644
+index 1035f7b5..00000000
+--- a/plugin-clock/translations/clock_fr.desktop
++++ /dev/null
+@@ -1,3 +0,0 @@
+-# Translations
+-Comment[fr]=Horloge et calendrier
+-Name[fr]=Horloge
+diff --git a/plugin-clock/translations/clock_hu.desktop b/plugin-clock/translations/clock_hu.desktop
+deleted file mode 100644
+index be55b7c9..00000000
+--- a/plugin-clock/translations/clock_hu.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[hu]=Óra és naptár
+-Name[hu]=Óra
+diff --git a/plugin-clock/translations/clock_ia.desktop b/plugin-clock/translations/clock_ia.desktop
+deleted file mode 100644
+index 9c7df243..00000000
+--- a/plugin-clock/translations/clock_ia.desktop
++++ /dev/null
+@@ -1,10 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Clock
+-Comment=Clock and calendar
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+diff --git a/plugin-clock/translations/clock_id_ID.desktop b/plugin-clock/translations/clock_id_ID.desktop
+deleted file mode 100644
+index 9c7df243..00000000
+--- a/plugin-clock/translations/clock_id_ID.desktop
++++ /dev/null
+@@ -1,10 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Clock
+-Comment=Clock and calendar
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+diff --git a/plugin-clock/translations/clock_it.desktop b/plugin-clock/translations/clock_it.desktop
+deleted file mode 100644
+index bd40ee3b..00000000
+--- a/plugin-clock/translations/clock_it.desktop
++++ /dev/null
+@@ -1,3 +0,0 @@
+-Comment[it]=Orologio e calendario
+-Name[it]=Orologio
+-
+diff --git a/plugin-clock/translations/clock_ja.desktop b/plugin-clock/translations/clock_ja.desktop
+deleted file mode 100644
+index 67e702a2..00000000
+--- a/plugin-clock/translations/clock_ja.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[ja]=時計とカレンダー
+-Name[ja]=時計
+diff --git a/plugin-clock/translations/clock_ko.desktop b/plugin-clock/translations/clock_ko.desktop
+deleted file mode 100644
+index 9c7df243..00000000
+--- a/plugin-clock/translations/clock_ko.desktop
++++ /dev/null
+@@ -1,10 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Clock
+-Comment=Clock and calendar
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+diff --git a/plugin-clock/translations/clock_lt.desktop b/plugin-clock/translations/clock_lt.desktop
+deleted file mode 100644
+index 6ccf8b1d..00000000
+--- a/plugin-clock/translations/clock_lt.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[lt]=Laikrodis ir kalendorius
+-Name[lt]=Laikrodis
+diff --git a/plugin-clock/translations/clock_nl.desktop b/plugin-clock/translations/clock_nl.desktop
+deleted file mode 100644
+index b041bc1f..00000000
+--- a/plugin-clock/translations/clock_nl.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[nl]=Klok en kalender
+-Name[nl]=Klok
+diff --git a/plugin-clock/translations/clock_pl.desktop b/plugin-clock/translations/clock_pl.desktop
+deleted file mode 100644
+index 035b3e40..00000000
+--- a/plugin-clock/translations/clock_pl.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[pl]=Wyświetla obecny czas. Zawiera kalendarz.
+-Name[pl]=Zegar
+diff --git a/plugin-clock/translations/clock_pt.desktop b/plugin-clock/translations/clock_pt.desktop
+deleted file mode 100644
+index e4a511f0..00000000
+--- a/plugin-clock/translations/clock_pt.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-# Translations
+-Name[pt]=Relógio
+-Comment[pt]=Relógio e calendário
+-
+diff --git a/plugin-clock/translations/clock_pt_BR.desktop b/plugin-clock/translations/clock_pt_BR.desktop
+deleted file mode 100644
+index 42aab783..00000000
+--- a/plugin-clock/translations/clock_pt_BR.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[pt_BR]=Relógio e calendário
+-Name[pt_BR]=Relógio
+diff --git a/plugin-clock/translations/clock_ro_RO.desktop b/plugin-clock/translations/clock_ro_RO.desktop
+deleted file mode 100644
+index d4ca3e14..00000000
+--- a/plugin-clock/translations/clock_ro_RO.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[ro_RO]=Afișează ora curentă incluzând și un calendar.
+-Name[ro_RO]=Data și ora
+diff --git a/plugin-clock/translations/clock_ru.desktop b/plugin-clock/translations/clock_ru.desktop
+deleted file mode 100644
+index c5bc1dcc..00000000
+--- a/plugin-clock/translations/clock_ru.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[ru]=Отображение текущего времени. Поставляется с календарем.
+-Name[ru]=Дата и время
+diff --git a/plugin-clock/translations/clock_sk.desktop b/plugin-clock/translations/clock_sk.desktop
+deleted file mode 100644
+index 9730f266..00000000
+--- a/plugin-clock/translations/clock_sk.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[sk]=Hodiny a kalendár
+-Name[sk]=Hodiny
+diff --git a/plugin-clock/translations/clock_sl.desktop b/plugin-clock/translations/clock_sl.desktop
+deleted file mode 100644
+index f056c30c..00000000
+--- a/plugin-clock/translations/clock_sl.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[sl]=Ura in koledar
+-Name[sl]=Ura
+diff --git a/plugin-clock/translations/clock_sr.desktop b/plugin-clock/translations/clock_sr.desktop
+deleted file mode 100644
+index 363f64e2..00000000
+--- a/plugin-clock/translations/clock_sr.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[sr]=Сат и календар
+-Name[sr]=Сат
+diff --git a/plugin-clock/translations/clock_sr@ijekavian.desktop b/plugin-clock/translations/clock_sr@ijekavian.desktop
+deleted file mode 100644
+index 2c1f6094..00000000
+--- a/plugin-clock/translations/clock_sr@ijekavian.desktop
++++ /dev/null
+@@ -1,2 +0,0 @@
+-Name[sr@ijekavian]=Сат
+-Comment[sr@ijekavian]=Сат и календар
+diff --git a/plugin-clock/translations/clock_sr@ijekavianlatin.desktop b/plugin-clock/translations/clock_sr@ijekavianlatin.desktop
+deleted file mode 100644
+index f4845497..00000000
+--- a/plugin-clock/translations/clock_sr@ijekavianlatin.desktop
++++ /dev/null
+@@ -1,2 +0,0 @@
+-Name[sr@ijekavianlatin]=Sat
+-Comment[sr@ijekavianlatin]=Sat i kalendar
+diff --git a/plugin-clock/translations/clock_sr@latin.desktop b/plugin-clock/translations/clock_sr@latin.desktop
+deleted file mode 100644
+index e1fbd72f..00000000
+--- a/plugin-clock/translations/clock_sr@latin.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[sr@latin]=Sat i kalendar
+-Name[sr@latin]=Sat
+diff --git a/plugin-clock/translations/clock_th_TH.desktop b/plugin-clock/translations/clock_th_TH.desktop
+deleted file mode 100644
+index 4ec45655..00000000
+--- a/plugin-clock/translations/clock_th_TH.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[th_TH]=นาฬิกาและปฏิทิน
+-Name[th_TH]=นาฬิกา
+diff --git a/plugin-clock/translations/clock_tr.desktop b/plugin-clock/translations/clock_tr.desktop
+deleted file mode 100644
+index b17ccc55..00000000
+--- a/plugin-clock/translations/clock_tr.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[tr]=Saat ve takvim
+-Name[tr]=Saat
+diff --git a/plugin-clock/translations/clock_uk.desktop b/plugin-clock/translations/clock_uk.desktop
+deleted file mode 100644
+index a76879cf..00000000
+--- a/plugin-clock/translations/clock_uk.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[uk]=Показує поточний час. Календар
+-Name[uk]=Дата і час
+diff --git a/plugin-clock/translations/clock_zh_CN.GB2312.desktop b/plugin-clock/translations/clock_zh_CN.GB2312.desktop
+deleted file mode 100644
+index 9c7df243..00000000
+--- a/plugin-clock/translations/clock_zh_CN.GB2312.desktop
++++ /dev/null
+@@ -1,10 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Clock
+-Comment=Clock and calendar
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+diff --git a/plugin-clock/translations/clock_zh_CN.desktop b/plugin-clock/translations/clock_zh_CN.desktop
+deleted file mode 100644
+index f875ee0b..00000000
+--- a/plugin-clock/translations/clock_zh_CN.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[zh_CN]=时钟和日历
+-Name[zh_CN]=时钟
+diff --git a/plugin-clock/translations/clock_zh_TW.desktop b/plugin-clock/translations/clock_zh_TW.desktop
+deleted file mode 100644
+index 12bbe250..00000000
+--- a/plugin-clock/translations/clock_zh_TW.desktop
++++ /dev/null
+@@ -1,12 +0,0 @@
+-[Desktop Entry]
+-Type=Service
+-ServiceTypes=LXQtPanel/Plugin
+-Name=Date & time
+-Comment=Displays the current time. Comes with a calendar.
+-
+-#TRANSLATIONS_DIR=../translations
+-
+-
+-# Translations
+-Comment[zh_TW]=時鐘與日曆
+-Name[zh_TW]=時鐘
