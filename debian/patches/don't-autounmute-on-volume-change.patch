@@ -1,0 +1,30 @@
+Description: volume: Do not auto-unmute on volume change
+Author: Palo Kisa <palo.kisa@gmail.com>
+Origin: upstream
+Bug: https://github.com/lxqt/lxqt/issues/1520
+Applied-Upstream: commit:41259bb
+Last-Update: 2018-07-16
+--- a/plugin-volume/audiodevice.cpp
++++ b/plugin-volume/audiodevice.cpp
+@@ -114,7 +114,6 @@ void AudioDevice::setVolume(int volume)
+         return;
+ 
+     setVolumeNoCommit(volume);
+-    setMute(false);
+ 
+     if (m_engine)
+         m_engine->commitDeviceVolume(this);
+--- a/plugin-volume/lxqtvolume.cpp
++++ b/plugin-volume/lxqtvolume.cpp
+@@ -283,10 +283,7 @@ void LXQtVolume::showNotification(bool f
+     {
+         if (Q_LIKELY(m_defaultSink))
+         {
+-            if (m_defaultSink->mute())
+-                m_notification->setSummary(tr("Volume: muted"));
+-            else
+-                m_notification->setSummary(tr("Volume: %1%").arg(QString::number(m_defaultSink->volume())));
++            m_notification->setSummary(tr("Volume: %1%%2").arg(QString::number(m_defaultSink->volume())).arg(m_defaultSink->mute() ? tr("(muted)") : ""));
+             m_notification->update();
+         }
+     }

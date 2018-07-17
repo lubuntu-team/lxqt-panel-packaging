@@ -1,6 +1,7 @@
 lxqt-panel (0.13.0-0ubuntu3) UNRELEASED; urgency=medium
 
   * Add a DEP-3 header for the patch completely removing the clock plugin.
+  * Don't auto-unmute the volume when it's changed.
 
  -- Simon Quigley <tsimonq2@ubuntu.com>  Mon, 16 Jul 2018 21:38:55 -0500
 
