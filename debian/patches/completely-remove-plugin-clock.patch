@@ -1,110 +1,12 @@
-From 3eb1a8b1471a817a49152218f7262b915d67923c Mon Sep 17 00:00:00 2001
-From: palinek <palinek@users.noreply.github.com>
-Date: Fri, 25 May 2018 05:39:03 +0200
-Subject: [PATCH] Definitely remove plugin-clock (#470)
-
----
- CMakeLists.txt                                     |  12 +-
- panel/plugin.cpp                                   |   5 -
- plugin-clock/CMakeLists.txt                        |  19 --
- plugin-clock/calendarpopup.cpp                     |  57 ----
- plugin-clock/calendarpopup.h                       |  49 ---
- plugin-clock/lxqtclock.cpp                         | 346 ---------------------
- plugin-clock/lxqtclock.h                           | 105 -------
- plugin-clock/lxqtclockconfiguration.cpp            | 301 ------------------
- plugin-clock/lxqtclockconfiguration.h              |  79 -----
- plugin-clock/lxqtclockconfiguration.ui             | 232 --------------
- plugin-clock/resources/clock.desktop.in            |   8 -
- plugin-clock/translations/clock_ar.desktop         |   2 -
- plugin-clock/translations/clock_cs.desktop         |  12 -
- plugin-clock/translations/clock_cs_CZ.desktop      |  12 -
- plugin-clock/translations/clock_da.desktop         |  12 -
- plugin-clock/translations/clock_de.desktop         |   2 -
- plugin-clock/translations/clock_el.desktop         |  12 -
- plugin-clock/translations/clock_eo.desktop         |  12 -
- plugin-clock/translations/clock_es.desktop         |   2 -
- plugin-clock/translations/clock_es_VE.desktop      |  12 -
- plugin-clock/translations/clock_eu.desktop         |  12 -
- plugin-clock/translations/clock_fi.desktop         |  12 -
- plugin-clock/translations/clock_fr.desktop         |   3 -
- plugin-clock/translations/clock_hu.desktop         |  12 -
- plugin-clock/translations/clock_ia.desktop         |  10 -
- plugin-clock/translations/clock_id_ID.desktop      |  10 -
- plugin-clock/translations/clock_it.desktop         |   3 -
- plugin-clock/translations/clock_ja.desktop         |  12 -
- plugin-clock/translations/clock_ko.desktop         |  10 -
- plugin-clock/translations/clock_lt.desktop         |  12 -
- plugin-clock/translations/clock_nl.desktop         |  12 -
- plugin-clock/translations/clock_pl.desktop         |  12 -
- plugin-clock/translations/clock_pt.desktop         |  12 -
- plugin-clock/translations/clock_pt_BR.desktop      |  12 -
- plugin-clock/translations/clock_ro_RO.desktop      |  12 -
- plugin-clock/translations/clock_ru.desktop         |  12 -
- plugin-clock/translations/clock_sk.desktop         |  12 -
- plugin-clock/translations/clock_sl.desktop         |  12 -
- plugin-clock/translations/clock_sr.desktop         |  12 -
- .../translations/clock_sr@ijekavian.desktop        |   2 -
- .../translations/clock_sr@ijekavianlatin.desktop   |   2 -
- plugin-clock/translations/clock_sr@latin.desktop   |  12 -
- plugin-clock/translations/clock_th_TH.desktop      |  12 -
- plugin-clock/translations/clock_tr.desktop         |  12 -
- plugin-clock/translations/clock_uk.desktop         |  12 -
- .../translations/clock_zh_CN.GB2312.desktop        |  10 -
- plugin-clock/translations/clock_zh_CN.desktop      |  12 -
- plugin-clock/translations/clock_zh_TW.desktop      |  12 -
- 48 files changed, 2 insertions(+), 1579 deletions(-)
- delete mode 100644 plugin-clock/CMakeLists.txt
- delete mode 100644 plugin-clock/calendarpopup.cpp
- delete mode 100644 plugin-clock/calendarpopup.h
- delete mode 100644 plugin-clock/lxqtclock.cpp
- delete mode 100644 plugin-clock/lxqtclock.h
- delete mode 100644 plugin-clock/lxqtclockconfiguration.cpp
- delete mode 100644 plugin-clock/lxqtclockconfiguration.h
- delete mode 100644 plugin-clock/lxqtclockconfiguration.ui
- delete mode 100644 plugin-clock/resources/clock.desktop.in
- delete mode 100644 plugin-clock/translations/clock_ar.desktop
- delete mode 100644 plugin-clock/translations/clock_cs.desktop
- delete mode 100644 plugin-clock/translations/clock_cs_CZ.desktop
- delete mode 100644 plugin-clock/translations/clock_da.desktop
- delete mode 100644 plugin-clock/translations/clock_de.desktop
- delete mode 100644 plugin-clock/translations/clock_el.desktop
- delete mode 100644 plugin-clock/translations/clock_eo.desktop
- delete mode 100644 plugin-clock/translations/clock_es.desktop
- delete mode 100644 plugin-clock/translations/clock_es_VE.desktop
- delete mode 100644 plugin-clock/translations/clock_eu.desktop
- delete mode 100644 plugin-clock/translations/clock_fi.desktop
- delete mode 100644 plugin-clock/translations/clock_fr.desktop
- delete mode 100644 plugin-clock/translations/clock_hu.desktop
- delete mode 100644 plugin-clock/translations/clock_ia.desktop
- delete mode 100644 plugin-clock/translations/clock_id_ID.desktop
- delete mode 100644 plugin-clock/translations/clock_it.desktop
- delete mode 100644 plugin-clock/translations/clock_ja.desktop
- delete mode 100644 plugin-clock/translations/clock_ko.desktop
- delete mode 100644 plugin-clock/translations/clock_lt.desktop
- delete mode 100644 plugin-clock/translations/clock_nl.desktop
- delete mode 100644 plugin-clock/translations/clock_pl.desktop
- delete mode 100644 plugin-clock/translations/clock_pt.desktop
- delete mode 100644 plugin-clock/translations/clock_pt_BR.desktop
- delete mode 100644 plugin-clock/translations/clock_ro_RO.desktop
- delete mode 100644 plugin-clock/translations/clock_ru.desktop
- delete mode 100644 plugin-clock/translations/clock_sk.desktop
- delete mode 100644 plugin-clock/translations/clock_sl.desktop
- delete mode 100644 plugin-clock/translations/clock_sr.desktop
- delete mode 100644 plugin-clock/translations/clock_sr@ijekavian.desktop
- delete mode 100644 plugin-clock/translations/clock_sr@ijekavianlatin.desktop
- delete mode 100644 plugin-clock/translations/clock_sr@latin.desktop
- delete mode 100644 plugin-clock/translations/clock_th_TH.desktop
- delete mode 100644 plugin-clock/translations/clock_tr.desktop
- delete mode 100644 plugin-clock/translations/clock_uk.desktop
- delete mode 100644 plugin-clock/translations/clock_zh_CN.GB2312.desktop
- delete mode 100644 plugin-clock/translations/clock_zh_CN.desktop
- delete mode 100644 plugin-clock/translations/clock_zh_TW.desktop
-
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index feacd09f..961b727a 100644
+Description: Definitely remove plugin-clock
+Author: Palo Kisa <palo.kisa@gmail.com>
+Origin: upstream
+Bug: https://github.com/lxqt/lxqt/issues/1356
+Applied-Upstream: commit:3eb1a8b
+Last-Update: 2018-07-16
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -85,22 +85,14 @@ message(STATUS "Panel plugins location: ${PLUGIN_DIR}")
+@@ -85,22 +85,14 @@ message(STATUS "Panel plugins location:
  
  # Plugin system
  # You can enable/disable building of the plugin using cmake options.
@@ -129,8 +31,6 @@ index feacd09f..961b727a 100644
  setByDefault(COLORPICKER_PLUGIN Yes)
  if(COLORPICKER_PLUGIN)
      list(APPEND ENABLED_PLUGINS "Color Picker")
-diff --git a/panel/plugin.cpp b/panel/plugin.cpp
-index ca0c2a18..36b8640f 100644
 --- a/panel/plugin.cpp
 +++ b/panel/plugin.cpp
 @@ -50,8 +50,6 @@
@@ -152,9 +52,6 @@ index ca0c2a18..36b8640f 100644
  #if defined(WITH_DESKTOPSWITCH_PLUGIN)
          std::make_tuple(QLatin1String("desktopswitch"), plugin_ptr_t{new DesktopSwitchPluginLibrary}, loadPluginTranslation_desktopswitch_helper),// desktopswitch
  #endif
-diff --git a/plugin-clock/CMakeLists.txt b/plugin-clock/CMakeLists.txt
-deleted file mode 100644
-index d0447619..00000000
 --- a/plugin-clock/CMakeLists.txt
 +++ /dev/null
 @@ -1,19 +0,0 @@
@@ -177,9 +74,6 @@ index d0447619..00000000
 -)
 -
 -BUILD_LXQT_PLUGIN(${PLUGIN})
-diff --git a/plugin-clock/calendarpopup.cpp b/plugin-clock/calendarpopup.cpp
-deleted file mode 100644
-index d9455f49..00000000
 --- a/plugin-clock/calendarpopup.cpp
 +++ /dev/null
 @@ -1,57 +0,0 @@
@@ -240,9 +134,6 @@ index d9455f49..00000000
 -{
 -    cal->setFirstDayOfWeek(wday);
 -}
-diff --git a/plugin-clock/calendarpopup.h b/plugin-clock/calendarpopup.h
-deleted file mode 100644
-index a2c52752..00000000
 --- a/plugin-clock/calendarpopup.h
 +++ /dev/null
 @@ -1,49 +0,0 @@
@@ -295,9 +186,6 @@ index a2c52752..00000000
 -};
 -
 -#endif // CALENDARPOPUP_H
-diff --git a/plugin-clock/lxqtclock.cpp b/plugin-clock/lxqtclock.cpp
-deleted file mode 100644
-index 537f81bb..00000000
 --- a/plugin-clock/lxqtclock.cpp
 +++ /dev/null
 @@ -1,346 +0,0 @@
@@ -647,9 +535,6 @@ index 537f81bb..00000000
 -
 -    return false;
 -}
-diff --git a/plugin-clock/lxqtclock.h b/plugin-clock/lxqtclock.h
-deleted file mode 100644
-index 990219e5..00000000
 --- a/plugin-clock/lxqtclock.h
 +++ /dev/null
 @@ -1,105 +0,0 @@
@@ -758,9 +643,6 @@ index 990219e5..00000000
 -
 -
 -#endif
-diff --git a/plugin-clock/lxqtclockconfiguration.cpp b/plugin-clock/lxqtclockconfiguration.cpp
-deleted file mode 100644
-index 777e28b1..00000000
 --- a/plugin-clock/lxqtclockconfiguration.cpp
 +++ /dev/null
 @@ -1,301 +0,0 @@
@@ -1065,9 +947,6 @@ index 777e28b1..00000000
 -
 -    saveSettings();
 -}
-diff --git a/plugin-clock/lxqtclockconfiguration.h b/plugin-clock/lxqtclockconfiguration.h
-deleted file mode 100644
-index 6aaaeeb6..00000000
 --- a/plugin-clock/lxqtclockconfiguration.h
 +++ /dev/null
 @@ -1,79 +0,0 @@
@@ -1150,9 +1029,6 @@ index 6aaaeeb6..00000000
 -};
 -
 -#endif // LXQTCLOCKCONFIGURATION_H
-diff --git a/plugin-clock/lxqtclockconfiguration.ui b/plugin-clock/lxqtclockconfiguration.ui
-deleted file mode 100644
-index 2912ef35..00000000
 --- a/plugin-clock/lxqtclockconfiguration.ui
 +++ /dev/null
 @@ -1,232 +0,0 @@
@@ -1388,9 +1264,6 @@ index 2912ef35..00000000
 -  </connection>
 - </connections>
 -</ui>
-diff --git a/plugin-clock/resources/clock.desktop.in b/plugin-clock/resources/clock.desktop.in
-deleted file mode 100644
-index e6e99014..00000000
 --- a/plugin-clock/resources/clock.desktop.in
 +++ /dev/null
 @@ -1,8 +0,0 @@
@@ -1402,17 +1275,11 @@ index e6e99014..00000000
 -Icon=preferences-system-time
 -
 -#TRANSLATIONS_DIR=../translations
-diff --git a/plugin-clock/translations/clock_ar.desktop b/plugin-clock/translations/clock_ar.desktop
-deleted file mode 100644
-index cc1b687d..00000000
 --- a/plugin-clock/translations/clock_ar.desktop
 +++ /dev/null
 @@ -1,2 +0,0 @@
 -Name[ar]=التّاريخ والوقت
 -Comment[ar]=تعرض الوقت الحاليّ. فيها تقويم.
-diff --git a/plugin-clock/translations/clock_cs.desktop b/plugin-clock/translations/clock_cs.desktop
-deleted file mode 100644
-index 20f62398..00000000
 --- a/plugin-clock/translations/clock_cs.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1428,9 +1295,6 @@ index 20f62398..00000000
 -# Translations
 -Comment[cs]=Hodiny a kalendář
 -Name[cs]=Hodiny
-diff --git a/plugin-clock/translations/clock_cs_CZ.desktop b/plugin-clock/translations/clock_cs_CZ.desktop
-deleted file mode 100644
-index c99c1f0c..00000000
 --- a/plugin-clock/translations/clock_cs_CZ.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1446,9 +1310,6 @@ index c99c1f0c..00000000
 -# Translations
 -Comment[cs_CZ]=Hodiny a kalendář
 -Name[cs_CZ]=Hodiny
-diff --git a/plugin-clock/translations/clock_da.desktop b/plugin-clock/translations/clock_da.desktop
-deleted file mode 100644
-index 4aa5ecdc..00000000
 --- a/plugin-clock/translations/clock_da.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1464,17 +1325,11 @@ index 4aa5ecdc..00000000
 -# Translations
 -Name[da]=Dato og klokkeslæt
 -Comment[da]=Viser den aktuelle tid. Der følger en kalender med.
-diff --git a/plugin-clock/translations/clock_de.desktop b/plugin-clock/translations/clock_de.desktop
-deleted file mode 100644
-index f24f08ed..00000000
 --- a/plugin-clock/translations/clock_de.desktop
 +++ /dev/null
 @@ -1,2 +0,0 @@
 -Name[de]=Uhr und Kalender
 -Comment[de]=Zeigt die aktuelle Uhrzeit. Ein Kalender ist auch enthalten.
-diff --git a/plugin-clock/translations/clock_el.desktop b/plugin-clock/translations/clock_el.desktop
-deleted file mode 100644
-index 05f41b1f..00000000
 --- a/plugin-clock/translations/clock_el.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1490,9 +1345,6 @@ index 05f41b1f..00000000
 -# Translations
 -Comment[el]=Ρολόι και ημερολόγιο
 -Name[el]=Ρολόι
-diff --git a/plugin-clock/translations/clock_eo.desktop b/plugin-clock/translations/clock_eo.desktop
-deleted file mode 100644
-index 1042ea54..00000000
 --- a/plugin-clock/translations/clock_eo.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1508,17 +1360,11 @@ index 1042ea54..00000000
 -# Translations
 -Comment[eo]=Horloĝo kaj kalendaro
 -Name[eo]=Horloĝo
-diff --git a/plugin-clock/translations/clock_es.desktop b/plugin-clock/translations/clock_es.desktop
-deleted file mode 100644
-index a579ef7e..00000000
 --- a/plugin-clock/translations/clock_es.desktop
 +++ /dev/null
 @@ -1,2 +0,0 @@
 -Name[es]=Fecha y hora
 -Comment[es]=Muestra la hora actual. Incluye un calendario.
-diff --git a/plugin-clock/translations/clock_es_VE.desktop b/plugin-clock/translations/clock_es_VE.desktop
-deleted file mode 100644
-index 2621c2be..00000000
 --- a/plugin-clock/translations/clock_es_VE.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1534,9 +1380,6 @@ index 2621c2be..00000000
 -# Translations
 -Comment[es_VE]=Reloj y calendario
 -Name[es_VE]=Reloj
-diff --git a/plugin-clock/translations/clock_eu.desktop b/plugin-clock/translations/clock_eu.desktop
-deleted file mode 100644
-index 6edd4462..00000000
 --- a/plugin-clock/translations/clock_eu.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1552,9 +1395,6 @@ index 6edd4462..00000000
 -# Translations
 -Comment[eu]=Erlojua eta egutegia
 -Name[eu]=Erlojua
-diff --git a/plugin-clock/translations/clock_fi.desktop b/plugin-clock/translations/clock_fi.desktop
-deleted file mode 100644
-index 0035c6a3..00000000
 --- a/plugin-clock/translations/clock_fi.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1570,18 +1410,12 @@ index 0035c6a3..00000000
 -# Translations
 -Comment[fi]=Kello ja kalenteri
 -Name[fi]=Kello
-diff --git a/plugin-clock/translations/clock_fr.desktop b/plugin-clock/translations/clock_fr.desktop
-deleted file mode 100644
-index 1035f7b5..00000000
 --- a/plugin-clock/translations/clock_fr.desktop
 +++ /dev/null
 @@ -1,3 +0,0 @@
 -# Translations
 -Comment[fr]=Horloge et calendrier
 -Name[fr]=Horloge
-diff --git a/plugin-clock/translations/clock_hu.desktop b/plugin-clock/translations/clock_hu.desktop
-deleted file mode 100644
-index be55b7c9..00000000
 --- a/plugin-clock/translations/clock_hu.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1597,9 +1431,6 @@ index be55b7c9..00000000
 -# Translations
 -Comment[hu]=Óra és naptár
 -Name[hu]=Óra
-diff --git a/plugin-clock/translations/clock_ia.desktop b/plugin-clock/translations/clock_ia.desktop
-deleted file mode 100644
-index 9c7df243..00000000
 --- a/plugin-clock/translations/clock_ia.desktop
 +++ /dev/null
 @@ -1,10 +0,0 @@
@@ -1613,9 +1444,6 @@ index 9c7df243..00000000
 -
 -
 -# Translations
-diff --git a/plugin-clock/translations/clock_id_ID.desktop b/plugin-clock/translations/clock_id_ID.desktop
-deleted file mode 100644
-index 9c7df243..00000000
 --- a/plugin-clock/translations/clock_id_ID.desktop
 +++ /dev/null
 @@ -1,10 +0,0 @@
@@ -1629,18 +1457,12 @@ index 9c7df243..00000000
 -
 -
 -# Translations
-diff --git a/plugin-clock/translations/clock_it.desktop b/plugin-clock/translations/clock_it.desktop
-deleted file mode 100644
-index bd40ee3b..00000000
 --- a/plugin-clock/translations/clock_it.desktop
 +++ /dev/null
 @@ -1,3 +0,0 @@
 -Comment[it]=Orologio e calendario
 -Name[it]=Orologio
 -
-diff --git a/plugin-clock/translations/clock_ja.desktop b/plugin-clock/translations/clock_ja.desktop
-deleted file mode 100644
-index 67e702a2..00000000
 --- a/plugin-clock/translations/clock_ja.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1656,9 +1478,6 @@ index 67e702a2..00000000
 -# Translations
 -Comment[ja]=時計とカレンダー
 -Name[ja]=時計
-diff --git a/plugin-clock/translations/clock_ko.desktop b/plugin-clock/translations/clock_ko.desktop
-deleted file mode 100644
-index 9c7df243..00000000
 --- a/plugin-clock/translations/clock_ko.desktop
 +++ /dev/null
 @@ -1,10 +0,0 @@
@@ -1672,9 +1491,6 @@ index 9c7df243..00000000
 -
 -
 -# Translations
-diff --git a/plugin-clock/translations/clock_lt.desktop b/plugin-clock/translations/clock_lt.desktop
-deleted file mode 100644
-index 6ccf8b1d..00000000
 --- a/plugin-clock/translations/clock_lt.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1690,9 +1506,6 @@ index 6ccf8b1d..00000000
 -# Translations
 -Comment[lt]=Laikrodis ir kalendorius
 -Name[lt]=Laikrodis
-diff --git a/plugin-clock/translations/clock_nl.desktop b/plugin-clock/translations/clock_nl.desktop
-deleted file mode 100644
-index b041bc1f..00000000
 --- a/plugin-clock/translations/clock_nl.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1708,9 +1521,6 @@ index b041bc1f..00000000
 -# Translations
 -Comment[nl]=Klok en kalender
 -Name[nl]=Klok
-diff --git a/plugin-clock/translations/clock_pl.desktop b/plugin-clock/translations/clock_pl.desktop
-deleted file mode 100644
-index 035b3e40..00000000
 --- a/plugin-clock/translations/clock_pl.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1726,9 +1536,6 @@ index 035b3e40..00000000
 -# Translations
 -Comment[pl]=Wyświetla obecny czas. Zawiera kalendarz.
 -Name[pl]=Zegar
-diff --git a/plugin-clock/translations/clock_pt.desktop b/plugin-clock/translations/clock_pt.desktop
-deleted file mode 100644
-index e4a511f0..00000000
 --- a/plugin-clock/translations/clock_pt.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1744,9 +1551,6 @@ index e4a511f0..00000000
 -Name[pt]=Relógio
 -Comment[pt]=Relógio e calendário
 -
-diff --git a/plugin-clock/translations/clock_pt_BR.desktop b/plugin-clock/translations/clock_pt_BR.desktop
-deleted file mode 100644
-index 42aab783..00000000
 --- a/plugin-clock/translations/clock_pt_BR.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1762,9 +1566,6 @@ index 42aab783..00000000
 -# Translations
 -Comment[pt_BR]=Relógio e calendário
 -Name[pt_BR]=Relógio
-diff --git a/plugin-clock/translations/clock_ro_RO.desktop b/plugin-clock/translations/clock_ro_RO.desktop
-deleted file mode 100644
-index d4ca3e14..00000000
 --- a/plugin-clock/translations/clock_ro_RO.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1780,9 +1581,6 @@ index d4ca3e14..00000000
 -# Translations
 -Comment[ro_RO]=Afișează ora curentă incluzând și un calendar.
 -Name[ro_RO]=Data și ora
-diff --git a/plugin-clock/translations/clock_ru.desktop b/plugin-clock/translations/clock_ru.desktop
-deleted file mode 100644
-index c5bc1dcc..00000000
 --- a/plugin-clock/translations/clock_ru.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1798,9 +1596,6 @@ index c5bc1dcc..00000000
 -# Translations
 -Comment[ru]=Отображение текущего времени. Поставляется с календарем.
 -Name[ru]=Дата и время
-diff --git a/plugin-clock/translations/clock_sk.desktop b/plugin-clock/translations/clock_sk.desktop
-deleted file mode 100644
-index 9730f266..00000000
 --- a/plugin-clock/translations/clock_sk.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1816,9 +1611,6 @@ index 9730f266..00000000
 -# Translations
 -Comment[sk]=Hodiny a kalendár
 -Name[sk]=Hodiny
-diff --git a/plugin-clock/translations/clock_sl.desktop b/plugin-clock/translations/clock_sl.desktop
-deleted file mode 100644
-index f056c30c..00000000
 --- a/plugin-clock/translations/clock_sl.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1834,9 +1626,6 @@ index f056c30c..00000000
 -# Translations
 -Comment[sl]=Ura in koledar
 -Name[sl]=Ura
-diff --git a/plugin-clock/translations/clock_sr.desktop b/plugin-clock/translations/clock_sr.desktop
-deleted file mode 100644
-index 363f64e2..00000000
 --- a/plugin-clock/translations/clock_sr.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1852,25 +1641,16 @@ index 363f64e2..00000000
 -# Translations
 -Comment[sr]=Сат и календар
 -Name[sr]=Сат
-diff --git a/plugin-clock/translations/clock_sr@ijekavian.desktop b/plugin-clock/translations/clock_sr@ijekavian.desktop
-deleted file mode 100644
-index 2c1f6094..00000000
 --- a/plugin-clock/translations/clock_sr@ijekavian.desktop
 +++ /dev/null
 @@ -1,2 +0,0 @@
 -Name[sr@ijekavian]=Сат
 -Comment[sr@ijekavian]=Сат и календар
-diff --git a/plugin-clock/translations/clock_sr@ijekavianlatin.desktop b/plugin-clock/translations/clock_sr@ijekavianlatin.desktop
-deleted file mode 100644
-index f4845497..00000000
 --- a/plugin-clock/translations/clock_sr@ijekavianlatin.desktop
 +++ /dev/null
 @@ -1,2 +0,0 @@
 -Name[sr@ijekavianlatin]=Sat
 -Comment[sr@ijekavianlatin]=Sat i kalendar
-diff --git a/plugin-clock/translations/clock_sr@latin.desktop b/plugin-clock/translations/clock_sr@latin.desktop
-deleted file mode 100644
-index e1fbd72f..00000000
 --- a/plugin-clock/translations/clock_sr@latin.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1886,9 +1666,6 @@ index e1fbd72f..00000000
 -# Translations
 -Comment[sr@latin]=Sat i kalendar
 -Name[sr@latin]=Sat
-diff --git a/plugin-clock/translations/clock_th_TH.desktop b/plugin-clock/translations/clock_th_TH.desktop
-deleted file mode 100644
-index 4ec45655..00000000
 --- a/plugin-clock/translations/clock_th_TH.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1904,9 +1681,6 @@ index 4ec45655..00000000
 -# Translations
 -Comment[th_TH]=นาฬิกาและปฏิทิน
 -Name[th_TH]=นาฬิกา
-diff --git a/plugin-clock/translations/clock_tr.desktop b/plugin-clock/translations/clock_tr.desktop
-deleted file mode 100644
-index b17ccc55..00000000
 --- a/plugin-clock/translations/clock_tr.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1922,9 +1696,6 @@ index b17ccc55..00000000
 -# Translations
 -Comment[tr]=Saat ve takvim
 -Name[tr]=Saat
-diff --git a/plugin-clock/translations/clock_uk.desktop b/plugin-clock/translations/clock_uk.desktop
-deleted file mode 100644
-index a76879cf..00000000
 --- a/plugin-clock/translations/clock_uk.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1940,9 +1711,6 @@ index a76879cf..00000000
 -# Translations
 -Comment[uk]=Показує поточний час. Календар
 -Name[uk]=Дата і час
-diff --git a/plugin-clock/translations/clock_zh_CN.GB2312.desktop b/plugin-clock/translations/clock_zh_CN.GB2312.desktop
-deleted file mode 100644
-index 9c7df243..00000000
 --- a/plugin-clock/translations/clock_zh_CN.GB2312.desktop
 +++ /dev/null
 @@ -1,10 +0,0 @@
@@ -1956,9 +1724,6 @@ index 9c7df243..00000000
 -
 -
 -# Translations
-diff --git a/plugin-clock/translations/clock_zh_CN.desktop b/plugin-clock/translations/clock_zh_CN.desktop
-deleted file mode 100644
-index f875ee0b..00000000
 --- a/plugin-clock/translations/clock_zh_CN.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
@@ -1974,9 +1739,6 @@ index f875ee0b..00000000
 -# Translations
 -Comment[zh_CN]=时钟和日历
 -Name[zh_CN]=时钟
-diff --git a/plugin-clock/translations/clock_zh_TW.desktop b/plugin-clock/translations/clock_zh_TW.desktop
-deleted file mode 100644
-index 12bbe250..00000000
 --- a/plugin-clock/translations/clock_zh_TW.desktop
 +++ /dev/null
 @@ -1,12 +0,0 @@
