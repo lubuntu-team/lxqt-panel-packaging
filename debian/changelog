@@ -1,11 +1,11 @@
-lxqt-panel (0.13.0-0ubuntu3) UNRELEASED; urgency=medium
+lxqt-panel (0.13.0-0ubuntu3) cosmic; urgency=medium
 
   * Add a DEP-3 header for the patch completely removing the clock plugin.
   * Don't auto-unmute the volume when it's changed.
   * Bump Standards-version to 4.1.5, no changes needed.
   * Run wrap-and-sort.
 
- -- Simon Quigley <tsimonq2@ubuntu.com>  Mon, 16 Jul 2018 21:38:55 -0500
+ -- Simon Quigley <tsimonq2@ubuntu.com>  Mon, 16 Jul 2018 21:58:19 -0500
 
 lxqt-panel (0.13.0-0ubuntu2) cosmic; urgency=medium
 
