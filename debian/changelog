@@ -1,10 +1,10 @@
-lxqt-panel (0.13.0-0ubuntu4) UNRELEASED; urgency=medium
+lxqt-panel (0.13.0-0ubuntu4) cosmic; urgency=medium
 
   * Change the Uploaders to Ubuntu uploaders.
   * Update Standards-version to 4.2.0, no changes needed.
   * Add an autoexpansion feature to the spacer plugin.
 
- -- Simon Quigley <tsimonq2@ubuntu.com>  Thu, 16 Aug 2018 16:07:44 -0500
+ -- Simon Quigley <tsimonq2@ubuntu.com>  Thu, 16 Aug 2018 16:17:17 -0500
 
 lxqt-panel (0.13.0-0ubuntu3) cosmic; urgency=medium
 
