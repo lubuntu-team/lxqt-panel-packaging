@@ -1,0 +1,114 @@
+Description: Use QStringLiteral whenever possible
+ This is patch 4/4 adding autoexpansion support to the spacer plugin.
+Author: Palo Kisa <palo.kisa@gmail.com>
+Origin: upstream
+Bug: https://github.com/lxqt/lxqt/issues/1038
+Applied-Upstream: commit:4908fcd
+Last-Update: 2018-08-16
+--- a/plugin-spacer/spacer.cpp
++++ b/plugin-spacer/spacer.cpp
+@@ -65,10 +65,10 @@ Spacer::Spacer(const ILXQtPanelPluginSta
+  ************************************************/
+ void Spacer::settingsChanged()
+ {
+-    mSize = settings()->value("size", 8).toInt();
++    mSize = settings()->value(QStringLiteral("size"), 8).toInt();
+     const bool old_expandable = mExpandable;
+-    mExpandable = settings()->value("expandable", false).toBool();
+-    mSpacer.setType(settings()->value("spaceType", SpacerConfiguration::msTypes[0]).toString());
++    mExpandable = settings()->value(QStringLiteral("expandable"), false).toBool();
++    mSpacer.setType(settings()->value(QStringLiteral("spaceType"), SpacerConfiguration::msTypes[0]).toString());
+     setSizes();
+     if (old_expandable != mExpandable)
+         pluginFlagsChanged();
+@@ -92,12 +92,12 @@ void Spacer::setSizes()
+         mSpacer.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+         mSpacer.setMinimumSize({1, 1});
+         mSpacer.setMaximumSize({QWIDGETSIZE_MAX, QWIDGETSIZE_MAX});
+-        mSpacer.setOrientation(panel()->isHorizontal() ? "horizontal" : "vertical");
++        mSpacer.setOrientation(panel()->isHorizontal() ? QStringLiteral("horizontal") : QStringLiteral("vertical"));
+     } else
+     {
+         if (panel()->isHorizontal())
+         {
+-            mSpacer.setOrientation("horizontal");
++            mSpacer.setOrientation(QStringLiteral("horizontal"));
+             mSpacer.setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+             mSpacer.setFixedWidth(mSize);
+             mSpacer.setMinimumHeight(0);
+@@ -105,7 +105,7 @@ void Spacer::setSizes()
+         }
+         else
+         {
+-            mSpacer.setOrientation("vertical");
++            mSpacer.setOrientation(QStringLiteral("vertical"));
+             mSpacer.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+             mSpacer.setFixedHeight(mSize);
+             mSpacer.setMinimumWidth(0);
+--- a/plugin-spacer/spacer.h
++++ b/plugin-spacer/spacer.h
+@@ -58,7 +58,7 @@ public:
+     Spacer(const ILXQtPanelPluginStartupInfo &startupInfo);
+ 
+     virtual QWidget *widget() override { return &mSpacer; }
+-    virtual QString themeId() const override { return "Spacer"; }
++    virtual QString themeId() const override { return QStringLiteral("Spacer"); }
+ 
+     bool isSeparate() const override { return true; }
+     bool isExpandable() const override { return mExpandable; }
+--- a/plugin-spacer/spacerconfiguration.cpp
++++ b/plugin-spacer/spacerconfiguration.cpp
+@@ -31,9 +31,9 @@
+ //Note: strings can't actually be translated here (in static initialization time)
+ //      the QT_TR_NOOP here is just for qt translate tools to get the strings for translation
+ const QStringList SpacerConfiguration::msTypes = {
+-    QLatin1String(QT_TR_NOOP("lined"))
+-    , QLatin1String(QT_TR_NOOP("dotted"))
+-    , QLatin1String(QT_TR_NOOP("invisible"))
++    QStringLiteral(QT_TR_NOOP("lined"))
++    , QStringLiteral(QT_TR_NOOP("dotted"))
++    , QStringLiteral(QT_TR_NOOP("invisible"))
+ };
+ 
+ SpacerConfiguration::SpacerConfiguration(PluginSettings *settings, QWidget *parent) :
+@@ -41,7 +41,7 @@ SpacerConfiguration::SpacerConfiguration
+     ui(new Ui::SpacerConfiguration)
+ {
+     setAttribute(Qt::WA_DeleteOnClose);
+-    setObjectName("SpacerConfigurationWindow");
++    setObjectName(QStringLiteral("SpacerConfigurationWindow"));
+     ui->setupUi(this);
+ 
+     //Note: translation is needed here in runtime (translator is attached already)
+@@ -63,9 +63,9 @@ SpacerConfiguration::~SpacerConfiguratio
+ 
+ void SpacerConfiguration::loadSettings()
+ {
+-    ui->sizeSB->setValue(settings().value("size", 8).toInt());
+-    ui->typeCB->setCurrentIndex(ui->typeCB->findData(settings().value("spaceType", msTypes[0]).toString()));
+-    const bool expandable = settings().value("expandable", false).toBool();
++    ui->sizeSB->setValue(settings().value(QStringLiteral("size"), 8).toInt());
++    ui->typeCB->setCurrentIndex(ui->typeCB->findData(settings().value(QStringLiteral("spaceType"), msTypes[0]).toString()));
++    const bool expandable = settings().value(QStringLiteral("expandable"), false).toBool();
+     ui->sizeExpandRB->setChecked(expandable);
+     ui->sizeFixedRB->setChecked(!expandable);
+     ui->sizeSB->setDisabled(expandable);
+@@ -73,15 +73,15 @@ void SpacerConfiguration::loadSettings()
+ 
+ void SpacerConfiguration::sizeChanged(int value)
+ {
+-    settings().setValue("size", value);
++    settings().setValue(QStringLiteral("size"), value);
+ }
+ 
+ void SpacerConfiguration::typeChanged(int index)
+ {
+-    settings().setValue("spaceType", ui->typeCB->itemData(index, Qt::UserRole));
++    settings().setValue(QStringLiteral("spaceType"), ui->typeCB->itemData(index, Qt::UserRole));
+ }
+ 
+ void SpacerConfiguration::widthTypeChanged(bool expandableChecked)
+ {
+-    settings().setValue("expandable", expandableChecked);
++    settings().setValue(QStringLiteral("expandable"), expandableChecked);
+ }
