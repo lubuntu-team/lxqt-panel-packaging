@@ -1,3 +1,9 @@
+lxqt-panel (0.13.0-0ubuntu4) UNRELEASED; urgency=medium
+
+  * Change the Uploaders to Ubuntu uploaders.
+
+ -- Simon Quigley <tsimonq2@ubuntu.com>  Thu, 16 Aug 2018 16:07:44 -0500
+
 lxqt-panel (0.13.0-0ubuntu3) cosmic; urgency=medium
 
   * Add a DEP-3 header for the patch completely removing the clock plugin.
