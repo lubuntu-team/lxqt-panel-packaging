@@ -1,3 +1,10 @@
+lxqt-panel (0.13.0-0ubuntu5) cosmic; urgency=medium
+
+  * Add optional overriding of icon theme.
+  * Run wrap-and-sort.
+
+ -- Walter Lapchynski <wxl@ubuntu.com>  Tue, 21 Aug 2018 23:37:22 -0700
+
 lxqt-panel (0.13.0-0ubuntu4) cosmic; urgency=medium
 
   * Change the Uploaders to Ubuntu uploaders.
