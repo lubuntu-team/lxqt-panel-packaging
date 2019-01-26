@@ -1,4 +1,4 @@
-lxqt-panel (0.14.0-0ubuntu1) UNRELEASED; urgency=medium
+lxqt-panel (0.14.0-0ubuntu1) disco; urgency=medium
 
   * New upstream release.
     - Bump build dependencies.
@@ -7,7 +7,7 @@ lxqt-panel (0.14.0-0ubuntu1) UNRELEASED; urgency=medium
   * Bump debhelper compat to 12, no changes needed.
   * Add a new lxqt-panel-l10n package.
 
- -- Simon Quigley <tsimonq2@ubuntu.com>  Sat, 26 Jan 2019 01:13:17 -0600
+ -- Simon Quigley <tsimonq2@ubuntu.com>  Sat, 26 Jan 2019 01:19:25 -0600
 
 lxqt-panel (0.13.0-0ubuntu5) cosmic; urgency=medium
 
