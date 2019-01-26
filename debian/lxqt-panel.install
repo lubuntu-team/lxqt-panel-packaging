@@ -1,0 +1,8 @@
+etc/xdg
+usr/include/lxqt
+usr/share/man
+usr/share/lxqt/panel.conf
+usr/share/lxqt/lxqt-panel
+usr/share/desktop-directories
+usr/bin/lxqt-panel
+usr/lib/*/lxqt-panel

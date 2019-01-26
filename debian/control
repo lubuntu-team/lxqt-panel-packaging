@@ -54,4 +54,15 @@ Replaces: lxqt-common (<< 0.12.0)
 Description: LXQt desktop panel
  The LXQt desktop panel
  .
- This package contain the LXQt panel.
+ This package contains the LXQt panel.
+
+Package: lxqt-panel-l10n
+Architecture: all
+Multi-Arch: foreign
+Section: localization
+Depends: ${misc:Depends},
+         qttranslations5-l10n
+Breaks: lxqt-panel (<< 0.11.0)
+Replaces: lxqt-panel (<< 0.11.0)
+Description: Language package for lxqt-panel
+ This package contains the l10n files needed by lxqt-panel.

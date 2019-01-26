@@ -4,6 +4,7 @@ lxqt-panel (0.14.0-0ubuntu1) UNRELEASED; urgency=medium
     - Bump build dependencies.
   * Bump Standards-version to 4.3.0, no changes needed.
   * Bump debhelper compat to 12, no changes needed.
+  * Add a new lxqt-panel-l10n package.
 
  -- Simon Quigley <tsimonq2@ubuntu.com>  Sat, 26 Jan 2019 01:13:17 -0600
 
