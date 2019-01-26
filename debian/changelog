@@ -1,3 +1,9 @@
+lxqt-panel (0.14.0-0ubuntu1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+
+ -- Simon Quigley <tsimonq2@ubuntu.com>  Sat, 26 Jan 2019 01:13:17 -0600
+
 lxqt-panel (0.13.0-0ubuntu5) cosmic; urgency=medium
 
   * Add optional overriding of icon theme.
