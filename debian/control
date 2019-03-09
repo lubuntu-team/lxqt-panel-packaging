@@ -60,8 +60,7 @@ Package: lxqt-panel-l10n
 Architecture: all
 Multi-Arch: foreign
 Section: localization
-Depends: ${misc:Depends},
-         qttranslations5-l10n
+Depends: qttranslations5-l10n, ${misc:Depends}
 Breaks: lxqt-panel (<< 0.11.0)
 Replaces: lxqt-panel (<< 0.11.0)
 Description: Language package for lxqt-panel
