@@ -1,9 +1,43 @@
+lxqt-panel (0.14.1-1ubuntu1) focal; urgency=low
+
+  * Merge from Debian unstable.  Remaining changes:
+    - Updated control file to include new deps.
+
+ -- Raman Sarda <theloudspeaker@lubuntu.me>  Fri, 07 Feb 2020 22:20:45 +0530
+
+lxqt-panel (0.14.1-1) unstable; urgency=medium
+
+  * Cherry-picking new upstream version 0.14.1.
+  * Bumped minimum versions:
+    - liblxqt0-dev (>= 0.14.1~)
+    - liblxqt-globalkeys0-dev (>= 0.14.1~)
+    - liblxqt-globalkeys-ui0-dev (>= 0.14.1~)
+
+ -- Alf Gaida <agaida@siduction.org>  Tue, 26 Feb 2019 03:28:17 +0100
+
 lxqt-panel (0.14.1-0ubuntu1) disco; urgency=medium
 
   * New upstream release.
   * Run wrap-and-sort.
 
  -- Simon Quigley <tsimonq2@ubuntu.com>  Sat, 09 Mar 2019 13:27:32 -0600
+
+lxqt-panel (0.14.0-1) unstable; urgency=medium
+
+  * Cherry-picking new upstream version 0.14.0.
+  * Bumped Standards to 4.3.0, no changes needed
+  * Dropped d/compat, use debhelper-compat = 12, no changes needed
+  * Fixed years in d/copyright
+  * Bumped minimum versions:
+    - liblxqt0-dev (>= 0.14.0~)
+    - liblxqt-globalkeys0-dev (>= 0.14.0~)
+    - liblxqt-globalkeys-ui0-dev (>= 0.14.0~)
+    - libsysstat-qt5-0-dev (>= 0.4.2~)
+  * Removed obsolete PULL_TRANSLATIONS= OFF from dh_auto_configure
+  * Added l10n-package, moved from lxqt-l10n
+  * Added d/upstream/metadata
+
+ -- Alf Gaida <agaida@siduction.org>  Sun, 27 Jan 2019 23:13:10 +0100
 
 lxqt-panel (0.14.0-0ubuntu1) disco; urgency=medium
 
@@ -15,6 +49,27 @@ lxqt-panel (0.14.0-0ubuntu1) disco; urgency=medium
   * Add a new lxqt-panel-l10n package.
 
  -- Simon Quigley <tsimonq2@ubuntu.com>  Sat, 26 Jan 2019 01:19:25 -0600
+
+lxqt-panel (0.13.0-2) unstable; urgency=medium
+
+  * Build dependency libsensors4-dev -> libsensors-dev (Closes: #917440)
+  * Bumped Standards to 4.2.1, no changes needed
+
+ -- Alf Gaida <agaida@siduction.org>  Sat, 29 Dec 2018 13:03:56 +0100
+
+lxqt-panel (0.13.0-1) unstable; urgency=medium
+
+  * Cherry-picking new upstream version 0.13.0.
+  * Bumped build dependencies
+    - liblxqt0-dev to >= 0.13.0~
+    - liblxqt0-dev to >= 0.13.0~
+    - liblxqt-globalkeys0-dev to >= 0.13.0~
+    - liblxqt-globalkeys-ui0-dev to >= 0.13.0~
+    - libsysstat-qt5-0-dev to >= 0.4.1~
+  * Removed build dependency libglib2.0-dev, thrown in via lxqt-build-tools
+  * Bumped year in copyright
+
+ -- Alf Gaida <agaida@siduction.org>  Fri, 25 May 2018 00:08:49 +0200
 
 lxqt-panel (0.13.0-0ubuntu5) cosmic; urgency=medium
 
@@ -54,6 +109,12 @@ lxqt-panel (0.13.0-0ubuntu1) cosmic; urgency=medium
   * Remove patches applied upstream.
 
  -- Simon Quigley <tsimonq2@ubuntu.com>  Wed, 23 May 2018 22:38:37 -0500
+
+lxqt-panel (0.12.0-10) unstable; urgency=medium
+
+  * Changed Source and watch for lxqt
+
+ -- Alf Gaida <agaida@siduction.org>  Sat, 28 Apr 2018 15:17:35 +0200
 
 lxqt-panel (0.12.0-9ubuntu1) cosmic; urgency=medium
 
@@ -356,3 +417,4 @@ lxqt-panel (0.9.0+20151101-1) experimental; urgency=medium
   * Removing whitespaces at EOL and EOF.
 
  -- Alf Gaida <agaida@siduction.org>  Sun, 25 Oct 2015 02:27:12 +0200
+
