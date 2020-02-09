@@ -4,7 +4,7 @@ XSBC-Original-Maintainer: LXQt Packaging Team <pkg-lxqt-devel@lists.alioth.debia
 Uploaders: Simon Quigley <tsimonq2@ubuntu.com>
 Section: x11
 Priority: optional
-Build-Depends: debhelper (>= 12),
+Build-Depends: debhelper-compat (= 12),
                libasound2-dev,
                libdbusmenu-qt5-dev,
                libglib2.0-dev,
@@ -20,7 +20,7 @@ Build-Depends: debhelper (>= 12),
                libqt5x11extras5-dev,
                libsensors4-dev [!hurd-any],
                libstatgrab-dev [linux-any],
-               libsysstat-qt5-0-dev (>= 0.4.2),
+               libsysstat-qt5-0-dev (>= 0.4.2~),
                libx11-dev,
                libxcb-damage0-dev,
                libxcb-util0-dev,

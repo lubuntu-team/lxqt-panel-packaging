@@ -1,9 +1,9 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: lxqt-panel
-Source: https://github.com/lxde/lxqt-panel
+Source: https://github.com/lxqt/lxqt-panel
 
 Files: *
-Copyright: 2012-2018 LXQt team
+Copyright: 2012-2019 LXQt team
            2010-2012 Razor team
 License: LGPL-2.1+
 

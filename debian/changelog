@@ -1,3 +1,14 @@
+lxqt-panel (0.14.1-1ubuntu2) focal; urgency=medium
+
+  * Correct merge from Ubuntu Merge-oMatic
+  * Bumped minimum requirements in control file
+  * Copyright updates.
+  * Updated debian/watch to point to correct source.
+  * Updated debian/upstream/metadata
+  * using debhelper-compat instead of debhelper and d/compat
+
+ -- Raman Sarda <theloudspeaker@lubuntu.me>  Sun, 09 Feb 2020 11:29:09 +0530
+
 lxqt-panel (0.14.1-1ubuntu1) focal; urgency=low
 
   * Merge from Debian unstable.  Remaining changes:
