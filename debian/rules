@@ -18,6 +18,9 @@ endif
 %:
 	dh ${@} --buildsystem cmake
 
+override_dh_missing:
+	dh_missing --fail-missing
+
 override_dh_auto_configure:
 	dh_auto_configure --\
 		-DPULL_TRANSLATIONS=OFF \
