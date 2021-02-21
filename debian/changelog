@@ -1,3 +1,24 @@
+lxqt-panel (0.16.1-1ubuntu1) hirsute; urgency=medium
+
+  * New upstream version. Merge from debian unstable.
+  * Tighten debhelper-compat requirement.
+  * Updated dependencies.
+  * Updated debian/rules.
+
+ -- Raman Sarda <theloudspeaker@disroot.org>  Mon, 22 Feb 2021 02:37:32 +0530
+
+lxqt-panel (0.16.1-1) unstable; urgency=medium
+
+  [ Alf Gaida ]
+  * Switched to gbp
+  * Bumped Standards-Version to 4.4.0, no changes needed
+  * improved debian/rules
+
+  [ Andrew Lee (李健秋) ]
+  * New upstream release. (Closes: #916105, #953154, #978204)
+
+ -- Andrew Lee (李健秋) <ajqlee@debian.org>  Wed, 06 Jan 2021 18:30:22 +0800
+
 lxqt-panel (0.15.0-0ubuntu1) groovy; urgency=medium
 
   * New upstream release.
