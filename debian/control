@@ -11,16 +11,15 @@ Build-Depends: debhelper-compat (= 13),
                libicu-dev,
                libkf5solid-dev,
                libkf5windowsystem-dev,
-               liblxqt0-dev (>= 0.15.0),
-               libkf5solid-dev,
-               liblxqt-globalkeys0-dev (>= 0.16.0~),
-               liblxqt-globalkeys-ui0-dev (>= 0.16.0~),
+               liblxqt-globalkeys-ui0-dev (>= 0.17.0),
+               liblxqt-globalkeys0-dev (>= 0.17.0),
+               liblxqt0-dev (>= 0.17.0),
                libpulse-dev,
                libqt5svg5-dev,
                libqt5x11extras5-dev,
                libsensors4-dev [!hurd-any],
                libstatgrab-dev [linux-any],
-               libsysstat-qt5-0-dev (>= 0.4.4~),
+               libsysstat-qt5-0-dev (>= 0.4.5),
                libx11-dev,
                libxcb-damage0-dev,
                libxcb-util0-dev,
@@ -30,7 +29,7 @@ Build-Depends: debhelper-compat (= 13),
                libxkbcommon-dev,
                libxkbcommon-x11-dev,
                libxrender-dev
-Standards-Version: 4.5.0
+Standards-Version: 4.5.1
 Vcs-Browser: https://phab.lubuntu.me/source/lxqt-panel/
 Vcs-Git: https://phab.lubuntu.me/source/lxqt-panel.git
 XS-Debian-Vcs-Browser: https://salsa.debian.org/lxqt-team/lxqt-panel
@@ -65,4 +64,6 @@ Depends: qttranslations5-l10n, ${misc:Depends}
 Breaks: lxqt-panel (<< 0.11.0)
 Replaces: lxqt-panel (<< 0.11.0)
 Description: Language package for lxqt-panel
+ The l10n files for lxqt-panel.
+ .
  This package contains the l10n files needed by lxqt-panel.

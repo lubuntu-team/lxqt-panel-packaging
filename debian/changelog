@@ -1,3 +1,19 @@
+lxqt-panel (0.17.1-0ubuntu1) impish; urgency=medium
+
+  * New upstream release 0.17.1
+  * Update debian/control
+    - Bump Standards-Version to 4.5.1
+    - Use liblxqt0-dev 0.17.0
+    - Use liblxqt-globalkeys0-dev 0.17.0
+    - Use liblxqt-globalkeys-ui0-dev 0.17.0
+    - Use libsysstat-qt5-0-dev 0.4.5
+    - Extend lxqt-panel-l10n package description
+  * Run wrap-and-sort
+    - Remove duplicate Build-Depends libkf5solid-dev
+  * Update debian/copyright
+
+ -- apt-ghetto <apt-ghetto@protonmail.com>  Sat, 14 Aug 2021 15:49:34 +0200
+
 lxqt-panel (0.16.1-1ubuntu1) hirsute; urgency=medium
 
   * New upstream version. Merge from debian unstable.
