@@ -21,14 +21,19 @@ Build-Depends: debhelper-compat (= 13),
                libstatgrab-dev [linux-any],
                libsysstat-qt5-0-dev (>= 0.4.5),
                libx11-dev,
+               libxcb-composite0-dev,
                libxcb-damage0-dev,
+               libxcb-image0-dev,
+               libxcb-randr0-dev,
+               libxcb-shm0-dev,
                libxcb-util0-dev,
                libxcb-xkb-dev,
                libxcomposite-dev,
                libxdamage-dev,
                libxkbcommon-dev,
                libxkbcommon-x11-dev,
-               libxrender-dev
+               libxrender-dev,
+               libxtst-dev
 Standards-Version: 4.5.1
 Vcs-Browser: https://phab.lubuntu.me/source/lxqt-panel/
 Vcs-Git: https://phab.lubuntu.me/source/lxqt-panel.git
