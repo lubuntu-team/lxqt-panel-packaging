@@ -2,6 +2,8 @@ lxqt-panel (1.1.0-0ubuntu1) UNRELEASED; urgency=medium
 
   * New upstream release.
   * Bumped build dependencies.
+  * Drop old Breaks/Replaces since we're past the LTS. Update the
+    runtime dependencies too.
 
  -- Simon Quigley <tsimonq2@ubuntu.com>  Thu, 02 Jun 2022 12:35:06 -0500
 

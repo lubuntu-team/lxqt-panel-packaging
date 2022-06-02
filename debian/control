@@ -49,8 +49,6 @@ Recommends: lxqt-about,
             pavucontrol-qt | pavucontrol,
             qlipper
 Suggests: lxqt | lxqt-core
-Breaks: lxqt-common (<< 0.12.0)
-Replaces: lxqt-common (<< 0.12.0)
 Description: LXQt desktop panel
  The LXQt desktop panel
  .
@@ -61,8 +59,6 @@ Architecture: all
 Multi-Arch: foreign
 Section: localization
 Depends: qttranslations5-l10n, ${misc:Depends}
-Breaks: lxqt-panel (<< 0.11.0)
-Replaces: lxqt-panel (<< 0.11.0)
 Description: Language package for lxqt-panel
  The l10n files for lxqt-panel.
  .
