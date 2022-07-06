@@ -3,8 +3,35 @@ Upstream-Name: lxqt-panel
 Source: https://github.com/lxqt/lxqt-panel
 
 Files: *
-Copyright: 2012-2020, LXQt team
+Copyright: 2012-2022, LXQt team
            2010-2013, Razor team
+License: LGPL-2.1+
+
+Files: plugin-tray/fdoselectionmanager.cpp
+       plugin-tray/snidbus.cpp
+       plugin-tray/sniproxy.cpp
+       plugin-tray/sniproxy.h
+Copyright: 2015 David Edmundson <davidedmundson@kde.org>
+           2019 Konrad Materka <materka@gmail.com>
+           2022 LXQt team
+License: LGPL-2.1+
+
+Files: plugin-tray/fdoselectionmanager.h
+       plugin-tray/snidbus.h
+Copyright: 2015 David Edmundson <davidedmundson@kde.org>
+           2022 LXQt team
+License: LGPL-2.1+
+
+Files: plugin-tray/xcbutils.h
+Copyright: 2012, 2013 Martin Graesslin <mgraesslin@kde.org>
+           2015 David Edmundson <davidedmundson@kde.org>
+           2022 LXQt team
+License: LGPL-2.1+
+
+Files: plugin-tray/xtestsender.cpp
+       plugin-tray/xtestsender.h
+Copyright: 2017 David Edmundson <davidedmundson@kde.org>
+           2022 LXQt team
 License: LGPL-2.1+
 
 Files: panel/lxqtpanelapplication_p.h
@@ -12,7 +39,7 @@ Copyright: 2016, Luís Pereira <luis.artur.pereira@gmail.com>
 License: LGPL-2.1+
 
 Files: debian/*
-Copyright: 2021,      Lubuntu Developers <lubuntu-devel@lists.ubuntu.com>
+Copyright: 2021-2022, Lubuntu Developers <lubuntu-devel@lists.ubuntu.com>
            2014-2019, Alf Gaida <agaida@siduction.org>
            2015,      Andrew Lee (李健秋) <ajqlee@debian.org>
 License: LGPL-2.1+
