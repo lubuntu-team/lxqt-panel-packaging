@@ -4,6 +4,7 @@ lxqt-panel (1.1.0-0ubuntu2~ppa1) jammy; urgency=medium
   * Updated copyright file.
   * Overrode all very-long-line-length-in-source-file notices that Lintian
     will ever throw at us with this package for the rest of forever.
+  * Removed redundant "Repository-Browser" field from d/upstream/metadata.
 
  -- Aaron Rainbolt <arraybolt3@gmail.com>  Wed, 06 Jul 2022 14:25:33 -0500
 
