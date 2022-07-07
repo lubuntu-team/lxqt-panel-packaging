@@ -6,6 +6,7 @@ lxqt-panel (1.1.0-0ubuntu2~ppa1) jammy; urgency=medium
     will ever throw at us with this package for the rest of forever.
   * Removed redundant "Repository-Browser" field from d/upstream/metadata.
   * Bumped Standards-Version to 4.6.1, no changes necessary.
+  * Removed obsolete "-Wl,--as-needed" linker flag.
 
  -- Aaron Rainbolt <arraybolt3@gmail.com>  Wed, 06 Jul 2022 14:25:33 -0500
 
