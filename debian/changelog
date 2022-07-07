@@ -2,8 +2,6 @@ lxqt-panel (1.1.0-0ubuntu2~ppa1) jammy; urgency=medium
 
   * Backport to Jammy.
   * Updated copyright file.
-  * Overrode all very-long-line-length-in-source-file notices that Lintian
-    will ever throw at us with this package for the rest of forever.
   * Removed redundant "Repository-Browser" field from d/upstream/metadata.
   * Bumped Standards-Version to 4.6.1, no changes necessary.
   * Removed obsolete "-Wl,--as-needed" linker flag.
