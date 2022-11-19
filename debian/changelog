@@ -1,4 +1,4 @@
-lxqt-panel (1.2.0-0ubuntu1) UNRELEASED; urgency=medium
+lxqt-panel (1.2.0-0ubuntu1) lunar; urgency=medium
 
   * New upstream release.
   * Fix the watch file, for real this time.
@@ -8,7 +8,7 @@ lxqt-panel (1.2.0-0ubuntu1) UNRELEASED; urgency=medium
   * Less Rs.
   * Minor copyright updates.
 
- -- Simon Quigley <tsimonq2@ubuntu.com>  Fri, 18 Nov 2022 21:42:47 -0600
+ -- Simon Quigley <tsimonq2@ubuntu.com>  Fri, 18 Nov 2022 22:09:44 -0600
 
 lxqt-panel (1.1.0-0ubuntu2) kinetic; urgency=medium
 
