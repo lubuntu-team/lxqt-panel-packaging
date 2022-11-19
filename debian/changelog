@@ -6,6 +6,7 @@ lxqt-panel (1.2.0-0ubuntu1) UNRELEASED; urgency=medium
   * Bump Standards-version to 4.6.1, no changes needed.
   * Lubuntuify the package slightly, to make debhelper happy.
   * Less Rs.
+  * Minor copyright updates.
 
  -- Simon Quigley <tsimonq2@ubuntu.com>  Fri, 18 Nov 2022 21:42:47 -0600
 
