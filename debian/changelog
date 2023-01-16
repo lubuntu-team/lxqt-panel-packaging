@@ -1,54 +1,54 @@
-lxqt-panel (1.2.0-0ubuntu1) lunar; urgency=medium
+lxqt-panel (1.2.1-1ubuntu1) UNRELEASED; urgency=medium
+
+  * Merge from Debian Unstable, remaining changes:
+
+ -- Simon Quigley <tsimonq2@ubuntu.com>  Mon, 16 Jan 2023 16:14:43 -0600
+
+lxqt-panel (1.2.1-1) unstable; urgency=medium
 
   * New upstream release.
-  * Fix the watch file, for real this time.
-  * Bump build dependencies in debian/control.
-  * Bump Standards-version to 4.6.1, no changes needed.
-  * Lubuntuify the package slightly, to make debhelper happy.
-  * Less Rs.
-  * Minor copyright updates.
+  * Bump Standards-Version to 4.6.2.
 
- -- Simon Quigley <tsimonq2@ubuntu.com>  Fri, 18 Nov 2022 22:09:44 -0600
+ -- ChangZhuo Chen (陳昌倬) <czchen@debian.org>  Thu, 05 Jan 2023 00:10:18 +0800
 
-lxqt-panel (1.1.0-0ubuntu2) kinetic; urgency=medium
-
-  * Add some missing build dependencies.
-
- -- Simon Quigley <tsimonq2@ubuntu.com>  Thu, 02 Jun 2022 13:15:43 -0500
-
-lxqt-panel (1.1.0-0ubuntu1) kinetic; urgency=medium
+lxqt-panel (1.2.0-1) unstable; urgency=medium
 
   * New upstream release.
-  * Bumped build dependencies.
-  * Drop old Breaks/Replaces since we're past the LTS. Update the
-    runtime dependencies too.
+  * Bump Standards-Version to 4.6.1.
+    * Add Rules-Requires-Root: no
+  * Bump compat to 13.
+    * Remove unnecessary -Wl,--as-needed in d/rules
+    * Remove unnecessary --fail-missing in d/rules
+  * Fix d/upstream/metadata.
+  * Update d/copyright.
+  * Update d/watch for GitHub.
 
- -- Simon Quigley <tsimonq2@ubuntu.com>  Thu, 02 Jun 2022 12:43:41 -0500
+ -- ChangZhuo Chen (陳昌倬) <czchen@debian.org>  Fri, 16 Dec 2022 01:24:07 +0800
 
-lxqt-panel (0.17.1-0ubuntu1) impish; urgency=medium
+lxqt-panel (1.1.0-2) unstable; urgency=medium
 
-  * New upstream release 0.17.1
-  * Update debian/control
-    - Bump Standards-Version to 4.5.1
-    - Use liblxqt0-dev 0.17.0
-    - Use liblxqt-globalkeys0-dev 0.17.0
-    - Use liblxqt-globalkeys-ui0-dev 0.17.0
-    - Use libsysstat-qt5-0-dev 0.4.5
-    - Extend lxqt-panel-l10n package description
-  * Run wrap-and-sort
-    - Remove duplicate Build-Depends libkf5solid-dev
-  * Update debian/copyright
+  * Merge to unstable.
 
- -- apt-ghetto <apt-ghetto@protonmail.com>  Sat, 14 Aug 2021 15:49:34 +0200
+ -- ChangZhuo Chen (陳昌倬) <czchen@debian.org>  Sat, 19 Nov 2022 16:14:37 +0800
 
-lxqt-panel (0.16.1-1ubuntu1) hirsute; urgency=medium
+lxqt-panel (1.1.0-1) experimental; urgency=medium
 
-  * New upstream version. Merge from debian unstable.
-  * Tighten debhelper-compat requirement.
-  * Updated dependencies.
-  * Updated debian/rules.
+  * Add debian/salsa-ci.yml file.
+  * Update debian/upstream/signing-key.asc.
+  * New upstream version 1.0.0
+  * New upstream version 1.1.0
+  * Build-deps on liblxqt1-dev (>= 1.1.0~).
+  * Build-deps on liblxqt-globalkeys1-dev (>= 1.1.0~).
+  * Build-deps on liblxqt-globalkeys-ui1-dev (>= 1.1.0~).
+  * Build-deps on libsysstat-qt5-0-dev (>= 0.4.6~).
+  * Drop obsoleted Breaks and Replaces lines.
+  * debian/copyright: update years.
+  * Build-deps on libxcb-randr0-dev.
+  * Build-deps on libxcb-image0-dev.
+  * Build-deps on libxtst-dev.
+  * Build-deps on libxcb-composite0-dev.
 
- -- Raman Sarda <theloudspeaker@disroot.org>  Mon, 22 Feb 2021 02:37:32 +0530
+ -- Andrew Lee (李健秋) <ajqlee@debian.org>  Sat, 16 Jul 2022 00:26:18 +0800
 
 lxqt-panel (0.16.1-1) unstable; urgency=medium
 
@@ -62,41 +62,6 @@ lxqt-panel (0.16.1-1) unstable; urgency=medium
 
  -- Andrew Lee (李健秋) <ajqlee@debian.org>  Wed, 06 Jan 2021 18:30:22 +0800
 
-lxqt-panel (0.15.0-0ubuntu1) groovy; urgency=medium
-
-  * New upstream release.
-    - Update upstream signing key.
-    - Update LXQt build depends.
-  * Bump Standards-version to 4.5.0, no changes needed.
-  * Run wrap-and-sort.
-
- -- Simon Quigley <tsimonq2@ubuntu.com>  Thu, 04 Jun 2020 14:30:49 -0500
-
-lxqt-panel (0.14.1-1ubuntu3) focal; urgency=medium
-
-  * Updated rules to match debian unstable
-  * Updated copyright.
-
- -- Raman Sarda <theloudspeaker@lubuntu.me>  Sun, 16 Feb 2020 00:58:19 +0530
-
-lxqt-panel (0.14.1-1ubuntu2) focal; urgency=medium
-
-  * Correct merge from Ubuntu Merge-oMatic
-  * Bumped minimum requirements in control file
-  * Copyright updates.
-  * Updated debian/watch to point to correct source.
-  * Updated debian/upstream/metadata
-  * using debhelper-compat instead of debhelper and d/compat
-
- -- Raman Sarda <theloudspeaker@lubuntu.me>  Sun, 09 Feb 2020 11:29:09 +0530
-
-lxqt-panel (0.14.1-1ubuntu1) focal; urgency=low
-
-  * Merge from Debian unstable.  Remaining changes:
-    - Updated control file to include new deps.
-
- -- Raman Sarda <theloudspeaker@lubuntu.me>  Fri, 07 Feb 2020 22:20:45 +0530
-
 lxqt-panel (0.14.1-1) unstable; urgency=medium
 
   * Cherry-picking new upstream version 0.14.1.
@@ -106,13 +71,6 @@ lxqt-panel (0.14.1-1) unstable; urgency=medium
     - liblxqt-globalkeys-ui0-dev (>= 0.14.1~)
 
  -- Alf Gaida <agaida@siduction.org>  Tue, 26 Feb 2019 03:28:17 +0100
-
-lxqt-panel (0.14.1-0ubuntu1) disco; urgency=medium
-
-  * New upstream release.
-  * Run wrap-and-sort.
-
- -- Simon Quigley <tsimonq2@ubuntu.com>  Sat, 09 Mar 2019 13:27:32 -0600
 
 lxqt-panel (0.14.0-1) unstable; urgency=medium
 
@@ -130,17 +88,6 @@ lxqt-panel (0.14.0-1) unstable; urgency=medium
   * Added d/upstream/metadata
 
  -- Alf Gaida <agaida@siduction.org>  Sun, 27 Jan 2019 23:13:10 +0100
-
-lxqt-panel (0.14.0-0ubuntu1) disco; urgency=medium
-
-  * New upstream release.
-    - Bump build dependencies.
-    - Remove reverse-applicable patches.
-  * Bump Standards-version to 4.3.0, no changes needed.
-  * Bump debhelper compat to 12, no changes needed.
-  * Add a new lxqt-panel-l10n package.
-
- -- Simon Quigley <tsimonq2@ubuntu.com>  Sat, 26 Jan 2019 01:19:25 -0600
 
 lxqt-panel (0.13.0-2) unstable; urgency=medium
 
@@ -163,83 +110,11 @@ lxqt-panel (0.13.0-1) unstable; urgency=medium
 
  -- Alf Gaida <agaida@siduction.org>  Fri, 25 May 2018 00:08:49 +0200
 
-lxqt-panel (0.13.0-0ubuntu5) cosmic; urgency=medium
-
-  * Add optional overriding of icon theme.
-  * Run wrap-and-sort.
-
- -- Walter Lapchynski <wxl@ubuntu.com>  Tue, 21 Aug 2018 23:37:22 -0700
-
-lxqt-panel (0.13.0-0ubuntu4) cosmic; urgency=medium
-
-  * Change the Uploaders to Ubuntu uploaders.
-  * Update Standards-version to 4.2.0, no changes needed.
-  * Add an autoexpansion feature to the spacer plugin.
-
- -- Simon Quigley <tsimonq2@ubuntu.com>  Thu, 16 Aug 2018 16:17:17 -0500
-
-lxqt-panel (0.13.0-0ubuntu3) cosmic; urgency=medium
-
-  * Add a DEP-3 header for the patch completely removing the clock plugin.
-  * Don't auto-unmute the volume when it's changed.
-  * Bump Standards-version to 4.1.5, no changes needed.
-  * Run wrap-and-sort.
-
- -- Simon Quigley <tsimonq2@ubuntu.com>  Mon, 16 Jul 2018 21:58:19 -0500
-
-lxqt-panel (0.13.0-0ubuntu2) cosmic; urgency=medium
-
-  * Completely remove plugin-clock.
-
- -- Simon Quigley <tsimonq2@ubuntu.com>  Thu, 24 May 2018 22:51:05 -0500
-
-lxqt-panel (0.13.0-0ubuntu1) cosmic; urgency=medium
-
-  * New upstream release.
-  * Update build dependencies.
-  * Update copyright.
-  * Remove patches applied upstream.
-
- -- Simon Quigley <tsimonq2@ubuntu.com>  Wed, 23 May 2018 22:38:37 -0500
-
 lxqt-panel (0.12.0-10) unstable; urgency=medium
 
   * Changed Source and watch for lxqt
 
  -- Alf Gaida <agaida@siduction.org>  Sat, 28 Apr 2018 15:17:35 +0200
-
-lxqt-panel (0.12.0-9ubuntu1) cosmic; urgency=medium
-
-  * Merge from Debian Sid. Remaining changes:
-    - Cherry-pick some upstream commits:
-      + Fix wrongly positioned popups (LP: #1527013).
-        * fix-wrongly-positioned-popups.patch
-        * Upstream commit 7391172.
-      + plugin-volume: Use a specific icon for the panel.
-        * use-specific-panel-icon.patch
-        * Upstream commit eaa65e5.
-      + Fix various memory leaks.
-        * fix-memory-leaks.patch
-        * mainmenu: Fix possible leaks in menu-cache usage.
-          - Upstream commit 04630d4.
-        * mount: Fix leak by correctly assigning the QObject parent.
-          - Upstream commit d1bd23f.
-        * taskbar: Avoid conditionals on unintialized values by proper
-          initialization of data members
-          - Upstream commit 1cb5778.
-      + Avoid infinite recursion when no icon is available.
-        * avoid-infinite-recursion-icons.patch
-        * Upstream commit b9b4133.
-      + Add Move and Resize items in the task-button context menu.
-        * add-move-resize-items.patch
-        * Upstream commit b69fe72.
-      + Set the initial task button text (and icon) correctly.
-        * set-initial-task-button-correctly.patch
-        * Upstream commit 563d6bf.
-  * Change the Vcs entries to be Lubuntu-specific.
-  * Fix typo in the patch description of fix-memory-leaks.patch.
-
- -- Simon Quigley <tsimonq2@ubuntu.com>  Mon, 21 May 2018 00:43:10 -0500
 
 lxqt-panel (0.12.0-9) unstable; urgency=medium
 
@@ -254,43 +129,6 @@ lxqt-panel (0.12.0-9) unstable; urgency=medium
   * Removed trailing whitespaces
 
  -- Alf Gaida <agaida@siduction.org>  Mon, 23 Apr 2018 19:47:29 +0200
-
-lxqt-panel (0.12.0-8ubuntu1) bionic; urgency=medium
-
-  * Cherry-pick some upstream commits because the upstream release cycle is
-    horribly slow (and without this it'll be years before they come in):
-    - Fix wrongly positioned popups (LP: #1527013).
-      + fix-wrongly-positioned-popups.patch
-      + Upstream commit 7391172.
-    - plugin-volume: Use a specific icon for the panel.
-      + use-specific-panel-icon.patch
-      + Upstream commit eaa65e5.
-    - Fix various memory leaks.
-      + fix-memory-leaks.patch
-      + mainmenu: Fix possible leaks in menu-cache usage.
-        * Upstream commit 04630d4.
-      + mount: Fix leak by correctly assigning the QObject parent.
-        * Upstream commit d1bd23f.
-      + taskbar: Avoid conditionals on unintialized values by proper
-        initialization of data members
-        * Upstream commit 1cb5778.
-    - Avoid infinite recursion when no icon is available.
-      + avoid-infinite-recursion-icons.patch
-      + Upstream commit b9b4133.
-    - Add Move and Resize items in the task-button context menu.
-      + add-move-resize-items.patch
-      + Upstream commit b69fe72.
-    - Set the initial task button text (and icon) correctly.
-      + set-initial-task-button-correctly.patch
-      + Upstream commit 563d6bf.
-
- -- Simon Quigley <tsimonq2@ubuntu.com>  Mon, 05 Feb 2018 20:04:48 -0600
-
-lxqt-panel (0.12.0-8build1) bionic; urgency=medium
-
-  * No change rebuild against libdbusmenu-qt5-2.
-
- -- Dmitry Shachnev <mitya57@ubuntu.com>  Tue, 30 Jan 2018 22:29:41 +0300
 
 lxqt-panel (0.12.0-8) unstable; urgency=medium
 
@@ -509,4 +347,3 @@ lxqt-panel (0.9.0+20151101-1) experimental; urgency=medium
   * Removing whitespaces at EOL and EOF.
 
  -- Alf Gaida <agaida@siduction.org>  Sun, 25 Oct 2015 02:27:12 +0200
-
