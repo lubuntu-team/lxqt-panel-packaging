@@ -1,6 +1,8 @@
 lxqt-panel (1.2.1-1ubuntu1) UNRELEASED; urgency=medium
 
   * Merge from Debian Unstable, remaining changes:
+    - Lubuntuify the package slightly.
+    - Run wrap-and-sort for cleanliness.
 
  -- Simon Quigley <tsimonq2@ubuntu.com>  Mon, 16 Jan 2023 16:14:43 -0600
 

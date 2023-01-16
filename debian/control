@@ -1,7 +1,9 @@
 Source: lxqt-panel
 Maintainer: Lubuntu Developers <lubuntu-devel@lists.ubuntu.com>
 XSBC-Original-Maintainer: LXQt Packaging Team <pkg-lxqt-devel@lists.alioth.debian.org>
-Uploaders: Simon Quigley <tsimonq2@ubuntu.com>
+Uploaders: Alf Gaida <agaida@siduction.org>,
+           ChangZhuo Chen (陳昌倬) <czchen@debian.org>,
+           Andrew Lee (李健秋) <ajqlee@debian.org>
 Section: x11
 Priority: optional
 Build-Depends: debhelper-compat (= 13),
@@ -34,12 +36,13 @@ Build-Depends: debhelper-compat (= 13),
                libxkbcommon-x11-dev,
                libxrender-dev,
                libxtst-dev
-Standards-Version: 4.6.1
+Standards-Version: 4.6.2
 Vcs-Browser: https://git.lubuntu.me/Lubuntu/lxqt-panel-packaging
 Vcs-Git: https://git.lubuntu.me/Lubuntu/lxqt-panel-packaging.git
 XS-Debian-Vcs-Browser: https://salsa.debian.org/lxqt-team/lxqt-panel
 XS-Debian-Vcs-Git: https://salsa.debian.org/lxqt-team/lxqt-panel.git
 Homepage: https://github.com/lxqt/lxqt-panel
+Rules-Requires-Root: no
 
 Package: lxqt-panel
 Architecture: any
