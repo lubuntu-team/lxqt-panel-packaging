@@ -4,6 +4,7 @@ lxqt-panel (1.2.1-1ubuntu1) UNRELEASED; urgency=medium
     - Lubuntuify the package slightly.
     - Run wrap-and-sort for cleanliness.
     - Update the copyright file.
+    - Take a different approach for the watch file.
 
  -- Simon Quigley <tsimonq2@ubuntu.com>  Mon, 16 Jan 2023 16:14:43 -0600
 
