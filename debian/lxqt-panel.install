@@ -5,4 +5,5 @@ usr/lib/*/lxqt-panel
 usr/share/desktop-directories
 usr/share/lxqt/lxqt-panel
 usr/share/lxqt/panel.conf
+usr/share/lxqt/panel/qeyes-types/
 usr/share/man
