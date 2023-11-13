@@ -1,8 +1,19 @@
-lxqt-panel (1.3.0-0ubuntu1~ppa1) jammy; urgency=medium
+lxqt-panel (1.4.0-0ubuntu1~ppa1) jammy; urgency=medium
 
   * Backport to Jammy.
 
- -- Simon Quigley <tsimonq2@ubuntu.com>  Fri, 11 Aug 2023 14:20:37 -0500
+ -- Aaron Rainbolt <arraybolt3@gmail.com>  Mon, 13 Nov 2023 11:34:09 -0600
+
+lxqt-panel (1.4.0-0ubuntu1) noble; urgency=medium
+
+  * New upstream release.
+  * Fixed copyright file.
+  * Bumped build dependency versions.
+  * Added lxqt-menu-data as a build dependency.
+  * Removed no-longer-existing directory from lxqt-panel.install.
+  * Move a README file for qeyes-types to the proper documentation directory.
+
+ -- Aaron Rainbolt <arraybolt3@gmail.com>  Mon, 13 Nov 2023 11:34:09 -0600
 
 lxqt-panel (1.3.0-0ubuntu1) mantic; urgency=medium
 
