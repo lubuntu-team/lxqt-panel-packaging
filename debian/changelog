@@ -1,6 +1,7 @@
 lxqt-panel (1.4.0-0ubuntu1~ppa1) jammy; urgency=medium
 
   * Backport to Jammy.
+  * Go back to using KWindowSystem.
 
  -- Aaron Rainbolt <arraybolt3@gmail.com>  Mon, 13 Nov 2023 11:34:09 -0600
 

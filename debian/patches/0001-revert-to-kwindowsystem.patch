@@ -1,0 +1,651 @@
+Description: Revert switch to KX11Extras
+ Jammy still uses KWindowSystem, so we need to revert the port away from
+ KWindowSystem to make things compatible again.
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Origin: vendor
+Last-Update: 2023-11-13
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -30,7 +30,7 @@ set(CMAKE_AUTOUIC ON)
+ set(CMAKE_AUTORCC ON)
+ 
+ set(REQUIRED_QT_VERSION "5.15.0")
+-set(KF5_MINIMUM_VERSION "5.101.0")
++set(KF5_MINIMUM_VERSION "5.36.0")
+ set(LXQT_GLOBALKEYS_MINIMUM_VERSION "1.4.0")
+ set(LXQT_MINIMUM_VERSION "1.4.0")
+ 
+--- a/panel/lxqtpanel.cpp
++++ b/panel/lxqtpanel.cpp
+@@ -50,7 +50,6 @@
+ #include <XdgDirs>
+ 
+ #include <KWindowSystem/KWindowSystem>
+-#include <KWindowSystem/KX11Extras>
+ #include <KWindowSystem/NETWM>
+ 
+ // Turn on this to show the time required to load each plugin during startup
+@@ -242,18 +241,18 @@ LXQtPanel::LXQtPanel(const QString &conf
+         QTimer::singleShot(PANEL_HIDE_FIRST_TIME, this, SLOT(hidePanel()));
+     }
+ 
+-    connect(KX11Extras::self(), &KX11Extras::windowAdded, this, [this] {
++    connect(KWindowSystem::self(), &KWindowSystem::windowAdded, this, [this] {
+         if (mHidable && mHideOnOverlap && !mHidden)
+         {
+             mShowDelayTimer.stop();
+             hidePanel();
+         }
+     });
+-    connect(KX11Extras::self(), &KX11Extras::windowRemoved, this, [this] {
++    connect(KWindowSystem::self(), &KWindowSystem::windowRemoved, this, [this] {
+         if (mHidable && mHideOnOverlap && mHidden && !isPanelOverlapped())
+             mShowDelayTimer.start();
+     });
+-    connect(KX11Extras::self(), &KX11Extras::currentDesktopChanged, this, [this] {
++    connect(KWindowSystem::self(), &KWindowSystem::currentDesktopChanged, this, [this] {
+        if (mHidable && mHideOnOverlap)
+        {
+             if (!mHidden)
+@@ -265,8 +264,8 @@ LXQtPanel::LXQtPanel(const QString &conf
+                 mShowDelayTimer.start();
+        }
+     });
+-    connect(KX11Extras::self(),
+-            static_cast<void (KX11Extras::*)(WId, NET::Properties, NET::Properties2)>(&KX11Extras::windowChanged),
++    connect(KWindowSystem::self(),
++            static_cast<void (KWindowSystem::*)(WId, NET::Properties, NET::Properties2)>(&KWindowSystem::windowChanged),
+             this, [this] (WId /* id */, NET::Properties prop, NET::Properties2) {
+         if (mHidable && mHideOnOverlap
+             // when a window is moved, resized, shaded, or minimized
+@@ -419,7 +418,7 @@ LXQtPanel::~LXQtPanel()
+ void LXQtPanel::show()
+ {
+     QWidget::show();
+-    KX11Extras::setOnDesktop(effectiveWinId(), NET::OnAllDesktops);
++    KWindowSystem::setOnDesktop(effectiveWinId(), NET::OnAllDesktops);
+ }
+ 
+ 
+@@ -676,7 +675,7 @@ void LXQtPanel::updateWmStrut()
+         switch (mPosition)
+         {
+         case LXQtPanel::PositionTop:
+-            KX11Extras::setExtendedStrut(wid,
++            KWindowSystem::setExtendedStrut(wid,
+                                             /* Left   */  0, 0, 0,
+                                             /* Right  */  0, 0, 0,
+                                             /* Top    */  rect.top() + getReserveDimension(), rect.left(), rect.right(),
+@@ -685,7 +684,7 @@ void LXQtPanel::updateWmStrut()
+             break;
+ 
+         case LXQtPanel::PositionBottom:
+-            KX11Extras::setExtendedStrut(wid,
++            KWindowSystem::setExtendedStrut(wid,
+                                             /* Left   */  0, 0, 0,
+                                             /* Right  */  0, 0, 0,
+                                             /* Top    */  0, 0, 0,
+@@ -694,7 +693,7 @@ void LXQtPanel::updateWmStrut()
+             break;
+ 
+         case LXQtPanel::PositionLeft:
+-            KX11Extras::setExtendedStrut(wid,
++            KWindowSystem::setExtendedStrut(wid,
+                                             /* Left   */  rect.left() + getReserveDimension(), rect.top(), rect.bottom(),
+                                             /* Right  */  0, 0, 0,
+                                             /* Top    */  0, 0, 0,
+@@ -704,7 +703,7 @@ void LXQtPanel::updateWmStrut()
+             break;
+ 
+         case LXQtPanel::PositionRight:
+-            KX11Extras::setExtendedStrut(wid,
++            KWindowSystem::setExtendedStrut(wid,
+                                             /* Left   */  0, 0, 0,
+                                             /* Right  */  wholeScreen.right() - rect.right() + getReserveDimension(), rect.top(), rect.bottom(),
+                                             /* Top    */  0, 0, 0,
+@@ -714,7 +713,7 @@ void LXQtPanel::updateWmStrut()
+     }
+     } else
+     {
+-        KX11Extras::setExtendedStrut(wid,
++        KWindowSystem::setExtendedStrut(wid,
+                                         /* Left   */  0, 0, 0,
+                                         /* Right  */  0, 0, 0,
+                                         /* Top    */  0, 0, 0,
+@@ -826,8 +825,8 @@ void LXQtPanel::showConfigDialog()
+     mConfigDialog->activateWindow();
+     WId wid = mConfigDialog->windowHandle()->winId();
+ 
+-    KX11Extras::activateWindow(wid);
+-    KX11Extras::setOnDesktop(wid, KX11Extras::currentDesktop());
++    KWindowSystem::activateWindow(wid);
++    KWindowSystem::setOnDesktop(wid, KWindowSystem::currentDesktop());
+ }
+ 
+ 
+@@ -846,8 +845,8 @@ void LXQtPanel::showAddPluginDialog()
+     mConfigDialog->activateWindow();
+     WId wid = mConfigDialog->windowHandle()->winId();
+ 
+-    KX11Extras::activateWindow(wid);
+-    KX11Extras::setOnDesktop(wid, KX11Extras::currentDesktop());
++    KWindowSystem::activateWindow(wid);
++    KWindowSystem::setOnDesktop(wid, KWindowSystem::currentDesktop());
+ }
+ 
+ 
+@@ -1130,7 +1129,7 @@ bool LXQtPanel::event(QEvent *event)
+         KWindowSystem::setType(effectiveWinId(), NET::Dock);
+ 
+         updateWmStrut(); // reserve screen space for the panel
+-        KX11Extras::setOnAllDesktops(effectiveWinId(), true);
++        KWindowSystem::setOnAllDesktops(effectiveWinId(), true);
+         break;
+     }
+     case QEvent::DragEnter:
+@@ -1414,7 +1413,7 @@ bool LXQtPanel::isPanelOverlapped() cons
+     ignoreList |= NET::TopMenuMask;
+     ignoreList |= NET::NotificationMask;
+ 
+-    const auto wIds = KX11Extras::stackingOrder();
++    const auto wIds = KWindowSystem::stackingOrder();
+     for (auto const wId : wIds)
+     {
+         KWindowInfo info(wId, NET::WMWindowType | NET::WMState | NET::WMFrameExtents | NET::WMDesktop);
+--- a/panel/plugin.cpp
++++ b/panel/plugin.cpp
+@@ -31,7 +31,7 @@
+ #include "pluginsettings_p.h"
+ #include "lxqtpanel.h"
+ 
+-#include <KWindowSystem/KX11Extras>
++#include <KWindowSystem>
+ 
+ #include <QDebug>
+ #include <QProcessEnvironment>
+@@ -523,8 +523,8 @@ void Plugin::showConfigureDialog()
+     mConfigDialog->activateWindow();
+ 
+     WId wid = mConfigDialog->windowHandle()->winId();
+-    KX11Extras::activateWindow(wid);
+-    KX11Extras::setOnDesktop(wid, KX11Extras::currentDesktop());
++    KWindowSystem::activateWindow(wid);
++    KWindowSystem::setOnDesktop(wid, KWindowSystem::currentDesktop());
+ }
+ 
+ 
+--- a/plugin-desktopswitch/desktopswitch.cpp
++++ b/plugin-desktopswitch/desktopswitch.cpp
+@@ -33,7 +33,6 @@
+ #include <lxqt-globalkeys.h>
+ #include <LXQt/GridLayout>
+ #include <KWindowSystem/KWindowSystem>
+-#include <KWindowSystem/KX11Extras>
+ #include <QX11Info>
+ #include <cmath>
+ 
+@@ -47,7 +46,7 @@ DesktopSwitch::DesktopSwitch(const ILXQt
+     QObject(),
+     ILXQtPanelPlugin(startupInfo),
+     m_pSignalMapper(new QSignalMapper(this)),
+-    m_desktopCount(KX11Extras::numberOfDesktops()),
++    m_desktopCount(KWindowSystem::numberOfDesktops()),
+     mRows(-1),
+     mShowOnlyActive(false),
+     mDesktops(new NETRootInfo(QX11Info::connection(), NET::NumberOfDesktops | NET::CurrentDesktop | NET::DesktopNames, NET::WM2DesktopLayout)),
+@@ -63,16 +62,16 @@ DesktopSwitch::DesktopSwitch(const ILXQt
+ 
+     settingsChanged();
+ 
+-    onCurrentDesktopChanged(KX11Extras::currentDesktop());
++    onCurrentDesktopChanged(KWindowSystem::currentDesktop());
+     QTimer::singleShot(0, this, SLOT(registerShortcuts()));
+ 
+     connect(m_buttons, &QButtonGroup::idClicked, this, &DesktopSwitch::setDesktop);
+ 
+-    connect(KX11Extras::self(), &KX11Extras::numberOfDesktopsChanged, this, &DesktopSwitch::onNumberOfDesktopsChanged);
+-    connect(KX11Extras::self(), &KX11Extras::currentDesktopChanged,   this, &DesktopSwitch::onCurrentDesktopChanged);
+-    connect(KX11Extras::self(), &KX11Extras::desktopNamesChanged,     this, &DesktopSwitch::onDesktopNamesChanged);
++    connect(KWindowSystem::self(), &KWindowSystem::numberOfDesktopsChanged, this, &DesktopSwitch::onNumberOfDesktopsChanged);
++    connect(KWindowSystem::self(), &KWindowSystem::currentDesktopChanged,   this, &DesktopSwitch::onCurrentDesktopChanged);
++    connect(KWindowSystem::self(), &KWindowSystem::desktopNamesChanged,     this, &DesktopSwitch::onDesktopNamesChanged);
+ 
+-    connect(KX11Extras::self(), static_cast<void (KX11Extras::*)(WId, NET::Properties, NET::Properties2)>(&KX11Extras::windowChanged),
++    connect(KWindowSystem::self(), static_cast<void (KWindowSystem::*)(WId, NET::Properties, NET::Properties2)>(&KWindowSystem::windowChanged),
+             this, &DesktopSwitch::onWindowChanged);
+ }
+ 
+@@ -137,7 +136,7 @@ void DesktopSwitch::refresh()
+     const QList<QAbstractButton*> btns = m_buttons->buttons();
+ 
+     int i = 0;
+-    const int current_desktop = KX11Extras::currentDesktop();
++    const int current_desktop = KWindowSystem::currentDesktop();
+     const int current_cnt = btns.count();
+     const int border = qMin(btns.count(), m_desktopCount);
+     //update existing buttons
+@@ -145,9 +144,9 @@ void DesktopSwitch::refresh()
+     {
+         DesktopSwitchButton * button = qobject_cast<DesktopSwitchButton*>(btns[i]);
+         button->update(i, mLabelType,
+-                       KX11Extras::desktopName(i + 1).isEmpty() ?
++                       KWindowSystem::desktopName(i + 1).isEmpty() ?
+                        tr("Desktop %1").arg(i + 1) :
+-                       KX11Extras::desktopName(i + 1));
++                       KWindowSystem::desktopName(i + 1));
+         button->setVisible(!mShowOnlyActive || i + 1 == current_desktop);
+     }
+ 
+@@ -156,9 +155,9 @@ void DesktopSwitch::refresh()
+     for ( ; i < m_desktopCount; ++i)
+     {
+         b = new DesktopSwitchButton(&mWidget, i, mLabelType,
+-                KX11Extras::desktopName(i+1).isEmpty() ?
++                KWindowSystem::desktopName(i+1).isEmpty() ?
+                 tr("Desktop %1").arg(i+1) :
+-                KX11Extras::desktopName(i+1));
++                KWindowSystem::desktopName(i+1));
+         mWidget.layout()->addWidget(b);
+         m_buttons->addButton(b, i);
+         b->setVisible(!mShowOnlyActive || i + 1 == current_desktop);
+@@ -215,7 +214,7 @@ DesktopSwitch::~DesktopSwitch() = defaul
+ 
+ void DesktopSwitch::setDesktop(int desktop)
+ {
+-    KX11Extras::setCurrentDesktop(desktop + 1);
++    KWindowSystem::setCurrentDesktop(desktop + 1);
+ }
+ 
+ void DesktopSwitch::onNumberOfDesktopsChanged(int count)
+@@ -330,9 +329,9 @@ void DesktopSwitchWidget::wheelEvent(QWh
+     if(abs(m_mouseWheelThresholdCounter) < 100)
+         return;
+ 
+-    int max = KX11Extras::numberOfDesktops();
++    int max = KWindowSystem::numberOfDesktops();
+     int delta = rotationSteps < 0 ? 1 : -1;
+-    int current = KX11Extras::currentDesktop() + delta;
++    int current = KWindowSystem::currentDesktop() + delta;
+ 
+     if (current > max){
+         current = 1;
+@@ -341,5 +340,5 @@ void DesktopSwitchWidget::wheelEvent(QWh
+         current = max;
+ 
+     m_mouseWheelThresholdCounter = 0;
+-    KX11Extras::setCurrentDesktop(current);
++    KWindowSystem::setCurrentDesktop(current);
+ }
+--- a/plugin-desktopswitch/desktopswitchconfiguration.cpp
++++ b/plugin-desktopswitch/desktopswitchconfiguration.cpp
+@@ -26,7 +26,7 @@
+ 
+ #include "desktopswitchconfiguration.h"
+ #include "ui_desktopswitchconfiguration.h"
+-#include <KWindowSystem/KX11Extras>
++#include <KWindowSystem>
+ #include <QTimer>
+ 
+ DesktopSwitchConfiguration::DesktopSwitchConfiguration(PluginSettings *settings, QWidget *parent) :
+@@ -64,17 +64,17 @@ void DesktopSwitchConfiguration::loadSet
+ 
+ void DesktopSwitchConfiguration::loadDesktopsNames()
+ {
+-    int n = KX11Extras::numberOfDesktops();
++    int n = KWindowSystem::numberOfDesktops();
+     for (int i = 1; i <= n; i++)
+     {
+-        QLineEdit *edit = new QLineEdit(KX11Extras::desktopName(i), this);
++        QLineEdit *edit = new QLineEdit(KWindowSystem::desktopName(i), this);
+         ((QFormLayout *) ui->namesGroupBox->layout())->addRow(tr("Desktop %1:").arg(i), edit);
+ 
+         // C++11 rocks!
+         QTimer *timer = new QTimer(this);
+         timer->setInterval(400);
+         timer->setSingleShot(true);
+-        connect(timer, &QTimer::timeout,       this, [=] { KX11Extras::setDesktopName(i, edit->text()); });
++        connect(timer, &QTimer::timeout,       this, [=] { KWindowSystem::setDesktopName(i, edit->text()); });
+         connect(edit,  &QLineEdit::textEdited, this, [=] { timer->start(); });
+     }
+ }
+--- a/plugin-kbindicator/src/kbdkeeper.cpp
++++ b/plugin-kbindicator/src/kbdkeeper.cpp
+@@ -25,7 +25,7 @@
+  * END_COMMON_COPYRIGHT_HEADER */
+ 
+ #include <QDebug>
+-#include <KWindowSystem/KX11Extras>
++#include <KWindowSystem/KWindowSystem>
+ #include <KWindowSystem/KWindowInfo>
+ #include <KWindowSystem/netwm_def.h>
+ #include "kbdkeeper.h"
+@@ -91,7 +91,7 @@ WinKbdKeeper::~WinKbdKeeper() = default;
+ 
+ void WinKbdKeeper::layoutChanged(uint group)
+ {
+-    WId win = KX11Extras::activeWindow();
++    WId win = KWindowSystem::activeWindow();
+ 
+     if (m_active == win){
+         m_mapping[win] = group;
+@@ -108,7 +108,7 @@ void WinKbdKeeper::layoutChanged(uint gr
+ 
+ void WinKbdKeeper::checkState()
+ {
+-    WId win = KX11Extras::activeWindow();
++    WId win = KWindowSystem::activeWindow();
+ 
+     if (!m_mapping.contains(win))
+         m_mapping.insert(win, 0);
+@@ -120,7 +120,7 @@ void WinKbdKeeper::checkState()
+ 
+ void WinKbdKeeper::switchToGroup(uint group)
+ {
+-    WId win = KX11Extras::activeWindow();
++    WId win = KWindowSystem::activeWindow();
+     m_mapping[win] = group;
+     m_layout.lockGroup(group);
+     m_info.setCurrentGroup(group);
+@@ -138,7 +138,7 @@ AppKbdKeeper::~AppKbdKeeper() = default;
+ 
+ void AppKbdKeeper::layoutChanged(uint group)
+ {
+-    KWindowInfo info = KWindowInfo(KX11Extras::activeWindow(), NET::Properties(), NET::WM2WindowClass);
++    KWindowInfo info = KWindowInfo(KWindowSystem::activeWindow(), NET::Properties(), NET::WM2WindowClass);
+     QString app = QString::fromUtf8(info.windowClassName());
+ 
+     if (m_active == app){
+@@ -157,7 +157,7 @@ void AppKbdKeeper::layoutChanged(uint gr
+ 
+ void AppKbdKeeper::checkState()
+ {
+-    KWindowInfo info = KWindowInfo(KX11Extras::activeWindow(), NET::Properties(), NET::WM2WindowClass);
++    KWindowInfo info = KWindowInfo(KWindowSystem::activeWindow(), NET::Properties(), NET::WM2WindowClass);
+     QString app = QString::fromUtf8(info.windowClassName());
+ 
+     if (!m_mapping.contains(app))
+@@ -172,7 +172,7 @@ void AppKbdKeeper::checkState()
+ 
+ void AppKbdKeeper::switchToGroup(uint group)
+ {
+-    KWindowInfo info = KWindowInfo(KX11Extras::activeWindow(), NET::Properties(), NET::WM2WindowClass);
++    KWindowInfo info = KWindowInfo(KWindowSystem::activeWindow(), NET::Properties(), NET::WM2WindowClass);
+     QString app = QString::fromUtf8(info.windowClassName());
+ 
+     m_mapping[app] = group;
+--- a/plugin-taskbar/lxqttaskbar.cpp
++++ b/plugin-taskbar/lxqttaskbar.cpp
+@@ -93,10 +93,10 @@ LXQtTaskBar::LXQtTaskBar(ILXQtPanelPlugi
+     connect(mSignalMapper, &QSignalMapper::mappedInt, this, &LXQtTaskBar::activateTask);
+     QTimer::singleShot(0, this, &LXQtTaskBar::registerShortcuts);
+ 
+-    connect(KX11Extras::self(), static_cast<void (KX11Extras::*)(WId, NET::Properties, NET::Properties2)>(&KX11Extras::windowChanged)
++    connect(KWindowSystem::self(), static_cast<void (KWindowSystem::*)(WId, NET::Properties, NET::Properties2)>(&KWindowSystem::windowChanged)
+             , this, &LXQtTaskBar::onWindowChanged);
+-    connect(KX11Extras::self(), &KX11Extras::windowAdded, this, &LXQtTaskBar::onWindowAdded);
+-    connect(KX11Extras::self(), &KX11Extras::windowRemoved, this, &LXQtTaskBar::onWindowRemoved);
++    connect(KWindowSystem::self(), &KWindowSystem::windowAdded, this, &LXQtTaskBar::onWindowAdded);
++    connect(KWindowSystem::self(), &KWindowSystem::windowRemoved, this, &LXQtTaskBar::onWindowRemoved);
+ }
+ 
+ /************************************************
+@@ -356,7 +356,7 @@ void LXQtTaskBar::refreshTaskList()
+ {
+     QList<WId> new_list;
+     // Just add new windows to groups, deleting is up to the groups
+-    const auto wnds = KX11Extras::stackingOrder();
++    const auto wnds = KWindowSystem::stackingOrder();
+     for (auto const wnd: wnds)
+     {
+         if (acceptWindow(wnd))
+--- a/plugin-taskbar/lxqttaskbar.h
++++ b/plugin-taskbar/lxqttaskbar.h
+@@ -43,7 +43,7 @@
+ #include <QMap>
+ #include <lxqt-globalkeys.h>
+ #include "../panel/ilxqtpanel.h"
+-#include <KWindowSystem/KX11Extras>
++#include <KWindowSystem/KWindowSystem>
+ #include <KWindowSystem/KWindowInfo>
+ #include <KWindowSystem/NETWM>
+ 
+--- a/plugin-taskbar/lxqttaskbarconfiguration.cpp
++++ b/plugin-taskbar/lxqttaskbarconfiguration.cpp
+@@ -29,7 +29,7 @@
+ 
+ #include "lxqttaskbarconfiguration.h"
+ #include "ui_lxqttaskbarconfiguration.h"
+-#include <KWindowSystem/KX11Extras>
++#include <KWindowSystem/KWindowSystem>
+ 
+ LXQtTaskbarConfiguration::LXQtTaskbarConfiguration(PluginSettings *settings, QWidget *parent):
+     LXQtPanelPluginConfigDialog(settings, parent),
+@@ -54,9 +54,9 @@ LXQtTaskbarConfiguration::LXQtTaskbarCon
+ 
+     ui->showDesktopNumCB->addItem(tr("Current"), 0);
+     //Note: in KWindowSystem desktops are numbered from 1..N
+-    const int desk_cnt = KX11Extras::numberOfDesktops();
++    const int desk_cnt = KWindowSystem::numberOfDesktops();
+     for (int i = 1; desk_cnt >= i; ++i)
+-        ui->showDesktopNumCB->addItem(QString(QStringLiteral("%1 - %2")).arg(i).arg(KX11Extras::desktopName(i)), i);
++        ui->showDesktopNumCB->addItem(QString(QStringLiteral("%1 - %2")).arg(i).arg(KWindowSystem::desktopName(i)), i);
+ 
+     loadSettings();
+     ui->ungroupedNextToExistingCB->setEnabled(!(ui->groupingGB->isChecked()));
+--- a/plugin-taskbar/lxqttaskbutton.cpp
++++ b/plugin-taskbar/lxqttaskbutton.cpp
+@@ -54,7 +54,7 @@
+ #include "lxqttaskgroup.h"
+ #include "lxqttaskbar.h"
+ 
+-#include <KWindowSystem/KX11Extras>
++#include <KWindowSystem/KWindowSystem>
+ // Necessary for closeApplication()
+ #include <KWindowSystem/NETWM>
+ #include <QX11Info>
+@@ -151,7 +151,7 @@ void LXQtTaskButton::updateIcon()
+     if (ico.isNull())
+     {
+         int devicePixels = mIconSize * devicePixelRatioF();
+-        ico = KX11Extras::icon(mWindow, devicePixels, devicePixels);
++        ico = KWindowSystem::icon(mWindow, devicePixels, devicePixels);
+     }
+     setIcon(ico.isNull() ? XdgIcon::defaultApplicationIcon() : ico);
+ }
+@@ -415,7 +415,7 @@ bool LXQtTaskButton::isApplicationHidden
+  ************************************************/
+ bool LXQtTaskButton::isApplicationActive() const
+ {
+-    return KX11Extras::activeWindow() == mWindow;
++    return KWindowSystem::activeWindow() == mWindow;
+ }
+ 
+ /************************************************
+@@ -426,16 +426,15 @@ void LXQtTaskButton::raiseApplication()
+     KWindowInfo info(mWindow, NET::WMDesktop | NET::WMState | NET::XAWMState);
+     if (parentTaskBar()->raiseOnCurrentDesktop() && info.isMinimized())
+     {
+-        KX11Extras::setOnDesktop(mWindow, KX11Extras::currentDesktop());
++        KWindowSystem::setOnDesktop(mWindow, KWindowSystem::currentDesktop());
+     }
+     else
+     {
+         int winDesktop = info.desktop();
+-        if (KX11Extras::currentDesktop() != winDesktop)
+-            KX11Extras::setCurrentDesktop(winDesktop);
++        if (KWindowSystem::currentDesktop() != winDesktop)
++            KWindowSystem::setCurrentDesktop(winDesktop);
+     }
+-    // bypass focus stealing prevention
+-    KX11Extras::forceActiveWindow(mWindow);
++    KWindowSystem::activateWindow(mWindow);
+ 
+     setUrgencyHint(false);
+ }
+@@ -445,7 +444,7 @@ void LXQtTaskButton::raiseApplication()
+  ************************************************/
+ void LXQtTaskButton::minimizeApplication()
+ {
+-    KX11Extras::minimizeWindow(mWindow);
++    KWindowSystem::minimizeWindow(mWindow);
+ }
+ 
+ /************************************************
+@@ -557,7 +556,7 @@ void LXQtTaskButton::moveApplicationToDe
+     if (!ok)
+         return;
+ 
+-    KX11Extras::setOnDesktop(mWindow, desk);
++    KWindowSystem::setOnDesktop(mWindow, desk);
+ }
+ 
+ /************************************************
+@@ -565,7 +564,7 @@ void LXQtTaskButton::moveApplicationToDe
+  ************************************************/
+ void LXQtTaskButton::moveApplicationToPrevNextDesktop(bool next)
+ {
+-    int deskNum = KX11Extras::numberOfDesktops();
++    int deskNum = KWindowSystem::numberOfDesktops();
+     if (deskNum <= 1)
+         return;
+     int targetDesk = KWindowInfo(mWindow, NET::WMDesktop).desktop() + (next ? 1 : -1);
+@@ -575,7 +574,7 @@ void LXQtTaskButton::moveApplicationToPr
+     else if (targetDesk < 1)
+         targetDesk = deskNum;
+ 
+-    KX11Extras::setOnDesktop(mWindow, targetDesk);
++    KWindowSystem::setOnDesktop(mWindow, targetDesk);
+ }
+ 
+ /************************************************
+@@ -585,10 +584,10 @@ void LXQtTaskButton::moveApplicationToPr
+ {
+     KWindowInfo info(mWindow, NET::WMDesktop);
+     if (!info.isOnCurrentDesktop())
+-        KX11Extras::setCurrentDesktop(info.desktop());
++        KWindowSystem::setCurrentDesktop(info.desktop());
+     if (isMinimized())
+-        KX11Extras::unminimizeWindow(mWindow);
+-    KX11Extras::forceActiveWindow(mWindow);
++        KWindowSystem::unminimizeWindow(mWindow);
++    KWindowSystem::forceActiveWindow(mWindow);
+     const QRect& windowGeometry = KWindowInfo(mWindow, NET::WMFrameExtents).frameGeometry();
+     QList<QScreen *> screens = QGuiApplication::screens();
+     if (screens.size() > 1){
+@@ -628,10 +627,10 @@ void LXQtTaskButton::moveApplication()
+ {
+     KWindowInfo info(mWindow, NET::WMDesktop);
+     if (!info.isOnCurrentDesktop())
+-        KX11Extras::setCurrentDesktop(info.desktop());
++        KWindowSystem::setCurrentDesktop(info.desktop());
+     if (isMinimized())
+-        KX11Extras::unminimizeWindow(mWindow);
+-    KX11Extras::forceActiveWindow(mWindow);
++        KWindowSystem::unminimizeWindow(mWindow);
++    KWindowSystem::forceActiveWindow(mWindow);
+     const QRect& g = KWindowInfo(mWindow, NET::WMGeometry).geometry();
+     int X = g.center().x();
+     int Y = g.center().y();
+@@ -646,10 +645,10 @@ void LXQtTaskButton::resizeApplication()
+ {
+     KWindowInfo info(mWindow, NET::WMDesktop);
+     if (!info.isOnCurrentDesktop())
+-        KX11Extras::setCurrentDesktop(info.desktop());
++        KWindowSystem::setCurrentDesktop(info.desktop());
+     if (isMinimized())
+-        KX11Extras::unminimizeWindow(mWindow);
+-    KX11Extras::forceActiveWindow(mWindow);
++        KWindowSystem::unminimizeWindow(mWindow);
++    KWindowSystem::forceActiveWindow(mWindow);
+     const QRect& g = KWindowInfo(mWindow, NET::WMGeometry).geometry();
+     int X = g.bottomRight().x();
+     int Y = g.bottomRight().y();
+@@ -701,7 +700,7 @@ void LXQtTaskButton::contextMenuEvent(QC
+     */
+ 
+     /********** Desktop menu **********/
+-    int deskNum = KX11Extras::numberOfDesktops();
++    int deskNum = KWindowSystem::numberOfDesktops();
+     if (deskNum > 1)
+     {
+         int winDesk = KWindowInfo(mWindow, NET::WMDesktop).desktop();
+@@ -715,7 +714,7 @@ void LXQtTaskButton::contextMenuEvent(QC
+ 
+         for (int i = 1; i <= deskNum; ++i)
+         {
+-            auto deskName = KX11Extras::desktopName(i).trimmed();
++            auto deskName = KWindowSystem::desktopName(i).trimmed();
+             if (deskName.isEmpty())
+                 a = deskMenu->addAction(tr("Desktop &%1").arg(i));
+             else
+@@ -726,7 +725,7 @@ void LXQtTaskButton::contextMenuEvent(QC
+             connect(a, &QAction::triggered, this, &LXQtTaskButton::moveApplicationToDesktop);
+         }
+ 
+-        int curDesk = KX11Extras::currentDesktop();
++        int curDesk = KWindowSystem::currentDesktop();
+         a = menu->addAction(tr("&To Current Desktop"));
+         a->setData(curDesk);
+         a->setEnabled(curDesk != winDesk);
+@@ -832,6 +831,9 @@ void LXQtTaskButton::setUrgencyHint(bool
+     if (mUrgencyHint == set)
+         return;
+ 
++    if (!set)
++        KWindowSystem::demandAttention(mWindow, false);
++
+     mUrgencyHint = set;
+     setProperty("urgent", set);
+     style()->unpolish(this);
+--- a/plugin-taskbar/lxqttaskgroup.cpp
++++ b/plugin-taskbar/lxqttaskgroup.cpp
+@@ -38,8 +38,8 @@
+ #include <QStringBuilder>
+ #include <QMenu>
+ #include <XdgIcon>
+-#include <KWindowSystem/KX11Extras>
+ #include <QX11Info>
++#include <KF5/KWindowSystem/KWindowSystem>
+ #include <functional>
+ 
+ /************************************************
+@@ -58,8 +58,8 @@ LXQtTaskGroup::LXQtTaskGroup(const QStri
+     setText(groupName);
+ 
+     connect(this,                  &LXQtTaskGroup::clicked,               this, &LXQtTaskGroup::onClicked);
+-    connect(KX11Extras::self(),    &KX11Extras::currentDesktopChanged,    this, &LXQtTaskGroup::onDesktopChanged);
+-    connect(KX11Extras::self(),    &KX11Extras::activeWindowChanged,      this, &LXQtTaskGroup::onActiveWindowChanged);
++    connect(KWindowSystem::self(), &KWindowSystem::currentDesktopChanged, this, &LXQtTaskGroup::onDesktopChanged);
++    connect(KWindowSystem::self(), &KWindowSystem::activeWindowChanged,   this, &LXQtTaskGroup::onActiveWindowChanged);
+     connect(parent,                &LXQtTaskBar::buttonRotationRefreshed, this, &LXQtTaskGroup::setAutoRotation);
+     connect(parent,                &LXQtTaskBar::refreshIconGeometry,     this, &LXQtTaskGroup::refreshIconsGeometry);
+     connect(parent,                &LXQtTaskBar::buttonStyleRefreshed,    this, &LXQtTaskGroup::setToolButtonsStyle);
+@@ -97,7 +97,7 @@ void LXQtTaskGroup::contextMenuEvent(QCo
+ void LXQtTaskGroup::closeGroup()
+ {
+     for (LXQtTaskButton *button : qAsConst(mButtonHash) )
+-        if (button->isOnDesktop(KX11Extras::currentDesktop()))
++        if (button->isOnDesktop(KWindowSystem::currentDesktop()))
+             button->closeApplication();
+ }
+ 
+@@ -305,7 +305,7 @@ void LXQtTaskGroup::onClicked(bool)
+ {
+     if (visibleButtonsCount() > 1)
+     {
+-        setChecked(mButtonHash.contains(KX11Extras::activeWindow()));
++        setChecked(mButtonHash.contains(KWindowSystem::activeWindow()));
+         setPopupVisible(true);
+     }
+ }
+@@ -384,7 +384,7 @@ void LXQtTaskGroup::refreshVisibility()
+     const int showDesktop = taskbar->showDesktopNum();
+     for(LXQtTaskButton * btn : qAsConst(mButtonHash))
+     {
+-        bool visible = taskbar->isShowOnlyOneDesktopTasks() ? btn->isOnDesktop(0 == showDesktop ? KX11Extras::currentDesktop() : showDesktop) : true;
++        bool visible = taskbar->isShowOnlyOneDesktopTasks() ? btn->isOnDesktop(0 == showDesktop ? KWindowSystem::currentDesktop() : showDesktop) : true;
+         visible &= taskbar->isShowOnlyCurrentScreenTasks() ? btn->isOnCurrentScreen() : true;
+         visible &= taskbar->isShowOnlyMinimizedTasks() ? btn->isMinimized() : true;
+         btn->setVisible(visible);
