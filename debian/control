@@ -35,7 +35,8 @@ Build-Depends: debhelper-compat (= 13),
                libxkbcommon-dev,
                libxkbcommon-x11-dev,
                libxrender-dev,
-               libxtst-dev
+               libxtst-dev,
+               lxqt-menu-data (>= 1.4.0)
 Standards-Version: 4.6.2
 Vcs-Browser: https://git.lubuntu.me/Lubuntu/lxqt-panel-packaging
 Vcs-Git: https://git.lubuntu.me/Lubuntu/lxqt-panel-packaging.git
