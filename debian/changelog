@@ -1,3 +1,9 @@
+lxqt-panel (1.4.0-0ubuntu2) noble; urgency=medium
+
+  * Apply upstream patch fixing a crash on a custom command.
+
+ -- Simon Quigley <tsimonq2@ubuntu.com>  Fri, 22 Dec 2023 16:40:34 -0600
+
 lxqt-panel (1.4.0-0ubuntu1) noble; urgency=medium
 
   * New upstream release.
