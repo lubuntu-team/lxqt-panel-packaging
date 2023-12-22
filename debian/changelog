@@ -1,9 +1,18 @@
-lxqt-panel (1.4.0-0ubuntu1~ppa1) jammy; urgency=medium
+lxqt-panel (1.4.0-0ubuntu2~ppa22.04.1) jammy; urgency=medium
 
-  * Backport to Jammy.
+  [ Aaron Rainbolt ]
   * Go back to using KWindowSystem.
 
- -- Aaron Rainbolt <arraybolt3@gmail.com>  Mon, 13 Nov 2023 11:34:09 -0600
+  [ Simon Quigley ]
+  * Backport to Jammy.
+
+ -- Simon Quigley <tsimonq2@ubuntu.com>  Fri, 22 Dec 2023 16:42:32 -0600
+
+lxqt-panel (1.4.0-0ubuntu2) noble; urgency=medium
+
+  * Apply upstream patch fixing a crash on a custom command.
+
+ -- Simon Quigley <tsimonq2@ubuntu.com>  Fri, 22 Dec 2023 16:40:34 -0600
 
 lxqt-panel (1.4.0-0ubuntu1) noble; urgency=medium
 

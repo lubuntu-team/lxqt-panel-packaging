@@ -1,0 +1,69 @@
+Description: LXQtCustomCommand: trim command to remove spaces
+ This fixes crash when command is made of only whitespace characters.
+ It's not detected as empty and upon argument split, it tries to access
+ first element of an empty list.
+ .
+ Also trim when saving settings in LXQtCustomCommandConfiguration
+ so placeholder text shows up on next run
+Author: Filippo Gentile <42845724+gfgit@users.noreply.github.com>
+Origin: upstream, https://github.com/lxqt/lxqt-panel/pull/1964
+Applied-Upstream: bd637abafc9e8e9c7727a89e5d86e0f07f213c23
+Last-Update: 2023-12-22
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/plugin-customcommand/lxqtcustomcommand.cpp
++++ b/plugin-customcommand/lxqtcustomcommand.cpp
+@@ -109,7 +109,7 @@ void LXQtCustomCommand::settingsChanged(
+ 
+     mAutoRotate = settings()->value(QStringLiteral("autoRotate"), true).toBool();
+     mFont = settings()->value(QStringLiteral("font"), QString()).toString(); // the default font should be empty
+-    mCommand = settings()->value(QStringLiteral("command"), QStringLiteral("echo Configure...")).toString();
++    mCommand = settings()->value(QStringLiteral("command"), QStringLiteral("echo Configure...")).toString().trimmed();
+     mRunWithBash = settings()->value(QStringLiteral("runWithBash"), true).toBool();
+     mOutputImage = settings()->value(QStringLiteral("outputImage"), false).toBool();
+     mRepeat = settings()->value(QStringLiteral("repeat"), true).toBool();
+@@ -118,9 +118,9 @@ void LXQtCustomCommand::settingsChanged(
+     mIcon = settings()->value(QStringLiteral("icon"), QString()).toString();
+     mText = settings()->value(QStringLiteral("text"), QStringLiteral("%1")).toString();
+     mMaxWidth = settings()->value(QStringLiteral("maxWidth"), 200).toInt();
+-    mClick = settings()->value(QStringLiteral("click"), QString()).toString();
+-    mWheelUp = settings()->value(QStringLiteral("wheelUp"), QString()).toString();
+-    mWheelDown = settings()->value(QStringLiteral("wheelDown"), QString()).toString();
++    mClick = settings()->value(QStringLiteral("click"), QString()).toString().trimmed();
++    mWheelUp = settings()->value(QStringLiteral("wheelUp"), QString()).toString().trimmed();
++    mWheelDown = settings()->value(QStringLiteral("wheelDown"), QString()).toString().trimmed();
+ 
+     if (oldFont != mFont) {
+         QFont newFont;
+--- a/plugin-customcommand/lxqtcustomcommandconfiguration.cpp
++++ b/plugin-customcommand/lxqtcustomcommandconfiguration.cpp
+@@ -108,7 +108,7 @@ void LXQtCustomCommandConfiguration::fon
+ void LXQtCustomCommandConfiguration::commandPlainTextEditChanged()
+ {
+     if (!mLockSettingChanges)
+-        settings().setValue(QStringLiteral("command"), ui->commandPlainTextEdit->toPlainText());
++        settings().setValue(QStringLiteral("command"), ui->commandPlainTextEdit->toPlainText().trimmed());
+ }
+ 
+ void LXQtCustomCommandConfiguration::runWithBashCheckBoxChanged(bool runWithBash)
+@@ -163,17 +163,17 @@ void LXQtCustomCommandConfiguration::max
+ void LXQtCustomCommandConfiguration::clickLineEditChanged(QString click)
+ {
+     if (!mLockSettingChanges)
+-        settings().setValue(QStringLiteral("click"), click);
++        settings().setValue(QStringLiteral("click"), click.trimmed());
+ }
+ 
+ void LXQtCustomCommandConfiguration::wheelUpLineEditChanged(QString wheelUp)
+ {
+     if (!mLockSettingChanges)
+-        settings().setValue(QStringLiteral("wheelUp"), wheelUp);
++        settings().setValue(QStringLiteral("wheelUp"), wheelUp.trimmed());
+ }
+ 
+ void LXQtCustomCommandConfiguration::wheelDownLineEditChanged(QString wheelDown)
+ {
+     if (!mLockSettingChanges)
+-        settings().setValue(QStringLiteral("wheelDown"), wheelDown);
++        settings().setValue(QStringLiteral("wheelDown"), wheelDown.trimmed());
+ }
