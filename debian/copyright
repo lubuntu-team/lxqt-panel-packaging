@@ -4,7 +4,7 @@ Source: https://github.com/lxqt/lxqt-panel
 
 Files: *
 Copyright: 2010-2013 Razor team
-           2012-2023 LXQt team
+           2012-2024 LXQt team
 License: LGPL-2.1+
 
 Files: panel/lxqtpanelapplication_p.h
@@ -21,7 +21,7 @@ Copyright: 2014-2019 Alf Gaida <agaida@siduction.org>
            2020-2021 Raman Sarda <theloudspeaker@lubuntu.me>
            2021      apt-ghetto <apt-ghetto@protonmail.com>
            2018-2023 Simon Quigley <tsimonq2@ubuntu.com>
-           2023      Aaron Rainbolt <arraybolt3@gmail.com>
+           2023-2024 Aaron Rainbolt <arraybolt3@gmail.com>
 License: LGPL-2.1+
 
 License: LGPL-2.1+
