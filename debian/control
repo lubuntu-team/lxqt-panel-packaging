@@ -7,21 +7,21 @@ Uploaders: Alf Gaida <agaida@siduction.org>,
 Section: x11
 Priority: optional
 Build-Depends: debhelper-compat (= 13),
+               layer-shell-qt,
                libasound2-dev,
-               libdbusmenu-qt5-dev,
+               libdbusmenu-lxqt0-dev,
                libglib2.0-dev,
                libicu-dev,
-               libkf5solid-dev,
-               libkf5windowsystem-dev,
-               liblxqt-globalkeys-ui1-dev (>= 1.4.0),
-               liblxqt-globalkeys1-dev (>= 1.4.0),
-               liblxqt1-dev (>= 1.4.0),
+               libkf6solid-dev,
+               libkf6windowsystem-dev,
+               liblayershellqtinterface-dev,
+               liblxqt-globalkeys-ui2-dev (>= 2.0.0),
+               liblxqt-globalkeys2-dev (>= 2.0.0),
+               liblxqt2-dev (>= 2.0.0),
                libpulse-dev,
-               libqt5svg5-dev,
-               libqt5x11extras5-dev,
                libsensors-dev [!hurd-any],
                libstatgrab-dev [linux-any],
-               libsysstat-qt5-0-dev (>= 0.4.5),
+               libsysstat-qt6-1-dev (>= 1.0.0),
                libx11-dev,
                libxcb-composite0-dev,
                libxcb-damage0-dev,
@@ -36,7 +36,9 @@ Build-Depends: debhelper-compat (= 13),
                libxkbcommon-x11-dev,
                libxrender-dev,
                libxtst-dev,
-               lxqt-menu-data (>= 1.4.0)
+               lxqt-menu-data (>= 2.0.0),
+               qt6-svg-dev,
+               qt6-wayland-dev
 Standards-Version: 4.7.0
 Vcs-Browser: https://git.lubuntu.me/Lubuntu/lxqt-panel-packaging
 Vcs-Git: https://git.lubuntu.me/Lubuntu/lxqt-panel-packaging.git
@@ -67,7 +69,7 @@ Package: lxqt-panel-l10n
 Architecture: all
 Multi-Arch: foreign
 Section: localization
-Depends: qttranslations5-l10n, ${misc:Depends}
+Depends: qt6-translations-l10n, ${misc:Depends}
 Description: Language package for lxqt-panel
  The l10n files for lxqt-panel.
  .
