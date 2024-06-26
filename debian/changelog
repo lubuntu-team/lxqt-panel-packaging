@@ -1,4 +1,4 @@
-lxqt-panel (2.0.1-0ubuntu1) UNRELEASED; urgency=medium
+lxqt-panel (2.0.1-0ubuntu1~ppa1) oracular; urgency=medium
 
   * New upstream release.
   * Update copyright file.
@@ -6,7 +6,7 @@ lxqt-panel (2.0.1-0ubuntu1) UNRELEASED; urgency=medium
   * Dropped trim-custom-commands-prevent-crash.patch, applied upstream.
   * Adjust build dependencies.
 
- -- Aaron Rainbolt <arraybolt3@ubuntu.com>  Wed, 19 Jun 2024 18:31:25 -0500
+ -- Aaron Rainbolt <arraybolt3@ubuntu.com>  Wed, 26 Jun 2024 12:58:17 -0500
 
 lxqt-panel (1.4.0-0ubuntu2) noble; urgency=medium
 
