@@ -1,0 +1,5 @@
+# Expected to be verylong
+lxqt-panel source: very-long-line-length-in-source-file * > 512 [*.ts:*]
+lxqt-panel source: very-long-line-length-in-source-file * > 512 [CHANGELOG:*]
+lxqt-panel source: very-long-line-length-in-source-file * > 512 [plugin-colorpicker/colorpicker.cpp:52]
+lxqt-panel source: very-long-line-length-in-source-file * > 512 [*.ui:*]

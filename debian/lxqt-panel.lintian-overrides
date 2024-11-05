@@ -1,0 +1,9 @@
+# This is expected
+lxqt-panel: desktop-entry-missing-required-key Name [usr/share/applications/lxqt-panel.desktop]
+lxqt-panel: desktop-entry-limited-to-environments [usr/share/applications/lxqt-panel.desktop]
+
+# Not likely to be fixed soon
+lxqt-panel: spelling-error-in-binary managment management [usr/bin/lxqt-panel]
+
+# False positive
+lxqt-panel: hardening-no-fortify-functions [usr/lib/x86_64-linux-gnu/lxqt-panel/backend/libwmbackend_kwin_wayland.so]

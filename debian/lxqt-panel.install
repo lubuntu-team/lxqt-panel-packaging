@@ -2,6 +2,7 @@ etc/xdg
 usr/bin/lxqt-panel
 usr/include/lxqt
 usr/lib/*/lxqt-panel
+usr/share/applications/
 usr/share/lxqt/lxqt-panel
 usr/share/lxqt/panel.conf
 usr/share/lxqt/panel/qeyes-types/
