@@ -1,3 +1,9 @@
+lxqt-panel (2.1.4-0ubuntu2) plucky; urgency=medium
+
+  * Remove runtime dependency on lxmenu-data.
+
+ -- Simon Quigley <tsimonq2@ubuntu.com>  Tue, 18 Feb 2025 14:57:47 -0600
+
 lxqt-panel (2.1.4-0ubuntu1) plucky; urgency=medium
 
   * New upstream release.

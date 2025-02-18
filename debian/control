@@ -51,7 +51,6 @@ Rules-Requires-Root: no
 Package: lxqt-panel
 Architecture: any
 Depends: layer-shell-qt,
-         lxmenu-data,
          lxqt-policykit,
          ${misc:Depends},
          ${shlibs:Depends}
