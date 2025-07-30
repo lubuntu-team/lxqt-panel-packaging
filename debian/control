@@ -38,7 +38,8 @@ Build-Depends: debhelper-compat (= 13),
                lxqt-menu-data (>= 2.1.0),
                qt6-base-private-dev (>= 6.6.0),
                qt6-svg-dev (>= 6.6.0),
-               qt6-wayland-dev (>= 6.6.0)
+               qt6-wayland-dev (>= 6.6.0),
+               qt6-wayland-private-dev (>= 6.6.0)
 Standards-Version: 4.7.2
 Vcs-Browser: https://git.lubuntu.me/Lubuntu/lxqt-panel-packaging
 Vcs-Git: https://git.lubuntu.me/Lubuntu/lxqt-panel-packaging.git
