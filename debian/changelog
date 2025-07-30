@@ -1,3 +1,9 @@
+lxqt-panel (2.2.2-0ubuntu1) questing; urgency=medium
+
+  * New upstream release.
+
+ -- Aaron Rainbolt <arraybolt3@ubuntu.com>  Wed, 30 Jul 2025 14:49:50 -0500
+
 lxqt-panel (2.1.4-0ubuntu3) plucky; urgency=medium
 
   * Update Standards-Version to 4.7.1, no changes needed.
