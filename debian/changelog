@@ -2,6 +2,7 @@ lxqt-panel (2.2.2-0ubuntu1) questing; urgency=medium
 
   * New upstream release.
   * Update copyright file.
+  * BUmp Standards-Version to 4.7.2, no changes needed.
 
  -- Aaron Rainbolt <arraybolt3@ubuntu.com>  Wed, 30 Jul 2025 14:49:50 -0500
 
