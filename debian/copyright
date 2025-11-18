@@ -14,7 +14,6 @@ License: LGPL-2.1+
 Files: debian/*
 Copyright: 2014-2019 Alf Gaida <agaida@siduction.org>
            2015-2022 Andrew Lee (李健秋) <ajqlee@debian.org>
-           2022-2023 ChangZhuo Chen (陳昌倬) <czchen@debian.org>
            2015      Shih-Yuan Lee (FourDollars) <fourdollars@gmail.com>
            2016      Ralf Jung <post@ralfj.de>
            2018      Walter Lapchynski <wxl@ubuntu.com>
@@ -22,6 +21,7 @@ Copyright: 2014-2019 Alf Gaida <agaida@siduction.org>
            2021      apt-ghetto <apt-ghetto@protonmail.com>
            2018-2025 Simon Quigley <tsimonq2@ubuntu.com>
            2023-2025 Aaron Rainbolt <arraybolt3@gmail.com>
+           2022-2025 ChangZhuo Chen (陳昌倬) <czchen@debian.org>
 License: LGPL-2.1+
 
 License: LGPL-2.1+
