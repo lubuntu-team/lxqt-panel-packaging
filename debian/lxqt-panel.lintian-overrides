@@ -5,5 +5,6 @@ lxqt-panel: desktop-entry-limited-to-environments [usr/share/applications/lxqt-p
 # Not likely to be fixed soon
 lxqt-panel: spelling-error-in-binary managment management [usr/bin/lxqt-panel]
 
-# False positive
+# False positives
 lxqt-panel: hardening-no-fortify-functions [usr/lib/x86_64-linux-gnu/lxqt-panel/backend/libwmbackend_kwin_wayland.so]
+lxqt-panel: hardening-no-fortify-functions [usr/lib/x86_64-linux-gnu/lxqt-panel/backend/libwmbackend_wayfire.so]

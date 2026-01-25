@@ -4,6 +4,8 @@ lxqt-panel (2.3.2-0ubuntu1) resolute; urgency=medium
     - Update build dependencies.
     - Adjust for /usr/share/lxqt/panel.conf moving to
       /etc/xdg/lxqt/panel.conf.
+    - Add libwmbackend_wayfire.so to lintian-overrides for
+      hardening-no-fortify-functions tag.
   * Update copyright file.
   * Update Standards-Version to 4.7.3, no changes needed.
   * Remove redundant 'Rules-Requires-Root: no' control line.
