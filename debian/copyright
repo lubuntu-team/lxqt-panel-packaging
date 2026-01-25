@@ -11,6 +11,12 @@ Files: panel/lxqtpanelapplication_p.h
 Copyright: 2016 Luís Pereira <luis.artur.pereira@gmail.com>
 License: LGPL-2.1+
 
+Files: panel/backends/wayland/wlroots/ext-workspace-v1.xml
+Copyright: 2019 Christopher Billington
+           2020 Ilia Bozhinov
+           2022 Victoria Brekenfeld
+License: HPND-sell-variant
+
 Files: debian/*
 Copyright: 2014-2019 Alf Gaida <agaida@siduction.org>
            2015-2022 Andrew Lee (李健秋) <ajqlee@debian.org>
@@ -20,8 +26,8 @@ Copyright: 2014-2019 Alf Gaida <agaida@siduction.org>
            2020-2021 Raman Sarda <theloudspeaker@lubuntu.me>
            2021      apt-ghetto <apt-ghetto@protonmail.com>
            2018-2025 Simon Quigley <tsimonq2@ubuntu.com>
-           2023-2025 Aaron Rainbolt <arraybolt3@gmail.com>
            2022-2025 ChangZhuo Chen (陳昌倬) <czchen@debian.org>
+           2023-2026 Aaron Rainbolt <arraybolt3@gmail.com>
 License: LGPL-2.1+
 
 License: LGPL-2.1+
@@ -37,3 +43,22 @@ License: LGPL-2.1+
  .
  On Debian systems, the complete text of the GNU Lesser General
  Public License version 2.1 can be found in "/usr/share/common-licenses/LGPL-2.1".
+
+License: HPND-sell-variant
+ Permission to use, copy, modify, distribute, and sell this software and its
+ documentation for any purpose is hereby granted without fee, provided that
+ the above copyright notice appear in all copies and that both that copyright
+ notice  and this permission notice appear in supporting documentation, and
+ that the  name of the copyright holders not be used in advertising or
+ publicity  pertaining to distribution of the software without specific,
+ written prior permission.  The copyright holders make no representations
+ about the suitability of this software for any purpose.  It is provided "as
+ is" without express or implied warranty.
+ .
+ THE COPYRIGHT HOLDERS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+ INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT
+ SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+ CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
+ DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+ TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
+ OF THIS SOFTWARE.
