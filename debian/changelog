@@ -10,7 +10,7 @@ lxqt-panel (2.3.2-0ubuntu1) resolute; urgency=medium
   * Update Standards-Version to 4.7.3, no changes needed.
   * Remove redundant 'Rules-Requires-Root: no' control line.
 
- -- Aaron Rainbolt <arraybolt3@ubuntu.com>  Sat, 24 Jan 2026 23:34:07 -0600
+ -- Aaron Rainbolt <arraybolt3@ubuntu.com>  Thu, 19 Feb 2026 15:31:01 -0500
 
 lxqt-panel (2.2.2-0ubuntu1) questing; urgency=medium
 
