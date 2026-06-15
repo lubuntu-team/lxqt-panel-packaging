@@ -1,8 +1,8 @@
-lxqt-panel (2.4.1-0ubuntu1) UNRELEASED; urgency=medium
+lxqt-panel (2.4.1-0ubuntu1) stonking; urgency=medium
 
   * New upstream release.
 
- -- Simon Quigley <tsimonq2@debian.org>  Mon, 15 Jun 2026 16:44:45 -0500
+ -- Simon Quigley <tsimonq2@debian.org>  Mon, 15 Jun 2026 16:45:21 -0500
 
 lxqt-panel (2.4.0-0ubuntu1) stonking; urgency=medium
 
