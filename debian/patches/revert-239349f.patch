@@ -1,0 +1,28 @@
+From: Andrew Lee (æŽå¥ç§‹) <ajqlee@debian.org>
+Date: May, 24 2026 09:49:23 +0200
+Subject: [PATCH] revert upstream regrassion commit
+Ship panel.conf directly to /etc/xdg/lxqt conflicts
+with distributions own configs.
+eg: lxqt-branding-debian package in Debian.
+
+Revert upstream regression commit:
+  https://github.com/lxqt/lxqt-panel/pull/2315/commits/239349fae5600d5f9219e8a0853af495cd6de1a1
+
+Origin: https://github.com/lxqt/lxqt-panel/pull/443
+Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/lxqt-panel/+bug/2154589
+Bug-Debian: https://bugs.debian.org/1124685
+Bug: https://github.com/lxqt/lxqt-panel/issues/2175
+Forwarded: no
+
+--- lxqt-panel-2.3.2.orig/panel/CMakeLists.txt
++++ lxqt-panel-2.3.2/panel/CMakeLists.txt
+@@ -114,7 +114,7 @@ target_link_libraries(${PROJECT}
+ set_property(TARGET ${PROJECT} PROPERTY ENABLE_EXPORTS TRUE)
+ 
+ install(TARGETS ${PROJECT} RUNTIME DESTINATION bin)
+-install(FILES ${CONFIG_FILES} DESTINATION "${LXQT_ETC_XDG_DIR}/lxqt")
++install(FILES ${CONFIG_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/lxqt")
+ install(FILES ${PUB_HEADERS} DESTINATION include/lxqt)
+ install(FILES
+     man/lxqt-panel.1
+
